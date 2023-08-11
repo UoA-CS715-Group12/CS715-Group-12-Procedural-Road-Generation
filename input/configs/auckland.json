@@ -2,20 +2,20 @@
     "axiom": {
         "description": "Default starting segments.",
         "value": [
-            [[375,40],[375,41]]
+            [[300,300],[400,300]]
         ]
     },
     "rule_image_name": {
         "description": "Name of image used for road network pattern rules.",
-        "value": "rule_image.png"
+        "value": "rule_image_2.png"
     },
     "population_density_image_name": {
         "description": "Name of image used for population density.",
-        "value": "Auckland_CBD_Pop_Density.tif"
+        "value": "pop_density_map_2.png"
     },
     "water_map_image_name": {
         "description": "Name of image used for water",
-        "value": "water_map.png"
+        "value": "water_map_2.png"
     },
     "land_use_image_name": {
         "description": "Name of image used for land use",

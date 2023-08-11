@@ -5,6 +5,7 @@ from src.utilities import parse_image
 from src.utilities import read_tif_file
 from src.utilities import find_legend_centers
 from src.utilities import find_legend_color_coordinates
+from src.utilities import normalise_pixel_values
 from src.road_network.segment import Segment
 
 class ConfigLoader:
@@ -24,7 +25,8 @@ class ConfigLoader:
         # Parse road rule map and population density map.
         path = os.getcwd() + "/input/images/"
         self.road_rules_array = parse_image(path + self.rule_image_name)
-        self.population_density_array = read_tif_file(path + self.population_density_image_name)
+        self.population_density_array = parse_image(path + self.population_density_image_name)
+        self.population_density_array = normalise_pixel_values(self.population_density_array) # convert to binary array for reading
         # find radial centers. Only relevant if radial road rule is used.
         self.radial_centers = find_legend_centers(self.road_rules_array, self.radial_legend)
         # Parse water map.
