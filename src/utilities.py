@@ -127,3 +127,8 @@ def read_tif_file(filename):
     gdo = gdal.Open(filename)
     band = gdo.GetRasterBand(1)
     return np.array(gdo.ReadAsArray(0, 0, band.XSize, band.YSize))
+
+def rgb2gray(img):
+    r, g, b = img[:, :, 0], img[:, :, 1], img[:, :, 2]
+    gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
+    return gray
