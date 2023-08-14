@@ -1,6 +1,7 @@
 # city size: 10.000 m x 10.000 m
 # input image size: 1000x1000
 # pixel size: 10 m x 10 m
+import math
 
 import numpy as np
 from enum import Enum
@@ -17,7 +18,7 @@ from src.utilities import find_pixel_value
 from src.utilities import compute_intersection
 from src.utilities import normalise_pixel_values
 from src.utilities import get_population_density_value
-
+from src.road_network.growth_rules.height_cost_function import *
 
 class Rules(Enum):
     RULE_SEED = 1
@@ -121,15 +122,18 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict):
 # Generates suggested segments based on the road rule at the end position of the input segment
 def generate_suggested_segments(config, segment, rule_image_array, population_image_array):
     roadmap_rule = get_roadmap_rule(config, segment, rule_image_array)
+    height_map = get_height_map()
     # We scale the population density which ensures the value is between [0-1].
     population_density = get_population_density_value(segment, population_image_array) * config.population_scaling_factor
+    threshold = math.inf # placeholder threshold
+    height_value = height_cost_function(segment, height_map, threshold)
 
     if roadmap_rule == Rules.RULE_GRID:
-        suggested_segments = grid(config, segment, population_density)
+        suggested_segments = grid(config, segment, population_density, height_value)
     elif roadmap_rule == Rules.RULE_ORGANIC:
-        suggested_segments = organic(config, segment, population_density)
+        suggested_segments = organic(config, segment, population_density, height_value)
     elif roadmap_rule == Rules.RULE_RADIAL:
-        suggested_segments = radial(config, segment, population_density)
+        suggested_segments = radial(config, segment, population_density, height_value)
 
     return suggested_segments
     

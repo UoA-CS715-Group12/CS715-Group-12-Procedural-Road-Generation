@@ -6,7 +6,7 @@ from src.road_network.segment import Segment
 
 # INPUT:    ConfigLoader, Segment, Float
 # OUTPUT:   List
-def organic(config, segment, population_density):
+def organic(config, segment, population_density, height):
     road_straight_probability = config.organic_straight_road_probability
     road_turn_probability = config.organic_road_turn_probability
     if segment.is_minor_road:
@@ -33,7 +33,7 @@ def organic(config, segment, population_density):
     # We multiply the probability with the population density because we want to
     # modestly increase the probability of turning the closer to the density.b
     road_turn_probability = road_turn_probability * (population_density + 1)
-
+    road_turn_probability = road_turn_probability * (height + 1)
     # Generate new segment turning right.
     if random.uniform(0, 1) <= road_turn_probability:
         rotated_unit_vector = rotate(segment_unit_vector, random.uniform(-120, -60))

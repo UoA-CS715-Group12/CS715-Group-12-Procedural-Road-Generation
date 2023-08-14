@@ -6,7 +6,7 @@ from src.road_network.segment import Segment
 
 # INPUT:    ConfigLoader, Segment, Float
 # OUTPUT:   List
-def radial(config, segment, population_density):
+def radial(config, segment, population_density, height):
     road_straight_probability = config.radial_straight_road_probability
     road_turn_probability = config.radial_road_turn_probability
     road_mininum_length = config.radial_road_min_length
@@ -51,6 +51,7 @@ def radial(config, segment, population_density):
     # We multiply the probability with the population density because we
     # want to increase the probability of turning the closer to the density.  
     road_turn_probability = road_turn_probability * (population_density + 1)
+    road_turn_probability = road_turn_probability * (height + 1)
     
     # Generate a new segment going straight.
     if random.uniform(0, 1) <= road_straight_probability:

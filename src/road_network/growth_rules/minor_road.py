@@ -10,6 +10,6 @@ def minor_road(config, segment):
     road_organic_probability = config.minor_road_organic_probability
 
     if random.uniform(0,1) <= road_organic_probability:
-        return organic(config,segment, 1.5)
+        return organic(config,segment, 1.5, 1)
     else:
-        return grid(config, segment, 1.5)
+        return grid(config, segment, 1.5, 1)

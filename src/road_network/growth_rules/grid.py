@@ -4,10 +4,9 @@ from src.utilities import rotate
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
 
-
 # INPUT:    ConfigLoader, Segment, Float
 # OUTPUT:   List
-def grid(config, segment, population_density):
+def grid(config, segment, population_density, height):
     road_straight_probability = config.grid_straight_road_probability
     road_turn_probability = config.grid_road_turn_probability
     if segment.is_minor_road:
@@ -33,6 +32,8 @@ def grid(config, segment, population_density):
     # We multiply the probability with the population density because we
     # want to increase the probability of turning the closer to the density.
     road_turn_probability = road_turn_probability * (population_density + 1)
+
+    road_turn_probability = road_turn_probability * (height + 1)
     
     # Rotate unit vector 90 degrees.
     rotated_unit_vector = rotate(segment_unit_vector, 90)
