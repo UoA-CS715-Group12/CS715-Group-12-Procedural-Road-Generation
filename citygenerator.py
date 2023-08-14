@@ -105,6 +105,13 @@ def visualise(water_map_array, road_network, land_usages=None):
             ax.fill(x_coords, y_coords, color)
 
     ax.autoscale()
+    
+ 
+    fig.axes[0].get_xaxis().set_visible(False)
+    fig.axes[0].get_yaxis().set_visible(False)
+    # Save onoy the graph 
+    fig.savefig('output/visualisation.png', bbox_inches='tight', pad_inches=0, dpi = 3000) 
+    
     plt.show()
 
 
