@@ -29,5 +29,7 @@ def city_to_json(road_network, vertices, land_usages):
     output["land_usages"] = land_usages
 
     # Dump to json file.
-    with open(os.getcwd() + "/output/roadnetwork.json", "w") as out:
+    file_path = os.path.join(os.getcwd(), "output", "roadnetwork.json")
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    with open(file_path, "w") as out:
         json.dump(output, out)
