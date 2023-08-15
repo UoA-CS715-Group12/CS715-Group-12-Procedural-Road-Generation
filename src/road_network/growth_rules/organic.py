@@ -4,6 +4,8 @@ from src.utilities import rotate
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
 
+POP_DENSITY_FACTOR = 2 # Proportion by which generation probability is affected by the population density
+
 # INPUT:    ConfigLoader, Segment, Float
 # OUTPUT:   List
 def organic(config, segment, population_density):

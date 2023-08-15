@@ -7,15 +7,15 @@
     },
     "rule_image_name": {
         "description": "Name of image used for road network pattern rules.",
-        "value": "rule_image_2.png"
+        "value": "rule_image_3.png"
     },
     "population_density_image_name": {
         "description": "Name of image used for population density.",
-        "value": "pop_density_map_2.png"
+        "value": "pop_density_map_3.png"
     },
     "water_map_image_name": {
         "description": "Name of image used for water",
-        "value": "water_map_2.png"
+        "value": "water_map_3.png"
     },
     "land_use_image_name": {
         "description": "Name of image used for land use",
@@ -131,7 +131,7 @@
     },
     "population_scaling_factor": {
         "description": "Value used to scale population density to [0-1] range.",
-        "value": 9.043963245335577
+        "value": 32
     },
     "pixel_scaling_factor" : {
         "description" : "Value used to scale pixels to meters. Derived from input image using QGIS.",

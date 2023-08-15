@@ -85,24 +85,24 @@ def visualise(water_map_array, road_network, land_usages=None):
     ax.add_collection(major_lines)
     ax.add_collection(minor_lines)
 
-    if land_usages is not None:
-        for use in land_usages:
-            x_coords = []
-            y_coords = []
-            poly = use["polygon"]
-            if use["land_usage"] == "residential":
-                color = "purple"
-            elif use["land_usage"] == "commercial":
-                color = "y"
-            elif use["land_usage"] == "industry":
-                color = "b"
-            else:
-                color = "r"
+    # if land_usages is not None:
+    #     for use in land_usages:
+    #         x_coords = []
+    #         y_coords = []
+    #         poly = use["polygon"]
+    #         if use["land_usage"] == "residential":
+    #             color = "purple"
+    #         elif use["land_usage"] == "commercial":
+    #             color = "y"
+    #         elif use["land_usage"] == "industry":
+    #             color = "b"
+    #         else:
+    #             color = "r"
 
-            for vertex in poly:
-                x_coords.append(vertex['x'])
-                y_coords.append(vertex['z'])
-            ax.fill(x_coords, y_coords, color)
+    #         for vertex in poly:
+    #             x_coords.append(vertex['x'])
+    #             y_coords.append(vertex['z'])
+    #         ax.fill(x_coords, y_coords, color)
 
     ax.autoscale()
     plt.show()
