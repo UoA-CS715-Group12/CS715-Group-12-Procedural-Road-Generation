@@ -32,7 +32,6 @@ def grid(config, segment, population_density, height):
     # We multiply the probability with the population density because we
     # want to increase the probability of turning the closer to the density.
     road_turn_probability = road_turn_probability * (population_density + 1)
-
     road_turn_probability = road_turn_probability * (height + 1)
     
     # Rotate unit vector 90 degrees.
