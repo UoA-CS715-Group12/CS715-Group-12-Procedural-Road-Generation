@@ -1,6 +1,5 @@
 import os
 from math import inf
-
 from src.utilities import parse_image
 from src.utilities import rgb2gray
 
@@ -33,6 +32,15 @@ def height_cost_function(segment, map, threshold):
     # Cost = cost function
 
 
-if __name__ == "__main__":
-    map = get_height_map()
-    height_cost_function(map)
+def check_too_high(segment):
+    height_map = get_height_map()
+    gray = rgb2gray(height_map)
+    try:
+        height_value = gray[int(segment.end_vert.position[1])][int(segment.end_vert.position[0])]
+    except IndexError:
+        return True
+
+    if height_value > 90:
+        return True
+    else:
+        return False

@@ -2,6 +2,7 @@ import random
 from src.utilities import rotate
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
+from src.road_network.growth_rules.height_cost_function import check_too_high
 
 
 # INPUT:    ConfigLoader, Segment, Float
@@ -40,17 +41,17 @@ def organic(config, segment, population_density, height):
         rotated_unit_vector = rotate(segment_unit_vector, random.uniform(-120, -60))
         turn_road_segment_array = random.uniform(road_mininum_length, road_maximum_length) * rotated_unit_vector
         turn_road_segment_array += segment.end_vert.position
-
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array))
-        suggested_segments.append(new_segment)
-    
+        if not check_too_high(new_segment):
+            suggested_segments.append(new_segment)
+
     # Generate new segment turning left.
     if random.uniform(0, 1) <= road_turn_probability:
         rotated_unit_vector = rotate(segment_unit_vector, random.uniform(60, 120))
         turn_road_segment_array = random.uniform(road_mininum_length, road_maximum_length) * rotated_unit_vector
         turn_road_segment_array += segment.end_vert.position
-        
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array))
-        suggested_segments.append(new_segment)
-    
+        if not check_too_high(new_segment):
+            suggested_segments.append(new_segment)
+
     return suggested_segments
