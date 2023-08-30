@@ -4,6 +4,7 @@ from src.utilities import rotate
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
 
+
 # INPUT:    ConfigLoader, Segment, Float
 # OUTPUT:   List
 def radial(config, segment, population_density, height):
@@ -52,6 +53,7 @@ def radial(config, segment, population_density, height):
     # want to increase the probability of turning the closer to the density.  
     road_turn_probability = road_turn_probability * (population_density + 1)
     road_turn_probability = road_turn_probability * (height + 1)
+    print("Radial Road Turn Probability: ", road_turn_probability)
     
     # Generate a new segment going straight.
     if random.uniform(0, 1) <= road_straight_probability:

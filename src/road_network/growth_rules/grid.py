@@ -1,8 +1,8 @@
 import random
-import numpy as np
 from src.utilities import rotate
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
+
 
 # INPUT:    ConfigLoader, Segment, Float
 # OUTPUT:   List

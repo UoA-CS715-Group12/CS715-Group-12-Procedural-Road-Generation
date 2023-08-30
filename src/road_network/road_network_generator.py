@@ -125,8 +125,10 @@ def generate_suggested_segments(config, segment, rule_image_array, population_im
     height_map = get_height_map()
     # We scale the population density which ensures the value is between [0-1].
     population_density = get_population_density_value(segment, population_image_array) * config.population_scaling_factor
-    threshold = math.inf # placeholder threshold
+    threshold = 90 # placeholder threshold
     height_value = height_cost_function(segment, height_map, threshold)
+    print("Pop Density: ", population_density)
+    print("Height: ", height_value)
 
     if roadmap_rule == Rules.RULE_GRID:
         suggested_segments = grid(config, segment, population_density, height_value)
