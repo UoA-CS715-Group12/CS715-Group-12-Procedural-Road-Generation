@@ -26,9 +26,9 @@ def grid(config, segment, population_density, height):
     if random.uniform(0, 1) <= road_straight_probability:
         straight_segment_array = random.uniform(road_mininum_length, road_maximum_length) * segment_unit_vector
         straight_segment_array += segment.end_vert.position
-        
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(straight_segment_array))
-        suggested_segments.append(new_segment)
+        if not check_too_high(new_segment):
+            suggested_segments.append(new_segment)
 
     # We multiply the probability with the population density because we
     # want to increase the probability of turning the closer to the density.
@@ -43,7 +43,6 @@ def grid(config, segment, population_density, height):
         turn_road_segment_array = random.uniform(road_mininum_length, road_maximum_length) * rotated_unit_vector
         turn_road_segment_array += segment.end_vert.position
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array))
-        suggested_segments.append(new_segment)
         if not check_too_high(new_segment):
             suggested_segments.append(new_segment)
 
@@ -52,7 +51,6 @@ def grid(config, segment, population_density, height):
         turn_road_segment_array_left = random.uniform(road_mininum_length, road_maximum_length) * -rotated_unit_vector
         turn_road_segment_array_left += segment.end_vert.position
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array_left))
-        suggested_segments.append(new_segment)
         if not check_too_high(new_segment):
             suggested_segments.append(new_segment)
 

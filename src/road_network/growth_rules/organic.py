@@ -27,9 +27,9 @@ def organic(config, segment, population_density, height):
         rotated_unit_vector = rotate(segment_unit_vector, random.uniform(-30, 30))
         straight_segment_array = random.uniform(road_mininum_length, road_maximum_length) * rotated_unit_vector
         straight_segment_array += segment.end_vert.position
-
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(straight_segment_array))
-        suggested_segments.append(new_segment)
+        if not check_too_high(new_segment):
+            suggested_segments.append(new_segment)
 
     # We multiply the probability with the population density because we want to
     # modestly increase the probability of turning the closer to the density.b

@@ -79,7 +79,6 @@ def radial(config, segment, population_density, height):
         rotated_unit_vector = rotate(corrected_forward, -90)
         turn_road_segment_array = random.uniform(road_mininum_length, road_maximum_length) * rotated_unit_vector
         turn_road_segment_array += segment.end_vert.position
-
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array))
         if not check_too_high(new_segment):
             suggested_segments.append(new_segment)

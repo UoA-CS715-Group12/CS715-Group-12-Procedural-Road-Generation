@@ -1,3 +1,4 @@
+import math
 import os
 from math import inf
 from src.utilities import parse_image
@@ -16,7 +17,7 @@ def height_cost_function(segment, map, threshold):
     gray = rgb2gray(map)
     height_value = gray[int(segment.end_vert.position[1])][int(segment.end_vert.position[0])]
     # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
-    distance = abs(segment.end_vert.position[1]-segment.end_vert.position[0])
+    distance = math.sqrt((segment.end_vert.position[1] - segment.start_vert.position[1])**2 + (segment.end_vert.position[0] - segment.start_vert.position[0])**2)
     if distance <= 1:
         return 0.0
     cost = float(height_value/distance)
