@@ -33,7 +33,7 @@ def height_cost_function(segment, map, threshold):
     # Cost = cost function
 
 
-def check_too_high(segment):
+def check_too_high(segment, height_threshold):
     height_map = get_height_map()
     gray = rgb2gray(height_map)
     try:
@@ -41,7 +41,7 @@ def check_too_high(segment):
     except IndexError:
         return True
 
-    if height_value > 90:
+    if height_value > height_threshold:
         return True
     else:
         return False
