@@ -62,7 +62,8 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
         print('Total Road Length:', total_road_length)
 
     if show_city:
-        visualise(config.water_map_array, road_network, land_usages=land_usages)
+        # visualise(config.water_map_array, road_network, land_usages=land_usages)
+        visualise(config.height_map_array, road_network)
 
     if show_stats:
         show_orientation_histogram(orientation_histogram)

@@ -21,6 +21,10 @@
         "description": "Name of image used for land use",
         "value": "Zoning_Raster_low_res.tif"
     },
+    "height_map_image_name":{
+        "description": "Name of image used for height",
+        "value": "height_map.png"
+    },
     "max_road_network_iterations": {
         "description": "Maximum iterations allowed for generating road segments.",
         "value": 100
