@@ -2,20 +2,20 @@
     "axiom": {
         "description": "Default starting segments.",
         "value": [
-            [[300,300],[400,300]]
+            [[343,398],[343,400]]
         ]
     },
     "rule_image_name": {
         "description": "Name of image used for road network pattern rules.",
-        "value": "rule_image_2.png"
+        "value": "greater_auckland/greater_auckland_growth_rule.png"
     },
     "population_density_image_name": {
         "description": "Name of image used for population density.",
-        "value": "pop_density_map_2.png"
+        "value": "greater_auckland/greater_auckland_pop_density.png"
     },
     "water_map_image_name": {
         "description": "Name of image used for water",
-        "value": "water_map_2.png"
+        "value": "greater_auckland/greater_auckland_coast.png"
     },
     "land_use_image_name": {
         "description": "Name of image used for land use",
