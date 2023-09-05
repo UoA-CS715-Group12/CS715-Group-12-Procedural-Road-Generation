@@ -122,20 +122,21 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict):
 # Generates suggested segments based on the road rule at the end position of the input segment
 def generate_suggested_segments(config, segment, rule_image_array, population_image_array):
     roadmap_rule = get_roadmap_rule(config, segment, rule_image_array)
-    height_map = get_height_map()
+    # height_map = get_height_map()
     # We scale the population density which ensures the value is between [0-1].
     population_density = get_population_density_value(segment, population_image_array) * config.population_scaling_factor
-    height_threshold = 60
-    height_cost = height_cost_function(segment, height_map, height_threshold)
-    print("Pop Density: ", population_density)
-    print("Height: ", height_cost)
+    # height_threshold = 60
+    # height_cost = height_cost_function(segment, height_map, height_threshold)
+
 
     if roadmap_rule == Rules.RULE_GRID:
-        suggested_segments = grid(config, segment, population_density, height_cost, height_threshold)
+        # suggested_segments = grid(config, segment, population_density, height_cost, height_threshold)
+        suggested_segments = grid(config, segment, population_density)
     elif roadmap_rule == Rules.RULE_ORGANIC:
-        suggested_segments = organic(config, segment, population_density, height_cost, height_threshold)
+        # suggested_segments = organic(config, segment, population_density, height_cost, height_threshold)
+        suggested_segments = organic(config, segment, population_density)
     elif roadmap_rule == Rules.RULE_RADIAL:
-        suggested_segments = radial(config, segment, population_density, height_cost, height_threshold)
+        suggested_segments = radial(config, segment, population_density)
 
     return suggested_segments
     
@@ -144,14 +145,16 @@ def generate_suggested_minor_segments(config, segment):
     road_organic_probability = config.minor_road_organic_probability
     population_image_array = config.population_density_array
     population_density = get_population_density_value(segment, population_image_array) * config.population_scaling_factor
-    height_map = get_height_map()
-    minor_height_threshold = 30
-    height_cost = height_cost_function(segment, height_map, minor_height_threshold)
+    # height_map = get_height_map()
+    # minor_height_threshold = 30
+    # height_cost = height_cost_function(segment, height_map, minor_height_threshold)
 
     if random.uniform(0,1) <= road_organic_probability:
-        return organic(config, segment, population_density, height_cost, minor_height_threshold)
+        # return organic(config, segment, population_density, height_cost, minor_height_threshold)
+        return organic(config, segment, population_density)
     else:
-        return grid(config, segment, population_density, height_cost, minor_height_threshold)
+        # return grid(config, segment, population_density, height_cost, minor_height_threshold)
+        return grid(config, segment, population_density)
 
 
 # INPUT:    ConfigLoader, Segment, numpy.Array

@@ -23,7 +23,7 @@
     },
     "height_map_image_name":{
         "description": "Name of image used for height",
-        "value": "height_map.png"
+        "value": "greater_auckland/greater_auckland_height.png"
     },
     "max_road_network_iterations": {
         "description": "Maximum iterations allowed for generating road segments.",

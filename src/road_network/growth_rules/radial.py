@@ -9,7 +9,7 @@ from src.road_network.segment import Segment
 
 # INPUT:    ConfigLoader, Segment, Float
 # OUTPUT:   List
-def radial(config, segment, population_density, height_cost, height_threshold):
+def radial(config, segment, population_density, height_cost=0, height_threshold=200):
     road_straight_probability = config.radial_straight_road_probability
     road_turn_probability = config.radial_road_turn_probability
     road_mininum_length = config.radial_road_min_length
@@ -62,8 +62,9 @@ def radial(config, segment, population_density, height_cost, height_threshold):
         straight_segment_array = random.uniform(road_mininum_length, road_maximum_length) * corrected_forward
         straight_segment_array += segment.end_vert.position
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(straight_segment_array))
-        if not check_too_high(new_segment, height_threshold):
-            suggested_segments.append(new_segment)
+        # if not check_too_high(new_segment, height_threshold):
+        #     suggested_segments.append(new_segment)
+        suggested_segments.append(new_segment)
     
     # Generate a new segment turning right.
     if random.uniform(0, 1) <= road_turn_probability:
@@ -71,8 +72,9 @@ def radial(config, segment, population_density, height_cost, height_threshold):
         turn_road_segment_array = random.uniform(road_mininum_length, road_maximum_length) * rotated_unit_vector
         turn_road_segment_array += segment.end_vert.position
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array))
-        if not check_too_high(new_segment, height_threshold):
-            suggested_segments.append(new_segment)
+        # if not check_too_high(new_segment, height_threshold):
+        #     suggested_segments.append(new_segment)
+        suggested_segments.append(new_segment)
 
     # Generate a new segment turning left.
     if random.uniform(0, 1) <= road_turn_probability:
@@ -80,7 +82,8 @@ def radial(config, segment, population_density, height_cost, height_threshold):
         turn_road_segment_array = random.uniform(road_mininum_length, road_maximum_length) * rotated_unit_vector
         turn_road_segment_array += segment.end_vert.position
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array))
-        if not check_too_high(new_segment, height_threshold):
-            suggested_segments.append(new_segment)
+        # if not check_too_high(new_segment, height_threshold):
+        #     suggested_segments.append(new_segment)
+        suggested_segments.append(new_segment)
 
     return suggested_segments
