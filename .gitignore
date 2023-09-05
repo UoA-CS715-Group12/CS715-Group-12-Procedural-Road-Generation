@@ -161,3 +161,6 @@ cython_debug/
 
 # Output folder
 output/
+Scripts/
+share/
+pyvenv.cfg
