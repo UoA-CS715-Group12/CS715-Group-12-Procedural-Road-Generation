@@ -12,6 +12,12 @@ def get_height_map():
     gray = rgb2gray(height_map)
     return gray
 
+def get_water_map():
+    path = os.getcwd()
+    height_map = parse_image(path + "/input/images/greater_auckland/greater_auckland_coast.png")
+    gray = rgb2gray(height_map)
+    return gray
+
 
 # Replace the major road generation using A* search
 def height_cost_function(point1, point2, height_map):
@@ -75,3 +81,31 @@ def linear_interpolate(segment, num_points=10):
     unique_points = list(set(points))
 
     return unique_points
+
+def check_water(segment, water_map):
+    try:
+        # Get the interpolated points along the segment
+        points = linear_interpolate(segment, 30)
+        iteration = 0
+        for x1, y1 in points:
+            water_value1 = water_map[y1][x1]
+            if water_value1 >= 250:
+                print("On Water")
+                return True
+
+            try:
+                x2, y2 = points[iteration+1]
+                x2, y2 = int(round(x2)), int(round(y2))
+                water_value2 = water_map[y2][x2]
+                if water_value2 >= 250:
+                    print("On Water")
+                    return True
+
+            except IndexError:
+                return False
+
+            iteration += 1
+
+    except IndexError:
+        print("Check Water Index Error")
+        return True

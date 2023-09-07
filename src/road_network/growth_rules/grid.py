@@ -1,5 +1,5 @@
 import random
-from src.road_network.growth_rules.height_cost_function import check_too_high
+from src.road_network.growth_rules.cost_function import check_too_high
 from src.utilities import rotate
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment

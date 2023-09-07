@@ -18,7 +18,7 @@ from src.utilities import find_pixel_value
 from src.utilities import compute_intersection
 from src.utilities import normalise_pixel_values
 from src.utilities import get_population_density_value
-from src.road_network.growth_rules.height_cost_function import *
+from src.road_network.growth_rules.cost_function import *
 
 class Rules(Enum):
     RULE_SEED = 1
@@ -36,6 +36,7 @@ def generate_road_network(config):
     vertex_added_dict = {}
     segment_front_queue = Queue(maxsize=0)
     height_map = get_height_map()
+    water_map = get_water_map()
 
     for segment in config.axiom:
         segment_added_list.append(segment)
@@ -48,11 +49,11 @@ def generate_road_network(config):
     min_distance = config.major_vertex_min_distance # Min distance between major road vertices.
     while not segment_front_queue.empty() and iteration < config.max_road_network_iterations:
         current_segment = segment_front_queue.get()
-        suggested_segments = generate_suggested_segments(config, current_segment, config.road_rules_array, config.population_density_array, height_map)
+        suggested_segments = generate_suggested_segments(config, current_segment, config.road_rules_array, config.population_density_array)
         for segment in suggested_segments:
             print(segment.start_vert.position, segment.end_vert.position)
             if not len(vertex_added_dict[current_segment.end_vert]) >= 4:   
-                verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict, height_map)
+                verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict, height_map, water_map)
                 print(verified_segment)
                 if verified_segment:
                     segment_front_queue.put(verified_segment)
@@ -65,7 +66,7 @@ def generate_road_network(config):
 
         iteration += 1
 
-    generate_minor_roads(config, segment_added_list, vertex_added_dict, height_map)
+    generate_minor_roads(config, segment_added_list, vertex_added_dict, height_map, water_map)
     print("Major road Total iterations: " + str(iteration))
 
     return segment_added_list, vertex_added_dict
@@ -74,7 +75,7 @@ def generate_road_network(config):
 # INPUT:    ConfigLoader, List, Dictionary
 # OUTPUT:   -
 # generate minor roads based on minor road seeds
-def generate_minor_roads(config, segment_added_list, vertex_added_dict, height_map):
+def generate_minor_roads(config, segment_added_list, vertex_added_dict, height_map, water_map):
     # Extract all segments which are not part of an intersection,
     # i.e. segments with end vertices that have less than three segments connected to them.
     minor_road_seed_candidates = [segment for segment in segment_added_list if len(vertex_added_dict[segment.end_vert]) < 3]
@@ -88,7 +89,7 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, height_m
         suggested_seeds = minor_road_seed(config, seed, population_density)
 
         for suggested_seed in suggested_seeds:
-            verified_seed = verify_segment(config, suggested_seed, min_distance, segment_added_list, vertex_added_dict, height_map)
+            verified_seed = verify_segment(config, suggested_seed, min_distance, segment_added_list, vertex_added_dict, height_map, water_map)
             if verified_seed:
                 minor_roads_queue.put(verified_seed)
                 segment_added_list.append(verified_seed)
@@ -103,10 +104,10 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, height_m
     while not minor_roads_queue.empty() and iteration < config.max_minor_road_iterations:
         current_segment = minor_roads_queue.get()
 
-        suggested_segments = generate_suggested_minor_segments(config, current_segment, height_map)
+        suggested_segments = generate_suggested_minor_segments(config, current_segment)
         for segment in suggested_segments:
             if not len(vertex_added_dict[current_segment.end_vert]) >= 4:   
-                verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict, height_map)
+                verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict, height_map, water_map)
                 if verified_segment:
                     verified_segment.is_minor_road = True
                     minor_roads_queue.put(verified_segment)
@@ -124,7 +125,7 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, height_m
 # INPUT:    ConfigLoader, Segment, numpy.Array, numpy.Array
 # OUTPUT:   List
 # Generates suggested segments based on the road rule at the end position of the input segment
-def generate_suggested_segments(config, segment, rule_image_array, population_image_array, height_map):
+def generate_suggested_segments(config, segment, rule_image_array, population_image_array):
     roadmap_rule = get_roadmap_rule(config, segment, rule_image_array)
     # We scale the population density which ensures the value is between [0-1].
     population_density = get_population_density_value(segment, population_image_array) * config.population_scaling_factor
@@ -139,7 +140,7 @@ def generate_suggested_segments(config, segment, rule_image_array, population_im
     return suggested_segments
     
 
-def generate_suggested_minor_segments(config, segment, height_map):
+def generate_suggested_minor_segments(config, segment):
     road_organic_probability = config.minor_road_organic_probability
     population_image_array = config.population_density_array
     population_density = get_population_density_value(segment, population_image_array) * config.population_scaling_factor
@@ -172,7 +173,7 @@ def get_roadmap_rule(config, segment, image_array):
 # OUTPUT:   Segment
 # Local constraints are used to verify a suggested segment. Segments are
 # either ignored if they are out of bounds or altered to fit the existing road network
-def verify_segment(config, segment, min_vertex_distance, segment_added_list, vertex_added_dict, height_map):
+def verify_segment(config, segment, min_vertex_distance, segment_added_list, vertex_added_dict, height_map, water_map):
     max_x = config.road_rules_array.shape[1] - 1 # maximum x coordinate
     max_y = config.road_rules_array.shape[0] - 1 # maximum y coordinate
     max_roads_intersection = 4 # maximum allowed roads in an intersection
@@ -207,6 +208,8 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
     elif np.array_equal(find_pixel_value(segment, config.water_map_array), config.water_legend):
         return None
     elif check_too_high(segment, 65, height_map):
+        return None
+    elif check_water(segment, water_map):
         return None
 
 
