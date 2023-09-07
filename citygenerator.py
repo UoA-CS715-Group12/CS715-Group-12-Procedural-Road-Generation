@@ -45,13 +45,13 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
     print(f"compute polygons completed in {end - start:0.4f} seconds")
     del polys[0] # We delete the first polygon as this corresponds to the outer area.
     
-    # Step 3: Determine land usages.
+    # # Step 3: Determine land usages.
     # start = time.perf_counter()
     # land_usages = land_usage.get_land_usage(polys, config)
     # end = time.perf_counter()
     # print(f"get land usage completed in {end - start:0.4f} seconds")
-    
-    # Step 4: Dump to .json.
+    #
+    # # Step 4: Dump to .json.
     # start = time.perf_counter()
     # city_to_json(road_network, list(vertex_dict.keys()), land_usages)
     # end = time.perf_counter()
@@ -97,7 +97,7 @@ def visualise(water_map_array, road_network, land_usages=None):
     minor_segment_coords = [np.array([segment.start_vert.position, segment.end_vert.position]) for segment in road_network 
                             if segment.is_minor_road]
     major_lines = LineCollection(major_segment_coords)
-    minor_lines = LineCollection(minor_segment_coords, linewidths=[0.6], colors=[[200, 200, 200, 0.8]])
+    minor_lines = LineCollection(minor_segment_coords, linewidths=[0.6], colors=[[220, 0, 0, 1]])
     fig = plt.figure()
 
     ax = fig.add_subplot(1, 1, 1)

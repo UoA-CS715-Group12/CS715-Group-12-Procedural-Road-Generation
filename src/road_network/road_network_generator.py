@@ -49,8 +49,8 @@ def generate_road_network(config):
     while not segment_front_queue.empty() and iteration < config.max_road_network_iterations:
         current_segment = segment_front_queue.get()
         suggested_segments = generate_suggested_segments(config, current_segment, config.road_rules_array, config.population_density_array, height_map)
-        print("generated", len(suggested_segments), "major segments")
         for segment in suggested_segments:
+            print(segment.start_vert.position, segment.end_vert.position)
             if not len(vertex_added_dict[current_segment.end_vert]) >= 4:   
                 verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict, height_map)
                 print(verified_segment)
@@ -206,7 +206,7 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
         return None
     elif np.array_equal(find_pixel_value(segment, config.water_map_array), config.water_legend):
         return None
-    elif check_too_high(segment, 70, height_map):
+    elif check_too_high(segment, 65, height_map):
         return None
 
 
