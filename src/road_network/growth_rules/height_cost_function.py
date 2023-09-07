@@ -8,7 +8,7 @@ from src.utilities import rgb2gray
 def get_height_map():
     # path = os.path.abspath(os.path.join(os.getcwd(), '../../..'))
     path = os.getcwd()
-    height_map = parse_image(path + "/input/images/height_map.png")
+    height_map = parse_image(path + "/input/images/greater_auckland/greater_auckland_height.png")
     gray = rgb2gray(height_map)
     return gray
 
@@ -32,9 +32,6 @@ def check_too_high(segment, height_threshold, height_map):
         points = linear_interpolate(segment, 30)
         iteration = 0
         for x1, y1 in points:
-            # Round x, y to nearest integer to look them up in the height map
-            x1, y1 = int(round(x1)), int(round(y1))
-
             height_value1 = height_map[y1][x1]
             if height_value1 > height_threshold:
                 print("Height > Threshold")
@@ -73,6 +70,8 @@ def linear_interpolate(segment, num_points=10):
         t = i / num_points
         x = x1 + t * (x2 - x1)
         y = y1 + t * (y2 - y1)
-        points.append((x, y))
+        points.append((round(x), round(y)))
 
-    return points
+    unique_points = list(set(points))
+
+    return unique_points
