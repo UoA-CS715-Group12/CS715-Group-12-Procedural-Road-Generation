@@ -2,7 +2,8 @@
     "axiom": {
         "description": "Default starting segments.",
         "value": [
-            [[343,398],[343,400]]
+            [[343,398],[343,400]],
+            [[315,194],[312,199]]
         ]
     },
     "rule_image_name": {
