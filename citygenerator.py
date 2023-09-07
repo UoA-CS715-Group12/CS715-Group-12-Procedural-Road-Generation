@@ -7,7 +7,7 @@ from matplotlib.collections import LineCollection
 from src.to_json import city_to_json
 from src.config_loader import ConfigLoader
 from src.road_network.segment import Segment
-from src.road_network.road_network_generator import generate_road_network
+import src.road_network.road_network_generator as rng
 import src.city_blocks.polygons as polygons
 import src.city_blocks.land_usage as land_usage
 from src.stats import compute_orientation_histogram, show_orientation_histogram
@@ -29,7 +29,11 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
     # Step 0: Load config.
     config = ConfigLoader(config_path)
     # Step 1: Grow road network.
-    road_network, vertex_dict = generate_road_network(config)
+    road_network, vertex_dict = rng.initialise(config)
+    rng.generate_major_roads(config, road_network, vertex_dict)
+    visualise(config.height_map_array, road_network)
+    rng.generate_minor_roads(config, road_network, vertex_dict)
+
     # Step 2: Compute polygons based on road network.
     polys = polygons.get_polygons(vertex_dict)
     del polys[0] # We delete the first polygon as this corresponds to the outer area.
