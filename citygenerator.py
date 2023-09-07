@@ -72,7 +72,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
 # INPUT:    numpy.Array, List, Dict
 # OUTPUT:   matplotlib plot
 # Function used to visualise intermediate representation using matplotlib
-def visualise(water_map_array, road_network, land_usages=None):
+def visualise(map_array, road_network, land_usages=None):
     major_segment_coords = [np.array([segment.start_vert.position, segment.end_vert.position]) for segment in road_network 
                             if not segment.is_minor_road]
     minor_segment_coords = [np.array([segment.start_vert.position, segment.end_vert.position]) for segment in road_network 
@@ -82,7 +82,7 @@ def visualise(water_map_array, road_network, land_usages=None):
     fig = plt.figure()
 
     ax = fig.add_subplot(1, 1, 1)
-    ax.imshow(water_map_array)
+    ax.imshow(map_array)
     ax.add_collection(major_lines)
     ax.add_collection(minor_lines)
 
