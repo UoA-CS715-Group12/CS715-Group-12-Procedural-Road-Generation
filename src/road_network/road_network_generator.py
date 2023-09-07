@@ -29,9 +29,13 @@ class Rules(Enum):
 
 
 
+
 def initialise(config):
+
     segment_added_list = []
     vertex_added_dict = {}
+    segment_front_queue = Queue(maxsize=0)
+
     for segment in config.axiom:
         segment_added_list.append(segment)
         vertex_added_dict[segment.start_vert] = [segment]
@@ -41,7 +45,10 @@ def initialise(config):
 def generate_major_roads(config, segment_added_list, vertex_added_dict):
     segment_front_queue = Queue(maxsize=0)
     for segment in segment_added_list:
+
         segment_front_queue.put(segment)
+        vertex_added_dict[segment.start_vert] = [segment]
+        vertex_added_dict[segment.end_vert] = [segment]
 
 
     # Iterate through the front queue, incrementally building the road network.
@@ -64,7 +71,6 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict):
                             vertex_added_dict[vert] = [verified_segment]
 
         iteration += 1
-
 
     return segment_added_list, vertex_added_dict
 
