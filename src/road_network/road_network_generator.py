@@ -35,9 +35,7 @@ def initialise(config):
 
     segment_added_list = []
     vertex_added_dict = {}
-    segment_front_queue = Queue(maxsize=0)
-    height_map = get_height_map()
-    water_map = get_water_map()
+
 
     for segment in config.axiom:
         segment_added_list.append(segment)
@@ -46,6 +44,8 @@ def initialise(config):
     return segment_added_list,vertex_added_dict
 
 def generate_major_roads(config, segment_added_list, vertex_added_dict, visualiser):
+    height_map = get_height_map()
+    water_map = get_water_map()
     segment_front_queue = Queue(maxsize=0)
     for segment in segment_added_list:
 
@@ -85,6 +85,8 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
 # OUTPUT:   -
 # generate minor roads based on minor road seeds
 def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualiser):
+    height_map = get_height_map()
+    water_map = get_water_map() 
     # Extract all segments which are not part of an intersection,
     # i.e. segments with end vertices that have less than three segments connected to them.
     minor_road_seed_candidates = [segment for segment in segment_added_list if len(vertex_added_dict[segment.end_vert]) < 3]
