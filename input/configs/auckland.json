@@ -2,7 +2,8 @@
     "axiom": {
         "description": "Default starting segments.",
         "value": [
-            [[343,398],[343,400]]
+            [[343,398],[343,400]],
+            [[315,194],[312,199]]
         ]
     },
     "rule_image_name": {
@@ -23,7 +24,7 @@
     },
     "height_map_image_name":{
         "description": "Name of image used for height",
-        "value": "height_map.png"
+        "value": "greater_auckland/greater_auckland_height.png"
     },
     "max_road_network_iterations": {
         "description": "Maximum iterations allowed for generating road segments.",
@@ -63,7 +64,7 @@
     },
     "organic_road_min_length": {
         "description": "Minimum length of a road segment for the organic pattern.",
-        "value": 80
+        "value": 20
     },
     "organic_road_max_length": {
         "description": "Maximum length of a road segment for the organic pattern.",
@@ -99,15 +100,15 @@
     },
     "minor_road_min_length": {
         "description": "Minimum length of a minor road seed road.",
-        "value": 10
+        "value": 5
     },
     "minor_road_max_length": {
         "description": "Maximum length of a minor road seed road.",
-        "value": 15
+        "value": 5
     },
     "minor_road_seed_probability": {
         "description": "Probability [0-1] of a minor road seed road being generated.",
-        "value": 1
+        "value": 10
     },
     "minor_vertex_min_distance": {
         "description": "Minimum allowed distance between minor road vertices.",
@@ -139,6 +140,6 @@
     },
     "pixel_scaling_factor" : {
         "description" : "Value used to scale pixels to meters. Derived from input image using QGIS.",
-        "value" : 12.972477064
+        "value" : 50.972477064
     }
 }

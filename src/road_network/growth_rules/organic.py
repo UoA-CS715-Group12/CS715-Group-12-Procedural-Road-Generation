@@ -2,12 +2,12 @@ import random
 from src.utilities import rotate
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
-from src.road_network.growth_rules.height_cost_function import check_too_high
+from src.road_network.growth_rules.cost_function import check_too_high
 
 
 # INPUT:    ConfigLoader, Segment, Float
 # OUTPUT:   List
-def organic(config, segment, population_density, height_cost, height_threshold):
+def organic(config, segment, population_density):
     road_straight_probability = config.organic_straight_road_probability
     road_turn_probability = config.organic_road_turn_probability
     if segment.is_minor_road:
@@ -28,13 +28,14 @@ def organic(config, segment, population_density, height_cost, height_threshold):
         straight_segment_array = random.uniform(road_mininum_length, road_maximum_length) * rotated_unit_vector
         straight_segment_array += segment.end_vert.position
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(straight_segment_array))
-        if not check_too_high(new_segment, height_threshold):
-            suggested_segments.append(new_segment)
+
+        # if not check_too_high(new_segment, height_threshold):
+        #     suggested_segments.append(new_segment)
+        suggested_segments.append(new_segment)
 
     # We multiply the probability with the population density because we want to
     # modestly increase the probability of turning the closer to the density.b
     road_turn_probability = road_turn_probability * (population_density + 1)
-    road_turn_probability = road_turn_probability * (height_cost + 1)
 
     # Generate new segment turning right.
     if random.uniform(0, 1) <= road_turn_probability:
@@ -42,8 +43,10 @@ def organic(config, segment, population_density, height_cost, height_threshold):
         turn_road_segment_array = random.uniform(road_mininum_length, road_maximum_length) * rotated_unit_vector
         turn_road_segment_array += segment.end_vert.position
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array))
-        if not check_too_high(new_segment, height_threshold):
-            suggested_segments.append(new_segment)
+        # if not check_too_high(new_segment, height_threshold):
+        #     suggested_segments.append(new_segment)
+        suggested_segments.append(new_segment)
+
 
     # Generate new segment turning left.
     if random.uniform(0, 1) <= road_turn_probability:
@@ -51,7 +54,9 @@ def organic(config, segment, population_density, height_cost, height_threshold):
         turn_road_segment_array = random.uniform(road_mininum_length, road_maximum_length) * rotated_unit_vector
         turn_road_segment_array += segment.end_vert.position
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array))
-        if not check_too_high(new_segment, height_threshold):
-            suggested_segments.append(new_segment)
+
+        # if not check_too_high(new_segment, height_threshold):
+        #     suggested_segments.append(new_segment)
+        suggested_segments.append(new_segment)
 
     return suggested_segments
