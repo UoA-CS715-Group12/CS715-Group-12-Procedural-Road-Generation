@@ -9,13 +9,13 @@ def get_height_map():
     # path = os.path.abspath(os.path.join(os.getcwd(), '../../..'))
     path = os.getcwd()
     height_map = parse_image(path + "/input/images/height_map.png")
-    return height_map
+    gray = rgb2gray(height_map)
+    return gray
 
 
 # Replace the major road generation using A* search
-def height_cost_function(segment, map, threshold):
-    gray = rgb2gray(map)
-    height_value = gray[int(segment.end_vert.position[1])][int(segment.end_vert.position[0])]
+def height_cost_function(segment, height_map, threshold):
+    height_value = height_map[int(segment.end_vert.position[1])][int(segment.end_vert.position[0])]
     # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
     distance = math.sqrt((segment.end_vert.position[1] - segment.start_vert.position[1])**2 + (segment.end_vert.position[0] - segment.start_vert.position[0])**2)
     if distance <= 1:
@@ -33,12 +33,11 @@ def height_cost_function(segment, map, threshold):
     # Cost = cost function
 
 
-def check_too_high(segment, height_threshold):
-    height_map = get_height_map()
-    gray = rgb2gray(height_map)
+def check_too_high(segment, height_threshold, height_map):
     try:
-        height_value = gray[int(segment.end_vert.position[1])][int(segment.end_vert.position[0])]
+        height_value = height_map[int(segment.end_vert.position[1])][int(segment.end_vert.position[0])]
     except IndexError:
+        print("Check Too High Index Error")
         return True
 
     if height_value > height_threshold:

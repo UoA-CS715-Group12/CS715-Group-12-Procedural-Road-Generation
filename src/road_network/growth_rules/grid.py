@@ -7,7 +7,7 @@ from src.road_network.segment import Segment
 
 # INPUT:    ConfigLoader, Segment, Float
 # OUTPUT:   List
-def grid(config, segment, population_density, height_cost, height_threshold):
+def grid(config, segment, population_density, height_cost, height_threshold, height_map):
     road_straight_probability = config.grid_straight_road_probability
     road_turn_probability = config.grid_road_turn_probability
     if segment.is_minor_road:
@@ -27,7 +27,7 @@ def grid(config, segment, population_density, height_cost, height_threshold):
         straight_segment_array = random.uniform(road_mininum_length, road_maximum_length) * segment_unit_vector
         straight_segment_array += segment.end_vert.position
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(straight_segment_array))
-        if not check_too_high(new_segment, height_threshold):
+        if not check_too_high(new_segment, height_threshold, height_map):
             suggested_segments.append(new_segment)
 
     # We multiply the probability with the population density because we
@@ -43,7 +43,7 @@ def grid(config, segment, population_density, height_cost, height_threshold):
         turn_road_segment_array = random.uniform(road_mininum_length, road_maximum_length) * rotated_unit_vector
         turn_road_segment_array += segment.end_vert.position
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array))
-        if not check_too_high(new_segment, height_threshold):
+        if not check_too_high(new_segment, height_threshold, height_map):
             suggested_segments.append(new_segment)
 
     # Generate new segment turning left.
@@ -51,7 +51,7 @@ def grid(config, segment, population_density, height_cost, height_threshold):
         turn_road_segment_array_left = random.uniform(road_mininum_length, road_maximum_length) * -rotated_unit_vector
         turn_road_segment_array_left += segment.end_vert.position
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array_left))
-        if not check_too_high(new_segment, height_threshold):
+        if not check_too_high(new_segment, height_threshold, height_map):
             suggested_segments.append(new_segment)
 
     return suggested_segments
