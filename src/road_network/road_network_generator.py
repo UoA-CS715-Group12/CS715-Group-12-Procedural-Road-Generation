@@ -66,6 +66,7 @@ def generate_road_network(config):
         iteration += 1
 
     generate_minor_roads(config, segment_added_list, vertex_added_dict, height_map)
+    print("Major road Total iterations: " + str(iteration))
 
     return segment_added_list, vertex_added_dict
 
@@ -118,7 +119,7 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, height_m
 
         iteration += 1
         
-        
+    print("Minor road Total Iterations: " + str(iteration))
 
 # INPUT:    ConfigLoader, Segment, numpy.Array, numpy.Array
 # OUTPUT:   List
