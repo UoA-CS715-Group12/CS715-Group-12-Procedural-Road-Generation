@@ -9,10 +9,12 @@ class Visualiser:
         self.map_array = map_array
         self.road_network = road_network
         self.land_usages = land_usages
+        self.iteration_counter = 0
 
     def visualise(self):
-        visualise(self.map_array, self.road_network, self.major_lines, self.minor_lines, self.fig, self.ax, self.land_usages)
-
+        if self.iteration_counter % 30 == 0:
+            visualise(self.map_array, self.road_network, self.major_lines, self.minor_lines, self.fig, self.ax, self.land_usages)
+        self.iteration_counter += 1
 
 def init_plot():
     fig, ax = plt.subplots()
