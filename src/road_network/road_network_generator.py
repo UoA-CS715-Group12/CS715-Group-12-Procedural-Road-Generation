@@ -27,19 +27,22 @@ class Rules(Enum):
     RULE_GRID = 4
     RULE_MINOR = 5
 
-# INPUT:    ConfigLoader
-# OUTPUT:   List
-# Generates a road network given a loaded config.
-def generate_road_network(config):
+
+
+def initialise(config):
     segment_added_list = []
     vertex_added_dict = {}
-    segment_front_queue = Queue(maxsize=0)
-
     for segment in config.axiom:
         segment_added_list.append(segment)
-        segment_front_queue.put(segment)
         vertex_added_dict[segment.start_vert] = [segment]
         vertex_added_dict[segment.end_vert] = [segment]
+    return segment_added_list,vertex_added_dict
+
+def generate_major_roads(config, segment_added_list, vertex_added_dict):
+    segment_front_queue = Queue(maxsize=0)
+    for segment in segment_added_list:
+        segment_front_queue.put(segment)
+
 
     # Iterate through the front queue, incrementally building the road network.
     iteration = 0
@@ -62,7 +65,6 @@ def generate_road_network(config):
 
         iteration += 1
 
-    generate_minor_roads(config, segment_added_list, vertex_added_dict)
 
     return segment_added_list, vertex_added_dict
 
