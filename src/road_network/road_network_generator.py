@@ -49,9 +49,11 @@ def generate_road_network(config):
     while not segment_front_queue.empty() and iteration < config.max_road_network_iterations:
         current_segment = segment_front_queue.get()
         suggested_segments = generate_suggested_segments(config, current_segment, config.road_rules_array, config.population_density_array, height_map)
+        print("generated", len(suggested_segments), "major segments")
         for segment in suggested_segments:
             if not len(vertex_added_dict[current_segment.end_vert]) >= 4:   
-                verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict)
+                verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict, height_map)
+                print(verified_segment)
                 if verified_segment:
                     segment_front_queue.put(verified_segment)
                     segment_added_list.append(verified_segment)
@@ -85,7 +87,7 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, height_m
         suggested_seeds = minor_road_seed(config, seed, population_density)
 
         for suggested_seed in suggested_seeds:
-            verified_seed = verify_segment(config, suggested_seed, min_distance, segment_added_list, vertex_added_dict)
+            verified_seed = verify_segment(config, suggested_seed, min_distance, segment_added_list, vertex_added_dict, height_map)
             if verified_seed:
                 minor_roads_queue.put(verified_seed)
                 segment_added_list.append(verified_seed)
@@ -103,7 +105,7 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, height_m
         suggested_segments = generate_suggested_minor_segments(config, current_segment, height_map)
         for segment in suggested_segments:
             if not len(vertex_added_dict[current_segment.end_vert]) >= 4:   
-                verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict)
+                verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict, height_map)
                 if verified_segment:
                     verified_segment.is_minor_road = True
                     minor_roads_queue.put(verified_segment)
@@ -125,17 +127,13 @@ def generate_suggested_segments(config, segment, rule_image_array, population_im
     roadmap_rule = get_roadmap_rule(config, segment, rule_image_array)
     # We scale the population density which ensures the value is between [0-1].
     population_density = get_population_density_value(segment, population_image_array) * config.population_scaling_factor
-    height_threshold = 60
-    height_cost = height_cost_function(segment, height_map, height_threshold)
-    print("Pop Density: ", population_density)
-    print("Height: ", height_cost)
 
     if roadmap_rule == Rules.RULE_GRID:
-        suggested_segments = grid(config, segment, population_density, height_cost, height_threshold, height_map)
+        suggested_segments = grid(config, segment, population_density)
     elif roadmap_rule == Rules.RULE_ORGANIC:
-        suggested_segments = organic(config, segment, population_density, height_cost, height_threshold, height_map)
+        suggested_segments = organic(config, segment, population_density)
     elif roadmap_rule == Rules.RULE_RADIAL:
-        suggested_segments = radial(config, segment, population_density, height_cost, height_threshold, height_map)
+        suggested_segments = radial(config, segment, population_density)
 
     return suggested_segments
     
@@ -144,13 +142,11 @@ def generate_suggested_minor_segments(config, segment, height_map):
     road_organic_probability = config.minor_road_organic_probability
     population_image_array = config.population_density_array
     population_density = get_population_density_value(segment, population_image_array) * config.population_scaling_factor
-    minor_height_threshold = 30
-    height_cost = height_cost_function(segment, height_map, minor_height_threshold)
 
     if random.uniform(0,1) <= road_organic_probability:
-        return organic(config, segment, population_density, height_cost, minor_height_threshold, height_map)
+        return organic(config, segment, population_density)
     else:
-        return grid(config, segment, population_density, height_cost, minor_height_threshold, height_map)
+        return grid(config, segment, population_density)
 
 
 # INPUT:    ConfigLoader, Segment, numpy.Array
@@ -175,7 +171,7 @@ def get_roadmap_rule(config, segment, image_array):
 # OUTPUT:   Segment
 # Local constraints are used to verify a suggested segment. Segments are
 # either ignored if they are out of bounds or altered to fit the existing road network
-def verify_segment(config, segment, min_vertex_distance, segment_added_list, vertex_added_dict):
+def verify_segment(config, segment, min_vertex_distance, segment_added_list, vertex_added_dict, height_map):
     max_x = config.road_rules_array.shape[1] - 1 # maximum x coordinate
     max_y = config.road_rules_array.shape[0] - 1 # maximum y coordinate
     max_roads_intersection = 4 # maximum allowed roads in an intersection
@@ -209,6 +205,9 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
         return None
     elif np.array_equal(find_pixel_value(segment, config.water_map_array), config.water_legend):
         return None
+    elif check_too_high(segment, 70, height_map):
+        return None
+
 
     # We query the KDTree to find the closest vertex to the end position of
     # the new segment. We use k=2 to find the two closest neighbours because
