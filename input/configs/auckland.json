@@ -47,7 +47,7 @@
     },
     "grid_road_min_length": {
         "description": "Minimum length of a road segment for the grid pattern.",
-        "value": 80
+        "value": 30
     },
     "grid_road_max_length": {
         "description": "Maximum length of a road segment for the grid pattern.",
@@ -63,7 +63,7 @@
     },
     "organic_road_min_length": {
         "description": "Minimum length of a road segment for the organic pattern.",
-        "value": 80
+        "value": 30
     },
     "organic_road_max_length": {
         "description": "Maximum length of a road segment for the organic pattern.",

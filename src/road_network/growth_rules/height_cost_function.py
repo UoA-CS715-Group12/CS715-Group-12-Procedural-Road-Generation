@@ -35,12 +35,32 @@ def height_cost_function(segment, height_map, threshold):
 
 def check_too_high(segment, height_threshold, height_map):
     try:
-        height_value = height_map[int(segment.end_vert.position[1])][int(segment.end_vert.position[0])]
+        # Get the interpolated points along the segment
+        points = linear_interpolate(segment, 10)
+
+        for x, y in points:
+            # Round x, y to nearest integer to look them up in the height map
+            x, y = int(round(x)), int(round(y))
+            height_value = height_map[y][x]
+
+            if height_value > height_threshold:
+                return True
+
     except IndexError:
         print("Check Too High Index Error")
         return True
 
-    if height_value > height_threshold:
-        return True
-    else:
-        return False
+    return False
+
+def linear_interpolate(segment, num_points=10):
+    x1, y1 = segment.start_vert.position
+    x2, y2 = segment.end_vert.position
+
+    points = []
+    for i in range(num_points + 1):
+        t = i / num_points
+        x = x1 + t * (x2 - x1)
+        y = y1 + t * (y2 - y1)
+        points.append((x, y))
+
+    return points
