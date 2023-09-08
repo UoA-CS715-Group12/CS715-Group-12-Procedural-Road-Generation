@@ -2,6 +2,8 @@ import numpy as np
 from PIL import Image
 import skimage.morphology
 from osgeo import gdal
+from src.road_network.vertex import Vertex
+from src.road_network.segment import Segment
 
 # INPUT:    String
 # OUTPUT:   numpy.Array
@@ -132,3 +134,12 @@ def rgb2gray(img):
     r, g, b = img[:, :, 0], img[:, :, 1], img[:, :, 2]
     gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
     return gray
+
+def segment2json(segments):
+    edge_list = []
+    for segment in segments:
+
+        output = [segment.start_vert.position.tolist(), segment.end_vert.position.tolist()]
+        edge_list.append(output)
+    return edge_list
+
