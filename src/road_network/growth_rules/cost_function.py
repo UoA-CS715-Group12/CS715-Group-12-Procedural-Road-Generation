@@ -12,6 +12,7 @@ def get_height_map():
     gray = rgb2gray(height_map)
     return gray
 
+
 def get_water_map():
     path = os.getcwd()
     height_map = parse_image(path + "/input/images/greater_auckland/greater_auckland_coast.png")
@@ -26,7 +27,7 @@ def height_cost_function(point1, point2, height_map):
     change_in_height = abs(height_map[point1[0], point1[1]] - height_map[point2[0], point2[1]])
     cost = float(change_in_height / distance)
     if cost > 7:
-        print(cost)
+        # print(cost)
         return True
     else:
         return False
@@ -40,7 +41,7 @@ def check_too_high(segment, height_threshold, height_map):
         for x1, y1 in points:
             height_value1 = height_map[y1][x1]
             if height_value1 > height_threshold:
-                print("Height > Threshold")
+                # print("Height > Threshold")
                 return True
 
             try:
@@ -48,12 +49,12 @@ def check_too_high(segment, height_threshold, height_map):
                 x2, y2 = int(round(x2)), int(round(y2))
                 height_value2 = height_map[y2][x2]
                 if height_value2 > height_threshold:
-                    print("Height > Threshold")
+                    # print("Height > Threshold")
                     return True
                 point1 = (x1, y1)
                 point2 = (x2, y2)
                 if height_cost_function(point1, point2, height_map):
-                    print("Gradient > Threshold")
+                    # print("Gradient > Threshold")
                     return True
             except IndexError:
                 return False
@@ -61,7 +62,7 @@ def check_too_high(segment, height_threshold, height_map):
             iteration += 1
 
     except IndexError:
-        print("Check Too High Index Error")
+        # print("Check Too High Index Error")
         return True
 
     return False
@@ -82,6 +83,7 @@ def linear_interpolate(segment, num_points=10):
 
     return unique_points
 
+
 def check_water(segment, water_map):
     try:
         # Get the interpolated points along the segment
@@ -90,7 +92,6 @@ def check_water(segment, water_map):
         for x1, y1 in points:
             water_value1 = water_map[y1][x1]
             if water_value1 >= 250:
-                print("On Water")
                 return True
 
             try:
@@ -98,7 +99,6 @@ def check_water(segment, water_map):
                 x2, y2 = int(round(x2)), int(round(y2))
                 water_value2 = water_map[y2][x2]
                 if water_value2 >= 250:
-                    print("On Water")
                     return True
 
             except IndexError:
@@ -107,5 +107,24 @@ def check_water(segment, water_map):
             iteration += 1
 
     except IndexError:
-        print("Check Water Index Error")
         return True
+
+def check_bridge(segment, water_map):
+    has_water = check_water(segment, water_map)
+    if not has_water:
+        return False
+
+    x1, y1 = segment.start_vert.position
+    x2, y2 = segment.end_vert.position
+    if water_map[y1][x1] < 50 and water_map[y2][x2] < 50:
+        return True
+    else:
+        return False
+
+
+# Apply cost multiplier to the segment distance
+def bridge_cost(segment):
+    x1, y1 = segment.start_vert.position
+    x2, y2 = segment.end_vert.position
+    distance = math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+    return distance * 3.33
