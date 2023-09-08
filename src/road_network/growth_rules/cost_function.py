@@ -109,3 +109,22 @@ def check_water(segment, water_map):
     except IndexError:
         # print("Check Water Index Error")
         return True
+
+def check_bridge(segment, water_map):
+    has_water = check_water(segment, water_map)
+    if not has_water:
+        return False
+    # if both ends of the segment on land
+    x1, y1 = segment.start_vert.position
+    x2, y2 = segment.end_vert.position
+    if water_map[y1][x1] < 50 and water_map[y2][x2] < 50:
+        return True
+    else:
+        return False
+
+# Apply cost multiplier to the segment distance
+def bridge_cost(segment):
+    x1, y1 = segment.start_vert.position
+    x2, y2 = segment.end_vert.position
+    distance = math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+    return distance * 3.33

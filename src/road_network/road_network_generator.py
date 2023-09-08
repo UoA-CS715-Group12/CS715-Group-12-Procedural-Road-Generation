@@ -19,7 +19,10 @@ from src.utilities import normalise_pixel_values
 from src.utilities import rotate
 from src.utilities import get_population_density_value
 # from src.visualise import visualise
+from src.visualise import visualise
+from src.road_network.a_star import a_star_search
 from src.road_network.growth_rules.cost_function import *
+
 
 class Rules(Enum):
     RULE_SEED = 1
@@ -27,8 +30,6 @@ class Rules(Enum):
     RULE_ORGANIC = 3
     RULE_GRID = 4
     RULE_MINOR = 5
-
-
 
 
 def initialise(config):
@@ -47,12 +48,23 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
     height_map = get_height_map()
     water_map = get_water_map()
     segment_front_queue = Queue(maxsize=0)
-    for segment in segment_added_list:
+    # path = a_star_search(water_map, (300, 400), (24, 329))
+    # segments = generate_a_star_roads(path)
+    # segment_added_list.extend(segments)
+    # for segment in segments:
+    #     if (segment.start_vert.position == segment.end_vert.position).all():
+    #         print("6")
+    #     for vert in [segment.start_vert, segment.end_vert]:
+    #         if vert in vertex_added_dict:
+    #             vertex_added_dict[vert].append(segment)
+    #         else:
+    #             vertex_added_dict[vert] = [segment]
 
+    for segment in segment_added_list:
+        round(segment.end_vert.position[1])
         segment_front_queue.put(segment)
         vertex_added_dict[segment.start_vert] = [segment]
         vertex_added_dict[segment.end_vert] = [segment]
-
 
     # Iterate through the front queue, incrementally building the road network.
     iteration = 0
