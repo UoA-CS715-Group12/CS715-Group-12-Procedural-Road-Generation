@@ -1,12 +1,12 @@
-import os
 import json
+import os
+
 import numpy as np
-from src.utilities import parse_image
-from src.utilities import read_tif_file
-from src.utilities import find_legend_centers
-from src.utilities import find_legend_color_coordinates
-from src.utilities import normalise_pixel_values
+
 from src.road_network.segment import Segment
+from src.utilities import (find_legend_centers, normalise_pixel_values,
+                           parse_image, parse_json, read_tif_file)
+
 
 class ConfigLoader:
     def __init__(self, config_path=None):
@@ -24,6 +24,7 @@ class ConfigLoader:
 
         # Parse road rule map and population density map.
         path = os.getcwd() + "/input/images/"
+        json_path = os.getcwd() + "/input/json/"
         self.road_rules_array = parse_image(path + self.rule_image_name)
         self.population_density_array = parse_image(path + self.population_density_image_name)
         self.population_density_array = normalise_pixel_values(self.population_density_array) # convert to binary array for reading
@@ -34,3 +35,4 @@ class ConfigLoader:
         # Parse land usage map.
         self.land_use_array = read_tif_file(path + self.land_use_image_name)
         self.height_map_array = parse_image(path + self.height_map_image_name)
+        self.pop_density_centres = parse_json(json_path + self.pop_density_centres_name)

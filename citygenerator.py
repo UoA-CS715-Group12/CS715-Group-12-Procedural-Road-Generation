@@ -36,15 +36,15 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
     # Step 1: Grow road network.
     road_network, vertex_dict = rng.initialise(config)
     visualiser = Visualiser(config.height_map_array, road_network)
-    rng.generate_major_roads(config, road_network, vertex_dict, visualiser)
+    rng.generate_major_roads_from_centres(config, road_network, vertex_dict, visualiser)
     rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
 
     # Step 2: Compute polygons based on road network.
-    start = time.perf_counter()
-    polys = polygons.get_polygons(vertex_dict)
-    end = time.perf_counter()
-    print(f"compute polygons completed in {end - start:0.4f} seconds")
-    del polys[0] # We delete the first polygon as this corresponds to the outer area.
+    # start = time.perf_counter()
+    # polys = polygons.get_polygons(vertex_dict)
+    # end = time.perf_counter()
+    # print(f"compute polygons completed in {end - start:0.4f} seconds")
+    # del polys[0] # We delete the first polygon as this corresponds to the outer area.
     
     # # Step 3: Determine land usages.
     # start = time.perf_counter()

@@ -80,6 +80,15 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
 
     return segment_added_list, vertex_added_dict
 
+def generate_major_roads_from_centres(config, segment_added_list, vertex_added_dict, visualiser):
+    # Build major road from each centre to every other centre
+    # TODO: Connect centres using A* and take into account of terrain etc.
+     # Extract coordinates of the pop density centres
+    pop_density_centres_arr = config.pop_density_centres[:20:] # Only take top 10 largest pop 
+
+    print("Pop density centre coordinates: ")
+    print(pop_density_centres_arr)
+
 
 # INPUT:    ConfigLoader, List, Dictionary
 # OUTPUT:   -

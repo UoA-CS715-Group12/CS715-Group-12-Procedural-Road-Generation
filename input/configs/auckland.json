@@ -26,6 +26,10 @@
         "description": "Name of image used for height",
         "value": "greater_auckland/greater_auckland_height.png"
     },
+    "pop_density_centres_name": {
+        "description": "Name of file used to get major population centre coordinates",
+        "value": "greater_auckland/auckland_pop_density_centres.json"
+    },
     "max_road_network_iterations": {
         "description": "Maximum iterations allowed for generating road segments.",
         "value": 100

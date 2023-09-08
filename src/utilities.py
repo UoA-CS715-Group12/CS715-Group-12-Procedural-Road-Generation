@@ -2,6 +2,7 @@ import numpy as np
 from PIL import Image
 import skimage.morphology
 from osgeo import gdal
+import json
 
 # INPUT:    String
 # OUTPUT:   numpy.Array
@@ -132,3 +133,9 @@ def rgb2gray(img):
     r, g, b = img[:, :, 0], img[:, :, 1], img[:, :, 2]
     gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
     return gray
+
+def parse_json(filepath):
+    f = open(filepath);
+    data = json.load(f);
+    f.close();
+    return data;
