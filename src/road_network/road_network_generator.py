@@ -37,11 +37,15 @@ def initialise(config):
     segment_added_list = []
     vertex_added_dict = {}
 
-
     for segment in config.axiom:
         segment_added_list.append(segment)
-        vertex_added_dict[segment.start_vert] = [segment]
-        vertex_added_dict[segment.end_vert] = [segment]
+        for vert in [segment.start_vert, segment.end_vert]:
+            if vert in vertex_added_dict:
+                vertex_added_dict[vert].append(segment)
+            else:
+                vertex_added_dict[vert] = [segment]
+
+
     return segment_added_list,vertex_added_dict
 
 def generate_major_roads(config, segment_added_list, vertex_added_dict, visualiser=None):
@@ -50,10 +54,7 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
     segment_front_queue = Queue(maxsize=0)
 
     for segment in segment_added_list:
-        round(segment.end_vert.position[1])
         segment_front_queue.put(segment)
-        vertex_added_dict[segment.start_vert] = [segment]
-        vertex_added_dict[segment.end_vert] = [segment]
 
     # Iterate through the front queue, incrementally building the road network.
     iteration = 0
@@ -256,6 +257,7 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
         vertex_added_dict[abs_intersection] = [intersecting_segment, old_segment_split]
         vertex_added_dict[old_segment_split.end_vert].remove(intersecting_segment)
         vertex_added_dict[old_segment_split.end_vert].append(old_segment_split)
+
 
         segment_added_list.append(old_segment_split)
         return new_segment
