@@ -28,7 +28,7 @@
     },
     "max_road_network_iterations": {
         "description": "Maximum iterations allowed for generating road segments.",
-        "value": 100
+        "value": 1000
     },
     "max_minor_road_iterations": {
         "description": "Maximum number of iterations for generating minor roads",

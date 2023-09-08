@@ -18,7 +18,7 @@ from src.utilities import compute_intersection
 from src.utilities import normalise_pixel_values
 from src.utilities import rotate
 from src.utilities import get_population_density_value
-from src.visualise import visualise
+# from src.visualise import visualise
 from src.road_network.growth_rules.cost_function import *
 
 class Rules(Enum):
@@ -43,7 +43,7 @@ def initialise(config):
         vertex_added_dict[segment.end_vert] = [segment]
     return segment_added_list,vertex_added_dict
 
-def generate_major_roads(config, segment_added_list, vertex_added_dict, visualiser):
+def generate_major_roads(config, segment_added_list, vertex_added_dict, visualiser=None):
     height_map = get_height_map()
     water_map = get_water_map()
     segment_front_queue = Queue(maxsize=0)
@@ -62,10 +62,10 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
 
         suggested_segments = suggest_major(config, current_segment, config.road_rules_array, config.population_density_array)
         for segment in suggested_segments:
-            print(segment.start_vert.position, segment.end_vert.position)
+            # print(segment.start_vert.position, segment.end_vert.position)
             if not len(vertex_added_dict[current_segment.end_vert]) >= 4:   
                 verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict, height_map, water_map)
-                print(verified_segment)
+                # print(verified_segment)
                 if verified_segment:
                     segment_front_queue.put(verified_segment)
                     segment_added_list.append(verified_segment)
@@ -74,7 +74,7 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
                             vertex_added_dict[vert].append(verified_segment)
                         else:
                             vertex_added_dict[vert] = [verified_segment]
-            visualiser.visualise()
+            # visualiser.visualise()
 
         iteration += 1
 
@@ -84,7 +84,7 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
 # INPUT:    ConfigLoader, List, Dictionary
 # OUTPUT:   -
 # generate minor roads based on minor road seeds
-def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualiser):
+def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualiser=None):
     height_map = get_height_map()
     water_map = get_water_map() 
     # Extract all segments which are not part of an intersection,
@@ -109,7 +109,7 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualis
                         vertex_added_dict[vert].append(verified_seed)
                     else:
                         vertex_added_dict[vert] = [verified_seed]
-            visualiser.visualise()
+            # visualiser.visualise()
             
     
     iteration = 0
@@ -131,7 +131,7 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualis
                         else:
                             vertex_added_dict[vert] = [verified_segment]
 
-            visualiser.visualise()
+            # visualiser.visualise()
 
         iteration += 1
         

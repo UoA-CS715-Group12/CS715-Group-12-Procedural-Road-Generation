@@ -15,6 +15,8 @@ from src.stats import compute_orientation_entropy, compute_orientation_order
 from src.stats import compute_average_node_degree, compute_intersection_count, compute_total_road_length
 from src.stats import compute_proportion_3way_intersections, compute_proportion_4way_intersections, compute_proportion_dead_ends
 from src.visualise import Visualiser
+from matplotlib import animation
+import threading
 
 # INPUT:    String, (Bool, Bool)
 # OUTPUT:   Generated city (visualisation)
@@ -22,6 +24,10 @@ from src.visualise import Visualiser
 # If show_city is true, the representation is visualised using matplotlib.
 # If show_time is true, the process time required to generate the intermediate representation is shown.
 # If show_stats is true, the statistics used to evaluate the representation are shown
+def run_computations(config, road_network, vertex_dict, visualiser):
+    rng.generate_major_roads(config, road_network, vertex_dict, visualiser)
+    rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
+
 def generate(config_path, show_city=False, show_time=False, show_stats=False):
 
     if show_time:
@@ -36,15 +42,24 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
     # Step 1: Grow road network.
     road_network, vertex_dict = rng.initialise(config)
     visualiser = Visualiser(config.height_map_array, road_network)
-    rng.generate_major_roads(config, road_network, vertex_dict, visualiser)
-    rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
 
-    # Step 2: Compute polygons based on road network.
-    start = time.perf_counter()
-    polys = polygons.get_polygons(vertex_dict)
-    end = time.perf_counter()
-    print(f"compute polygons completed in {end - start:0.4f} seconds")
-    del polys[0] # We delete the first polygon as this corresponds to the outer area.
+    threading.Thread(target=run_computations, args=(config, road_network, vertex_dict, visualiser), daemon=True).start()
+    while True:
+        visualiser.visualise()
+    
+    # # Start the visualisation in a separate thread
+    # rng.generate_major_roads(config, road_network, vertex_dict, visualiser)
+    # rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
+
+
+        
+
+    # # Step 2: Compute polygons based on road network.
+    # start = time.perf_counter()
+    # polys = polygons.get_polygons(vertex_dict)
+    # end = time.perf_counter()
+    # print(f"compute polygons completed in {end - start:0.4f} seconds")
+    # del polys[0] # We delete the first polygon as this corresponds to the outer area.
     
     # # Step 3: Determine land usages.
     # start = time.perf_counter()
@@ -83,7 +98,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
 
     if show_city:
         # visualise(config.water_map_array, road_network, land_usages=land_usages)
-        visualiser.visualise()
+        # visualiser.visualise()
         ## keep plt showing:
         plt.ioff()
         plt.show()

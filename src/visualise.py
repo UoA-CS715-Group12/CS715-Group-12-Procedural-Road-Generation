@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.collections import LineCollection
+import time
 
 
 class Visualiser:
@@ -12,9 +13,11 @@ class Visualiser:
         self.iteration_counter = 0
 
     def visualise(self):
-        if self.iteration_counter % 100 == 0:
-            visualise(self.map_array, self.road_network, self.major_lines, self.minor_lines, self.fig, self.ax, self.land_usages)
-        self.iteration_counter += 1
+        # while True:
+        #     time.sleep(1)
+        #     visualise(self.map_array, self.road_network, self.major_lines, self.minor_lines, self.fig, self.ax, self.land_usages)
+        #     self.iteration_counter += 1
+        visualise(self.map_array, self.road_network, self.major_lines, self.minor_lines, self.fig, self.ax, self.land_usages)
 
 def init_plot():
     fig, ax = plt.subplots()
