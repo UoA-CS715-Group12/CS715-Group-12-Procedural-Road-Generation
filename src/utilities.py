@@ -4,6 +4,7 @@ import skimage.morphology
 from osgeo import gdal
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
+import json
 
 # INPUT:    String
 # OUTPUT:   numpy.Array
@@ -143,3 +144,8 @@ def segment2json(segments):
         output = [segment.start_vert.position.tolist(), segment.end_vert.position.tolist()]
         edge_list.append(output)
     return edge_list
+def parse_json(filepath):
+    f = open(filepath)
+    data = json.load(f)
+    f.close()
+    return data
