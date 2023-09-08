@@ -16,8 +16,9 @@ class Visualiser:
         # while True:
         #     time.sleep(1)
         #     visualise(self.map_array, self.road_network, self.major_lines, self.minor_lines, self.fig, self.ax, self.land_usages)
-        #     self.iteration_counter += 1
-        visualise(self.map_array, self.road_network, self.major_lines, self.minor_lines, self.fig, self.ax, self.land_usages)
+        self.iteration_counter += 1
+        at_beginning = self.iteration_counter < 10
+        visualise(self.map_array, self.road_network, self.major_lines, self.minor_lines, self.fig, self.ax, at_beginning, self.land_usages)
 
 def init_plot():
     fig, ax = plt.subplots()
@@ -29,14 +30,15 @@ def init_plot():
     ax.add_collection(minor_lines)
 
     plt.ion()  # Turn on interactive mode
+
     plt.show()
-    
+
     return fig, ax, major_lines, minor_lines
 
-
-def visualise(map_array, road_network, major_lines, minor_lines, fig, ax, land_usages=None,):
-
-
+counter = 0
+def visualise(map_array, road_network, major_lines, minor_lines, fig, ax, at_beginning=True, land_usages=None,):
+    if not at_beginning:
+        xlim, ylim = ax.get_xlim(), ax.get_ylim()
     major_segment_coords = [np.array([segment.start_vert.position, segment.end_vert.position]) for segment in road_network if not segment.is_minor_road]
     minor_segment_coords = [np.array([segment.start_vert.position, segment.end_vert.position]) for segment in road_network if segment.is_minor_road]
 
@@ -65,6 +67,13 @@ def visualise(map_array, road_network, major_lines, minor_lines, fig, ax, land_u
                 x_coords.append(vertex['x'])
                 y_coords.append(vertex['z'])
             ax.fill(x_coords, y_coords, color)
+   
+    if at_beginning:
+        ax.autoscale_view()
+        xlim, ylim = ax.get_xlim(), ax.get_ylim()
+    else:
+        ax.set_xlim(xlim)
+        ax.set_ylim(ylim)
 
-    ax.autoscale()
+
     fig.canvas.flush_events()  # Update the plot
