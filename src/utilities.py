@@ -135,6 +135,7 @@ def rgb2gray(img):
     gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
     return gray
 
+
 def segment2json(segments):
     edge_list = []
     for segment in segments:
@@ -142,4 +143,3 @@ def segment2json(segments):
         output = [segment.start_vert.position.tolist(), segment.end_vert.position.tolist()]
         edge_list.append(output)
     return edge_list
-
