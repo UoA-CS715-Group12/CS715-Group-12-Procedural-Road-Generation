@@ -21,17 +21,11 @@ def organic(config, segment, population_density):
 
     # Compute the unit vector of the given segment to determine direction.
     segment_unit_vector = (segment.end_vert.position - segment.start_vert.position)/segment.segment_norm()
-    print(5)
-    print(segment.end_vert.position)
-    print(segment.start_vert.position)
-    print(segment.segment_norm())
-    print(4)
+
     # Generate a new segment going straight.
     if random.uniform(0, 1) <= road_straight_probability:
         rotated_unit_vector = rotate(segment_unit_vector, random.uniform(-30, 30))
-        print(rotated_unit_vector,"2")
         straight_segment_array = random.uniform(road_minimum_length, road_maximum_length) * rotated_unit_vector
-        print(rotated_unit_vector, "1")
         straight_segment_array += segment.end_vert.position
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(straight_segment_array))
         round(new_segment.end_vert.position[1])

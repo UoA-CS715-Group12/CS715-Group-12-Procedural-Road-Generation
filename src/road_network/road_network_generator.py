@@ -48,17 +48,6 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
     height_map = get_height_map()
     water_map = get_water_map()
     segment_front_queue = Queue(maxsize=0)
-    # path = a_star_search(water_map, (300, 400), (24, 329))
-    # segments = generate_a_star_roads(path)
-    # segment_added_list.extend(segments)
-    # for segment in segments:
-    #     if (segment.start_vert.position == segment.end_vert.position).all():
-    #         print("6")
-    #     for vert in [segment.start_vert, segment.end_vert]:
-    #         if vert in vertex_added_dict:
-    #             vertex_added_dict[vert].append(segment)
-    #         else:
-    #             vertex_added_dict[vert] = [segment]
 
     for segment in segment_added_list:
         round(segment.end_vert.position[1])
@@ -74,10 +63,8 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
 
         suggested_segments = suggest_major(config, current_segment, config.road_rules_array, config.population_density_array)
         for segment in suggested_segments:
-            # print(segment.start_vert.position, segment.end_vert.position)
             if not len(vertex_added_dict[current_segment.end_vert]) >= 4:   
                 verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict, height_map, water_map)
-                # print(verified_segment)
                 if verified_segment:
                     segment_front_queue.put(verified_segment)
                     segment_added_list.append(verified_segment)

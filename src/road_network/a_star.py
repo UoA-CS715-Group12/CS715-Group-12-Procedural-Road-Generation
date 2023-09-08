@@ -4,10 +4,10 @@ import numpy as np
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
 
+
 def heuristic(a, b):
-    # Manhattan distance
-    # return abs(a[0] - b[0]) + abs(a[1] - b[1])
     return math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
+
 
 def a_star_search(water_map, start, goal):
     # Initialize priority queue and add the start node
@@ -27,10 +27,7 @@ def a_star_search(water_map, start, goal):
                 path.append(current)
                 current = came_from[current]
             path.reverse()
-            list_sequence = [list(t) for t in path]
-            # print(list_sequence)
             return path
-
 
         neighbors = get_neighbors(current, 15)
 
@@ -56,6 +53,8 @@ def get_neighbors(current, range_n):
                 continue
             neighbors.append((current[0] + dx, current[1] + dy))
     return neighbors
+
+
 def generate_a_star_roads(path):
     segments = []
     iteration = 0
@@ -69,6 +68,5 @@ def generate_a_star_roads(path):
         except IndexError:
             print("End of A* path")
 
-        iteration+=1
-
+        iteration += 1
     return segments
