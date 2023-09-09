@@ -45,14 +45,23 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
     print(f"config completed in {end - start:0.4f} seconds")
     
     # Step 1: Grow road network.
+
+    # TODO: Integrate Tony's Population center code here, generate A* roads from population centers
+    # TODO: Merge generated Main roads
+    # TODO: Refine A* cost function
+
     segments = astar.generate_a_star_roads(astar.a_star_search(get_water_map(), (300, 400), (30, 300)))
-    # segments = segment2json(segments)
+
     config.axiom.extend(segments)
+
     road_network, vertex_dict = rng.initialise(config)
+
     visualiser = Visualiser(config.height_map_array, road_network)
 
     threading.Thread(target=run_computations, args=(config, road_network, vertex_dict, visualiser), daemon=True).start()
+
     while True:
+        
         visualiser.visualise()
     
     # # Start the visualisation in a separate thread
