@@ -34,15 +34,8 @@ def run_computations(config, road_network, vertex_dict, visualiser):
     rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
 
 def generate(config_path, show_city=False, show_time=False, show_stats=False):
-
-    if show_time:
-        t = time.process_time()
-
     # Step 0: Load config.
-    start = time.perf_counter()
     config = ConfigLoader(config_path)
-    end = time.perf_counter()
-    print(f"config completed in {end - start:0.4f} seconds")
     
     # Step 1: Grow road network.
 
@@ -50,7 +43,9 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
     # TODO: Merge generated Main roads
     # TODO: Refine A* cost function
 
-    segments = astar.generate_a_star_roads(astar.a_star_search(get_water_map(), (300, 400), (30, 300)))
+    population_centers = []
+    path = astar.a_star_search(get_water_map(), (300, 400), (30, 300))
+    segments = astar.generate_a_star_roads(path)
 
     config.axiom.extend(segments)
 
@@ -61,7 +56,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
     threading.Thread(target=run_computations, args=(config, road_network, vertex_dict, visualiser), daemon=True).start()
 
     while True:
-        
+
         visualiser.visualise()
     
     # # Start the visualisation in a separate thread
