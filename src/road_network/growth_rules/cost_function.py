@@ -14,7 +14,7 @@ def get_height_map():
     if height_map is not None:
         return height_map
 
-    path = os.path.join(os.getcwd(), "/input/images/greater_auckland/greater_auckland_height.png")
+    path = os.path.join(os.getcwd(), "input/images/greater_auckland/greater_auckland_height.png")
     height_map = parse_image(path)
     height_map = rgb2gray(height_map)
     return height_map
@@ -26,7 +26,7 @@ def get_water_map():
     if water_map is not None:
         return water_map
 
-    path = os.path.join(os.getcwd(), "/input/images/greater_auckland/greater_auckland_coast.png")
+    path = os.path.join(os.getcwd(), "input/images/greater_auckland/greater_auckland_coast.png")
     water_map = parse_image(path)
     water_map = rgb2gray(water_map)
     return water_map
