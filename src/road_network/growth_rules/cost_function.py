@@ -1,7 +1,7 @@
 import math
 import os
 from math import inf
-from src.utilities import parse_image
+from src.utilities import parse_image, get_distance
 from src.utilities import rgb2gray
 
 
@@ -23,7 +23,7 @@ def get_water_map():
 # Replace the major road generation using A* search
 def height_cost_function(point1, point2, height_map):
     # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
-    distance = math.sqrt((point1[1] - point2[1]) ** 2 + (point1[0] - point2[0]) ** 2)
+    distance = get_distance(point1, point2)
     change_in_height = abs(height_map[point1[0], point1[1]] - height_map[point2[0], point2[1]])
     cost = float(change_in_height / distance)
     if cost > 7:
@@ -45,7 +45,7 @@ def check_too_high(segment, height_threshold, height_map):
                 return True
 
             try:
-                x2, y2 = points[iteration+1]
+                x2, y2 = points[iteration + 1]
                 x2, y2 = int(round(x2)), int(round(y2))
                 height_value2 = height_map[y2][x2]
                 if height_value2 > height_threshold:
@@ -95,7 +95,7 @@ def check_water(segment, water_map):
                 return True
 
             try:
-                x2, y2 = points[iteration+1]
+                x2, y2 = points[iteration + 1]
                 x2, y2 = int(round(x2)), int(round(y2))
                 water_value2 = water_map[y2][x2]
                 if water_value2 >= 250:
@@ -108,6 +108,7 @@ def check_water(segment, water_map):
 
     except IndexError:
         return True
+
 
 def check_bridge(segment, water_map):
     has_water = check_water(segment, water_map)
@@ -126,5 +127,5 @@ def check_bridge(segment, water_map):
 def bridge_cost(segment):
     x1, y1 = segment.start_vert.position
     x2, y2 = segment.end_vert.position
-    distance = math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+    distance = get_distance((x1, y1), (x2, y2))
     return distance * 3.33

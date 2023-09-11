@@ -3,10 +3,11 @@ from queue import PriorityQueue
 import numpy as np
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
+from src.utilities import get_distance
 
 
-def heuristic(a, b):
-    return math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
+def heuristic(point_n, point_goal):
+    return get_distance(point_n, point_goal)
 
 
 def a_star_search(water_map, start, goal):
@@ -14,7 +15,8 @@ def a_star_search(water_map, start, goal):
     frontier = PriorityQueue()
     frontier.put((0, start))
     came_from = {start: None}
-    cost_so_far = {start: 0}
+    g_cost = {start: 0}
+    f_value = {start: 0}
 
     while not frontier.empty():
         current_priority, current = frontier.get()
@@ -34,39 +36,54 @@ def a_star_search(water_map, start, goal):
         for neighbor in neighbors:
             x, y = neighbor
             # Check if the neighbor is in the grid and is not an obstacle
-            if x >= 0 and x < np.shape(water_map)[1] and y >= 0 and y < np.shape(water_map)[0] and water_map[y][x] < 200:
-                new_cost = cost_so_far[current] + 1
-                if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
-                    cost_so_far[neighbor] = new_cost
-                    priority = new_cost + heuristic(goal, neighbor)
+            if 0 <= x < np.shape(water_map)[1] and 0 <= y < np.shape(water_map)[0] and water_map[y][x] < 200:
+                new_g_cost = g_cost[current] + 1
+                priority = new_g_cost + heuristic(neighbor, goal)
+
+                if neighbor not in f_value or priority < f_value[neighbor]:
+                    g_cost[neighbor] = new_g_cost
+                    f_value[neighbor] = priority
                     frontier.put((priority, neighbor))
                     came_from[neighbor] = current
 
     print("No A* path found")
     return None  # Path not found
 
+
 def get_neighbors(current, range_n):
+    """
+    Get the neighbor pixels/vertices of a cell in a grid.
+
+    :param current: Current cell
+    :param range_n: Range of the neighbor pixels/vertices from current cell
+    :return: An array of neighbor pixels/vertices
+    """
     neighbors = []
+
     for dx in range(-range_n, range_n + 1):
         for dy in range(-range_n, range_n + 1):
             if dx == 0 and dy == 0:  # Skip the current cell itself
                 continue
             neighbors.append((current[0] + dx, current[1] + dy))
+
     return neighbors
 
 
 def generate_a_star_roads(path):
+    """
+    Generate segments between each vertex in the path.
+
+    :param path: An array of vertices
+    :return: An array of segments
+    """
     segments = []
-    iteration = 0
-    for x1,y1 in path:
-        try:
-            x2, y2 = path[iteration+1]
-            segment = Segment(segment_start=Vertex(np.array([x1, y1])), segment_end=Vertex(np.array([x2, y2])))
 
-            segments.append(segment)
+    for i in range(len(path) - 1):
+        x1, y1 = path[i]
+        x2, y2 = path[i + 1]
+        segment = Segment(segment_start=Vertex(np.array([x1, y1])), segment_end=Vertex(np.array([x2, y2])))
 
-        except IndexError:
-            print("End of A* path")
+        segments.append(segment)
 
-        iteration += 1
+    print("End of A* path")
     return segments
