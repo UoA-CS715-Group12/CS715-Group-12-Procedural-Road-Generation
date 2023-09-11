@@ -1,7 +1,7 @@
 import math
 import os
 from math import inf
-from src.utilities import parse_image, get_distance_between_2_points
+from src.utilities import parse_image, get_distance
 from src.utilities import rgb2gray
 
 
@@ -23,7 +23,7 @@ def get_water_map():
 # Replace the major road generation using A* search
 def height_cost_function(point1, point2, height_map):
     # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
-    distance = get_distance_between_2_points(point1, point2)
+    distance = get_distance(point1, point2)
     change_in_height = abs(height_map[point1[0], point1[1]] - height_map[point2[0], point2[1]])
     cost = float(change_in_height / distance)
     if cost > 7:
@@ -127,5 +127,5 @@ def check_bridge(segment, water_map):
 def bridge_cost(segment):
     x1, y1 = segment.start_vert.position
     x2, y2 = segment.end_vert.position
-    distance = get_distance_between_2_points((x1, y1), (x2, y2))
+    distance = get_distance((x1, y1), (x2, y2))
     return distance * 3.33

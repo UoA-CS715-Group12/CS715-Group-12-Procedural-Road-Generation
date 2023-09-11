@@ -3,11 +3,11 @@ from queue import PriorityQueue
 import numpy as np
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
-from src.utilities import get_distance_between_2_points
+from src.utilities import get_distance
 
 
 def heuristic(a, b):
-    return get_distance_between_2_points(a, b)
+    return get_distance(a, b)
 
 
 def a_star_search(water_map, start, goal):
