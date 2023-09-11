@@ -35,7 +35,7 @@ def a_star_search(water_map, start, goal):
         for neighbor in neighbors:
             x, y = neighbor
             # Check if the neighbor is in the grid and is not an obstacle
-            if x >= 0 and x < np.shape(water_map)[1] and y >= 0 and y < np.shape(water_map)[0] and water_map[y][x] < 200:
+            if 0 <= x < np.shape(water_map)[1] and 0 <= y < np.shape(water_map)[0] and water_map[y][x] < 200:
                 new_cost = cost_so_far[current] + 1
                 if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
                     cost_so_far[neighbor] = new_cost
