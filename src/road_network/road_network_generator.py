@@ -20,7 +20,6 @@ from src.utilities import rotate
 from src.utilities import get_population_density_value
 # from src.visualise import visualise
 from src.visualise import visualise
-from src.road_network.a_star import a_star_search
 from src.road_network.growth_rules.cost_function import *
 
 
@@ -33,7 +32,6 @@ class Rules(Enum):
 
 
 def initialise(config):
-
     segment_added_list = []
     vertex_added_dict = {}
 
@@ -45,8 +43,8 @@ def initialise(config):
             else:
                 vertex_added_dict[vert] = [segment]
 
+    return segment_added_list, vertex_added_dict
 
-    return segment_added_list,vertex_added_dict
 
 def generate_major_roads(config, segment_added_list, vertex_added_dict, visualiser=None):
     height_map = get_height_map()
@@ -58,13 +56,13 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
 
     # Iterate through the front queue, incrementally building the road network.
     iteration = 0
-    min_distance = config.major_vertex_min_distance # Min distance between major road vertices.
+    min_distance = config.major_vertex_min_distance  # Min distance between major road vertices.
     while not segment_front_queue.empty() and iteration < config.max_road_network_iterations:
         current_segment = segment_front_queue.get()
 
         suggested_segments = suggest_major(config, current_segment, config.road_rules_array, config.population_density_array)
         for segment in suggested_segments:
-            if not len(vertex_added_dict[current_segment.end_vert]) >= 4:   
+            if not len(vertex_added_dict[current_segment.end_vert]) >= 4:
                 verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict, height_map, water_map)
                 if verified_segment:
                     segment_front_queue.put(verified_segment)
@@ -80,11 +78,12 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
 
     return segment_added_list, vertex_added_dict
 
+
 def generate_major_roads_from_centres(config, segment_added_list, vertex_added_dict, visualiser):
     # Build major road from each centre to every other centre
     # TODO: Connect centres using A* and take into account of terrain etc.
-     # Extract coordinates of the pop density centres
-    pop_density_centres_arr = config.pop_density_centres[:20:] # Only take top 10 largest pop 
+    # Extract coordinates of the pop density centres
+    pop_density_centres_arr = config.pop_density_centres[:20:]  # Only take top 10 largest pop
 
     print("Pop density centre coordinates: ")
     print(pop_density_centres_arr)
@@ -95,14 +94,14 @@ def generate_major_roads_from_centres(config, segment_added_list, vertex_added_d
 # generate minor roads based on minor road seeds
 def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualiser=None):
     height_map = get_height_map()
-    water_map = get_water_map() 
+    water_map = get_water_map()
     # Extract all segments which are not part of an intersection,
     # i.e. segments with end vertices that have less than three segments connected to them.
     minor_road_seed_candidates = [segment for segment in segment_added_list if len(vertex_added_dict[segment.end_vert]) < 3]
     minor_roads_queue = Queue(maxsize=0)
 
     # Start by generating all seeds from which minor roads may grow. Add them to queue.
-    min_distance = config.minor_vertex_min_distance # Min distance between minor road vertices.
+    min_distance = config.minor_vertex_min_distance  # Min distance between minor road vertices.
     for seed in minor_road_seed_candidates:
         # We scale the population density which ensures the value is between [0-1].
         population_density = get_population_density_value(seed, config.population_density_array) * config.population_scaling_factor
@@ -119,8 +118,7 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualis
                     else:
                         vertex_added_dict[vert] = [verified_seed]
             # visualiser.visualise()
-            
-    
+
     iteration = 0
     # Iterate through max_minor_road_iterations and construct minor roads from stubs created above.
     while not minor_roads_queue.empty() and iteration < config.max_minor_road_iterations:
@@ -128,7 +126,7 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualis
 
         suggested_segments = suggest_minor(config, current_segment)
         for segment in suggested_segments:
-            if not len(vertex_added_dict[current_segment.end_vert]) >= 4:   
+            if not len(vertex_added_dict[current_segment.end_vert]) >= 4:
                 verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict, height_map, water_map)
                 if verified_segment:
                     verified_segment.is_minor_road = True
@@ -143,17 +141,17 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualis
             # visualiser.visualise()
 
         iteration += 1
-        
-        
+
+
 def minor_road_seed(config, segment, population_density):
     probability_seed = config.minor_road_seed_probability
     road_mininum_length = config.minor_road_min_length
     road_maximum_length = config.minor_road_max_length
-    
+
     suggested_segments = []
 
     # Compute the unit vector of the given segment to determine direction.
-    segment_unit_vector = (segment.end_vert.position - segment.start_vert.position)/segment.segment_norm()
+    segment_unit_vector = (segment.end_vert.position - segment.start_vert.position) / segment.segment_norm()
 
     # We multiply the probability with the population density because we want to
     # modestly increase the probability of turning the closer to the density.
@@ -170,7 +168,6 @@ def minor_road_seed(config, segment, population_density):
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array))
         new_segment.is_minor_road = True
         suggested_segments.append(new_segment)
-        
 
     # Generate segment turning left.
     if random.uniform(0, 1) <= road_turn_probability:
@@ -182,7 +179,6 @@ def minor_road_seed(config, segment, population_density):
         suggested_segments.append(new_segment)
 
     return suggested_segments
-
 
 
 def suggest_major(config, segment, rule_image_array, population_image_array):
@@ -198,14 +194,14 @@ def suggest_major(config, segment, rule_image_array, population_image_array):
         suggested_segments = radial(config, segment, population_density)
 
     return suggested_segments
-    
+
 
 def suggest_minor(config, segment):
     road_organic_probability = config.minor_road_organic_probability
     population_image_array = config.population_density_array
     population_density = get_population_density_value(segment, population_image_array) * config.population_scaling_factor
 
-    if random.uniform(0,1) <= road_organic_probability:
+    if random.uniform(0, 1) <= road_organic_probability:
         return organic(config, segment, population_density)
     else:
         return grid(config, segment, population_density)
@@ -227,17 +223,17 @@ def get_roadmap_rule(config, segment, image_array):
     else:
         # Defaults to organic.
         return Rules.RULE_ORGANIC
-    
+
 
 # INPUT:    ConfigLoader, Segment, Float, List, Dictionary
 # OUTPUT:   Segment
 # Local constraints are used to verify a suggested segment. Segments are
 # either ignored if they are out of bounds or altered to fit the existing road network
 def verify_segment(config, segment, min_vertex_distance, segment_added_list, vertex_added_dict, height_map, water_map):
-    max_x = config.road_rules_array.shape[1] - 1 # maximum x coordinate
-    max_y = config.road_rules_array.shape[0] - 1 # maximum y coordinate
-    max_roads_intersection = 4 # maximum allowed roads in an intersection
-    vertex_added_list = list(vertex_added_dict.keys()) # list of unique vertex positions
+    max_x = config.road_rules_array.shape[1] - 1  # maximum x coordinate
+    max_y = config.road_rules_array.shape[0] - 1  # maximum y coordinate
+    max_roads_intersection = 4  # maximum allowed roads in an intersection
+    vertex_added_list = list(vertex_added_dict.keys())  # list of unique vertex positions
     # KDTree of unique vertices used to compute nearest neighbours
     vertex_tree = cKDTree([vertex.position for vertex in vertex_added_list])
 
@@ -258,13 +254,12 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
         vertex_added_dict[old_segment_split.end_vert].remove(intersecting_segment)
         vertex_added_dict[old_segment_split.end_vert].append(old_segment_split)
 
-
         segment_added_list.append(old_segment_split)
         return new_segment
-        
+
     # We do not consider the segment further if it breaks the boundaries or if it is located in water.
     if ((segment.end_vert.position[0] > max_x or segment.end_vert.position[1] > max_y) or
-       (segment.end_vert.position[0] < 0 or segment.end_vert.position[1] < 0)):
+            (segment.end_vert.position[0] < 0 or segment.end_vert.position[1] < 0)):
         return None
     elif np.array_equal(find_pixel_value(segment, config.water_map_array), config.water_legend):
         return None
@@ -272,7 +267,6 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
         return None
     elif check_water(segment, water_map):
         return None
-
 
     # We query the KDTree to find the closest vertex to the end position of
     # the new segment. We use k=2 to find the two closest neighbours because
@@ -294,23 +288,23 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
             # should not snap to the vertex
             close_vertex_segments = vertex_added_dict.get(close_vertex)
             segments_same_start = [seg for seg in close_vertex_segments
-                                if segment.start_vert is seg.start_vert or segment.start_vert is seg.end_vert]
+                                   if segment.start_vert is seg.start_vert or segment.start_vert is seg.end_vert]
             if segments_same_start:
                 duplicate = True
 
             vertex_is_close = True
-    
+
     # We find the maximum allowed segment length and query our tree to find any
     # vertices within this distance. This way, we reduce the number of segments
     # to check in the subsequent steps; assuming the query returns more than one
     # result. If only one result is returned, it is the segment.end_vert.
     max_segment_length = max(config.grid_road_max_length, config.organic_road_max_length, config.radial_road_max_length)
-    _, vertices_indexes = vertex_tree.query(segment.end_vert.position, k=100, distance_upper_bound=max_segment_length+1)
+    _, vertices_indexes = vertex_tree.query(segment.end_vert.position, k=100, distance_upper_bound=max_segment_length + 1)
     vertices_indexes = [index for index in vertices_indexes if index != len(vertex_added_list)]
     if vertices_indexes:
         matched_vertices = [vertex_added_list[index] for index in vertices_indexes
                             if vertex_added_list[index] is not segment.end_vert and vertex_added_list[index] is not segment.start_vert]
-                                    
+
         # We find all segments which the matched vertices are part of.
         matched_segments = set()
         for vertex in matched_vertices:
@@ -328,20 +322,18 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
             # close to an existing segment. If multiple intersections are
             # detected, use the intersection closest to the start position of
             # the new segment.
-            if(intersection[0] > 0.00001 and 
-               intersection[0] < 1.49999 and 
-               intersection[1] > 0.00001 and 
-               intersection[1] < 0.99999 and 
-               intersection[0] < closest_value):
-                intersecting_segment = old_segment 
+            if (0.00001 < intersection[0] < 1.49999 and
+                    0.00001 < intersection[1] < 0.99999 and
+                    intersection[0] < closest_value):
+                intersecting_segment = old_segment
                 closest_value = intersection[0]
-    
+
     # If the segment intersects an existing segment, and an existing vertex
     # is not nearby, we create a new intersection (and thus vertex) and
     # split the existing segment into two parts.
     if intersecting_segment and not vertex_is_close:
         return _create_intersection(segment, intersecting_segment, closest_value)
-        
+
     # If the segment does not intersect an existing segment but is close to
     # an existing vertex, we snap the end position of the segment to the
     # existing vertex.
@@ -358,8 +350,8 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
     elif vertex_is_close and intersecting_segment:
         # If the existing vertex is part of the intersecting segment, we
         # snap the end position of the new segment to the vertex.
-        if (close_vertex is intersecting_segment.start_vert or 
-            close_vertex is intersecting_segment.end_vert):
+        if (close_vertex is intersecting_segment.start_vert or
+                close_vertex is intersecting_segment.end_vert):
             if not duplicate and len(vertex_added_dict[close_vertex]) < max_roads_intersection:
                 new_segment = Segment(segment_start=segment.start_vert, segment_end=close_vertex)
                 return new_segment
