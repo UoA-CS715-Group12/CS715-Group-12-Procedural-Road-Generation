@@ -48,12 +48,21 @@ def a_star_search(water_map, start, goal):
 
 
 def get_neighbors(current, range_n):
+    """
+    Get the neighbor pixels/vertices of a cell in a grid.
+
+    :param current: Current cell
+    :param range_n: Range of the neighbor pixels/vertices from current cell
+    :return: An array of neighbor pixels/vertices
+    """
     neighbors = []
+
     for dx in range(-range_n, range_n + 1):
         for dy in range(-range_n, range_n + 1):
             if dx == 0 and dy == 0:  # Skip the current cell itself
                 continue
             neighbors.append((current[0] + dx, current[1] + dy))
+
     return neighbors
 
 
