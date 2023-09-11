@@ -146,7 +146,7 @@ def write_to_json(centroids, weights):
 
     centroid_data.sort(key=lambda x : x["weight"], reverse=True)
     # Write the centroid data to a JSON file
-    with open('output.json', 'w') as f:
+    with open('pop_density_centres.json', 'w') as f:
         json.dump(centroid_data, f, indent=4)
 
     
