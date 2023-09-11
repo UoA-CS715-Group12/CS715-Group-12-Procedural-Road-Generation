@@ -10,3 +10,19 @@ https://github.com/x775/citygenerator
 
 All changes after the first commit is our own implementation.
 
+## Getting started:
+
+### K-means clustering
+This script generates a list of population density centres and their positions given an input image. The results are saved in the file `pop_density_centres.json`
+
+```
+python src/generate_pop_density_centres.py <image-path>
+```
+
+For example, the following script runs it on the Greater Auckland area (Windows 10 filepath):
+```
+python src/generate_pop_density_centres.py input/images/greater_auckland/greater_auckland_pop_density.png
+```
+
+### Road Generation
+Run the `citygenerator.py` file either using an IDE or the command line
