@@ -1,6 +1,8 @@
 import math
 from queue import PriorityQueue
 import numpy as np
+
+from src.road_network.growth_rules.cost_function import get_height_map, get_water_map
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
 from src.utilities import get_distance
@@ -10,8 +12,11 @@ def heuristic(point_n, point_goal):
     return get_distance(point_n, point_goal)
 
 
-def a_star_search(water_map, start, goal):
+def a_star_search(start, goal):
     # Initialize priority queue and add the start node
+    height_map = get_height_map()
+    water_map = get_water_map()
+
     frontier = PriorityQueue()
     frontier.put((0, start))
     came_from = {start: None}

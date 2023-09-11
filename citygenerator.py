@@ -44,7 +44,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
     print(f"config completed in {end - start:0.4f} seconds")
 
     # Step 1: Grow road network.
-    segments = astar.generate_a_star_roads(astar.a_star_search(get_water_map(), (300, 400), (30, 300)))
+    segments = astar.generate_a_star_roads(astar.a_star_search((300, 400), (30, 300)))
     # segments = segment2json(segments)
     config.axiom.extend(segments)
     road_network, vertex_dict = rng.initialise(config)
