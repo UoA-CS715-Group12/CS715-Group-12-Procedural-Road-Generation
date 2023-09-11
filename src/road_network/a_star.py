@@ -6,7 +6,7 @@ from src.road_network.segment import Segment
 
 
 def heuristic(a, b):
-    return math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
+    return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
 
 
 def a_star_search(water_map, start, goal):
@@ -45,6 +45,7 @@ def a_star_search(water_map, start, goal):
     print("No A* path found")
     return None  # Path not found
 
+
 def get_neighbors(current, range_n):
     neighbors = []
     for dx in range(-range_n, range_n + 1):
@@ -56,17 +57,20 @@ def get_neighbors(current, range_n):
 
 
 def generate_a_star_roads(path):
+    """
+    Generate segments between each vertex in the path.
+
+    :param path: An array of vertices
+    :return: An array of segments
+    """
     segments = []
-    iteration = 0
-    for x1,y1 in path:
-        try:
-            x2, y2 = path[iteration+1]
-            segment = Segment(segment_start=Vertex(np.array([x1, y1])), segment_end=Vertex(np.array([x2, y2])))
 
-            segments.append(segment)
+    for i in range(len(path) - 1):
+        x1, y1 = path[i]
+        x2, y2 = path[i + 1]
+        segment = Segment(segment_start=Vertex(np.array([x1, y1])), segment_end=Vertex(np.array([x2, y2])))
 
-        except IndexError:
-            print("End of A* path")
+        segments.append(segment)
 
-        iteration += 1
+    print("End of A* path")
     return segments
