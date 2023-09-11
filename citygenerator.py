@@ -22,7 +22,6 @@ from src.road_network.growth_rules.cost_function import *
 from src.utilities import *
 
 
-
 # INPUT:    String, (Bool, Bool)
 # OUTPUT:   Generated city (visualisation)
 # Main function used to generate an intermediate representation of a city.
@@ -33,8 +32,8 @@ def run_computations(config, road_network, vertex_dict, visualiser):
     rng.generate_major_roads(config, road_network, vertex_dict, visualiser)
     rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
 
-def generate(config_path, show_city=False, show_time=False, show_stats=False):
 
+def generate(config_path, show_city=False, show_time=False, show_stats=False):
     if show_time:
         t = time.process_time()
 
@@ -43,7 +42,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
     config = ConfigLoader(config_path)
     end = time.perf_counter()
     print(f"config completed in {end - start:0.4f} seconds")
-    
+
     # Step 1: Grow road network.
     segments = astar.generate_a_star_roads(astar.a_star_search(get_water_map(), (300, 400), (30, 300)))
     # segments = segment2json(segments)
@@ -54,13 +53,10 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
     threading.Thread(target=run_computations, args=(config, road_network, vertex_dict, visualiser), daemon=True).start()
     while True:
         visualiser.visualise()
-    
+
     # # Start the visualisation in a separate thread
     # rng.generate_major_roads(config, road_network, vertex_dict, visualiser)
     # rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
-
-
-        
 
     # # Step 2: Compute polygons based on road network.
     # start = time.perf_counter()
@@ -68,7 +64,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
     # end = time.perf_counter()
     # print(f"compute polygons completed in {end - start:0.4f} seconds")
     # del polys[0] # We delete the first polygon as this corresponds to the outer area.
-    
+
     # # Step 3: Determine land usages.
     # start = time.perf_counter()
     # land_usages = land_usage.get_land_usage(polys, config)
@@ -113,8 +109,6 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
 
     if show_stats:
         show_orientation_histogram(orientation_histogram)
-
-
 
 
 if __name__ == "__main__":

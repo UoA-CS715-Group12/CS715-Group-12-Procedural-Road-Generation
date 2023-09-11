@@ -6,8 +6,8 @@ from src.road_network.segment import Segment
 from src.utilities import get_distance
 
 
-def heuristic(a, b):
-    return get_distance(a, b)
+def heuristic(point_n, point_goal):
+    return get_distance(point_n, point_goal)
 
 
 def a_star_search(water_map, start, goal):
@@ -15,7 +15,8 @@ def a_star_search(water_map, start, goal):
     frontier = PriorityQueue()
     frontier.put((0, start))
     came_from = {start: None}
-    cost_so_far = {start: 0}
+    g_cost = {start: 0}
+    f_value = {start: 0}
 
     while not frontier.empty():
         current_priority, current = frontier.get()
@@ -36,10 +37,12 @@ def a_star_search(water_map, start, goal):
             x, y = neighbor
             # Check if the neighbor is in the grid and is not an obstacle
             if 0 <= x < np.shape(water_map)[1] and 0 <= y < np.shape(water_map)[0] and water_map[y][x] < 200:
-                new_cost = cost_so_far[current] + 1
-                if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
-                    cost_so_far[neighbor] = new_cost
-                    priority = new_cost + heuristic(goal, neighbor)
+                new_g_cost = g_cost[current] + 1
+                priority = new_g_cost + heuristic(neighbor, goal)
+
+                if neighbor not in f_value or priority < f_value[neighbor]:
+                    g_cost[neighbor] = new_g_cost
+                    f_value[neighbor] = priority
                     frontier.put((priority, neighbor))
                     came_from[neighbor] = current
 
