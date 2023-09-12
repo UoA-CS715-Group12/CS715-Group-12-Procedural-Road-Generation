@@ -1,6 +1,8 @@
 import math
 from queue import PriorityQueue
 import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
 
 from src.road_network.growth_rules.cost_function import get_height_map, get_water_map
 from src.road_network.vertex import Vertex
@@ -95,14 +97,58 @@ def generate_a_star_road(path):
 
 def get_all_a_star_roads(population_centres, number_of_centres, height_map, water_map):
     segments = []
-    for i in range(number_of_centres):
-        centre1 = population_centres[i]
-        j = i + 1
+    edges = get_edges_mst(population_centres)
+    
+    for edge in edges:
+        node1Idx, node2Idx = edge
+        centre1 = population_centres[node1Idx]
+        centre2 = population_centres[node2Idx]
         try:
-            centre2 = population_centres[j]
-            path = generate_a_star_road(a_star_search(centre1, centre2, height_map, water_map))
+            path = generate_a_star_road([centre1, centre2]) # TODO: Add A star search between each pair of centres
             segments.append(path)
 
         except IndexError:
             pass
+        
     return segments
+
+def get_edges_mst(nodes):
+    """ Returns a graph consisting of edges and nodes based on the population density centre nodes
+
+    Args:
+        nodes (_type_): List of nodes in the form [(x1, y1), (x2, y2), ...]
+    return: A list of edges in the form [(n0, n2), (n1, n3)] where nx is the index of the node
+    """
+    # Create a graph
+    G = nx.Graph()
+
+    # Add nodes to the graph
+    for i, node in enumerate(nodes):
+        G.add_node(i, pos=node)
+
+    # Calculate the distances between all pairs of nodes
+    for i in range(len(nodes)):
+        for j in range(i + 1, len(nodes)):
+            distance = ((nodes[i][0] - nodes[j][0])**2 + (nodes[i][1] - nodes[j][1])**2)**0.5
+            G.add_edge(i, j, weight=distance)
+
+    # Find the Minimum Spanning Tree
+    mst = nx.minimum_spanning_tree(G)
+    
+    return mst.edges()
+
+# def get_all_a_star_roads(population_centres, number_of_centres, height_map, water_map):
+#     segments = []
+    
+#     pop_density_centres_arr = population_centres[:number_of_centres]
+#     n = len(pop_density_centres_arr)
+    
+#     for centre1 in pop_density_centres_arr:
+#         for centre2 in pop_density_centres_arr:
+#             if (centre1 != centre2):
+#                 x1, y1 = centre1;
+#                 x2, y2 = centre1;
+#                 segment = [Segment(segment_start=Vertex(np.array([x1, y1])), segment_end=Vertex(np.array([x2, y2])))]
+#                 segments.append(segment)
+    
+#     return segments
