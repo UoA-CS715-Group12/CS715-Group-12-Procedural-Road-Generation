@@ -27,12 +27,12 @@ def cost_function(point1, point2, previous_point, height_map):
     angle_rad = abs(math.atan((m2 - m1) / (1 + m1 * m2 + 1e-6)))
     angle_deg = math.degrees(angle_rad)
 
-    if abs(angle_deg) < 60:
+    if angle_deg < 10:
         ratio = 1
     else:
         ratio = 500
 
-    cost = change_in_height * distance * abs(angle_deg) / 60 * ratio
+    cost = change_in_height * distance * (1 + angle_deg / 10) * ratio
 
     return cost
 
