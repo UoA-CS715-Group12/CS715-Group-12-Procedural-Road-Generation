@@ -9,6 +9,7 @@ from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
 from src.utilities import get_distance
 
+WEIGHT_FACTOR = 70
 
 def heuristic(point_n, point_goal):
     return get_distance(point_n, point_goal)
@@ -101,10 +102,10 @@ def get_all_a_star_roads(population_centres, number_of_centres, height_map, wate
     
     for edge in edges:
         node1Idx, node2Idx = edge
-        centre1 = population_centres[node1Idx]
-        centre2 = population_centres[node2Idx]
+        x1, y1, *_ = population_centres[node1Idx]
+        x2, y2, *_ = population_centres[node2Idx]
         try:
-            path = generate_a_star_road([centre1, centre2]) # TODO: Add A star search between each pair of centres
+            path = generate_a_star_road([(x1, y1), (x2, y2)]) # TODO: Add A star search between each pair of centres
             segments.append(path)
 
         except IndexError:
@@ -116,7 +117,7 @@ def get_edges_mst(nodes):
     """ Returns a graph consisting of edges and nodes based on the population density centre nodes
 
     Args:
-        nodes (_type_): List of nodes in the form [(x1, y1), (x2, y2), ...]
+        nodes (_type_): List of nodes in the form [(x1, y1, w1), (x2, y2, w2), ...]
     return: A list of edges in the form [(n0, n2), (n1, n3)] where nx is the index of the node
     """
     # Create a graph
@@ -129,26 +130,13 @@ def get_edges_mst(nodes):
     # Calculate the distances between all pairs of nodes
     for i in range(len(nodes)):
         for j in range(i + 1, len(nodes)):
+            weight_i = nodes[i][2]
+            weight_j = nodes[j][2]
             distance = ((nodes[i][0] - nodes[j][0])**2 + (nodes[i][1] - nodes[j][1])**2)**0.5
-            G.add_edge(i, j, weight=distance)
+            weighted_dist = distance - WEIGHT_FACTOR * (weight_i + weight_j) # Less cost for more important nodes so we make sure they are connected
+            G.add_edge(i, j, weight=weighted_dist)
 
     # Find the Minimum Spanning Tree
     mst = nx.minimum_spanning_tree(G)
     
     return mst.edges()
-
-# def get_all_a_star_roads(population_centres, number_of_centres, height_map, water_map):
-#     segments = []
-    
-#     pop_density_centres_arr = population_centres[:number_of_centres]
-#     n = len(pop_density_centres_arr)
-    
-#     for centre1 in pop_density_centres_arr:
-#         for centre2 in pop_density_centres_arr:
-#             if (centre1 != centre2):
-#                 x1, y1 = centre1;
-#                 x2, y2 = centre1;
-#                 segment = [Segment(segment_start=Vertex(np.array([x1, y1])), segment_end=Vertex(np.array([x2, y2])))]
-#                 segments.append(segment)
-    
-#     return segments

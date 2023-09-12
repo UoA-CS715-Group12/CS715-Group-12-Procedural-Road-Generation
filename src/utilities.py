@@ -166,6 +166,7 @@ def read_population_json(filename, number):
     for i in range(number):
         x = round(data[i]['x'])
         y = round(data[i]['y'])
-        results.append((x, y))
+        w = data[i]['weight']
+        results.append((x, y, w))
 
     return results
