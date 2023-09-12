@@ -12,10 +12,10 @@ def heuristic(point_n, point_goal):
     return get_distance(point_n, point_goal)
 
 
-def a_star_search(start, goal, height_map, water_map):
+def a_star_search(start, goal, height_map_path, water_map_path):
     # Initialize priority queue and add the start node
-    height_map = get_height_map(height_map)
-    water_map = get_water_map(water_map)
+    height_map = get_height_map(height_map_path)
+    water_map = get_water_map(water_map_path)
 
     frontier = PriorityQueue()
     frontier.put((0, start))
