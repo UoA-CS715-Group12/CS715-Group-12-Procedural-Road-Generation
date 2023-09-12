@@ -11,7 +11,7 @@ from src.utilities import (find_legend_centers, normalise_pixel_values,
 class ConfigManager:
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super(ConfigManager, cls).__new__(cls)
         return cls._instance
