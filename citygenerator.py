@@ -28,12 +28,15 @@ from src.utilities import *
 # If show_city is true, the representation is visualised using matplotlib.
 # If show_time is true, the process time required to generate the intermediate representation is shown.
 # If show_stats is true, the statistics used to evaluate the representation are shown
-def run_computations(config, road_network, vertex_dict, visualiser):
-    rng.generate_major_roads(config, road_network, vertex_dict, visualiser)
-    rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
+def run_computations(config, road_network, vertex_dict, visualiser, height_map, water_map):
+    rng.generate_major_roads(config, road_network, vertex_dict, height_map, water_map, visualiser)
+    rng.generate_minor_roads(config, road_network, vertex_dict, height_map, water_map, visualiser)
 
 
-def generate(config_path, show_city=False, show_time=False, show_stats=False,  number_of_centres=5):
+def generate(config_path, show_city=False, show_time=False, show_stats=False,  number_of_centres=5,
+             height_map="input/images/greater_auckland/greater_auckland_height.png",
+             water_map="input/images/greater_auckland/greater_auckland_coast.png",
+             population_json="input/json/greater_auckland/auckland_pop_density_centres.json"):
     if show_time:
         t = time.process_time()
 
@@ -44,8 +47,9 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False,  n
     print(f"config completed in {end - start:0.4f} seconds")
 
     # Step 1: Grow road network.
-    population_centres = read_population_json("input/json/greater_auckland/auckland_pop_density_centres.json", number_of_centres)
-    segments = get_all_a_star_roads(population_centres, number_of_centres)
+    population_centres = read_population_json(population_json,
+                                              number_of_centres)
+    segments = get_all_a_star_roads(population_centres, number_of_centres, height_map, water_map)
     for path in segments:
         config.axiom.extend(path)
 
@@ -53,7 +57,8 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False,  n
 
     # Step 2: Visualise road network.
     visualiser = Visualiser(config.height_map_array, road_network)
-    threading.Thread(target=run_computations, args=(config, road_network, vertex_dict, visualiser), daemon=True).start()
+    threading.Thread(target=run_computations, args=(config, road_network, vertex_dict, visualiser, height_map,
+                                                    water_map), daemon=True).start()
     while True:
         visualiser.visualise()
 
