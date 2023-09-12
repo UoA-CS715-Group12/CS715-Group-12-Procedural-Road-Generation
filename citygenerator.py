@@ -17,7 +17,7 @@ from src.stats import compute_proportion_3way_intersections, compute_proportion_
 from src.visualise import Visualiser
 from matplotlib import animation
 import threading
-import src.road_network.a_star as astar
+from src.road_network.a_star import get_all_a_star_roads
 from src.road_network.growth_rules.cost_function import *
 from src.utilities import *
 
@@ -33,7 +33,7 @@ def run_computations(config, road_network, vertex_dict, visualiser):
     rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
 
 
-def generate(config_path, show_city=False, show_time=False, show_stats=False):
+def generate(config_path, show_city=False, show_time=False, show_stats=False,  number_of_centres=5):
     if show_time:
         t = time.process_time()
 
@@ -44,38 +44,18 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False):
     print(f"config completed in {end - start:0.4f} seconds")
 
     # Step 1: Grow road network.
-    segments = astar.generate_a_star_roads(astar.a_star_search((300, 400), (30, 300)))
-    # segments = segment2json(segments)
-    config.axiom.extend(segments)
-    road_network, vertex_dict = rng.initialise(config)
-    visualiser = Visualiser(config.height_map_array, road_network)
+    population_centres = read_population_json("input/json/greater_auckland/auckland_pop_density_centres.json", number_of_centres)
+    segments = get_all_a_star_roads(population_centres, number_of_centres)
+    for path in segments:
+        config.axiom.extend(path)
 
+    road_network, vertex_dict = rng.initialise(config)
+
+    # Step 2: Visualise road network.
+    visualiser = Visualiser(config.height_map_array, road_network)
     threading.Thread(target=run_computations, args=(config, road_network, vertex_dict, visualiser), daemon=True).start()
     while True:
         visualiser.visualise()
-
-    # # Start the visualisation in a separate thread
-    # rng.generate_major_roads(config, road_network, vertex_dict, visualiser)
-    # rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
-
-    # # Step 2: Compute polygons based on road network.
-    # start = time.perf_counter()
-    # polys = polygons.get_polygons(vertex_dict)
-    # end = time.perf_counter()
-    # print(f"compute polygons completed in {end - start:0.4f} seconds")
-    # del polys[0] # We delete the first polygon as this corresponds to the outer area.
-
-    # # Step 3: Determine land usages.
-    # start = time.perf_counter()
-    # land_usages = land_usage.get_land_usage(polys, config)
-    # end = time.perf_counter()
-    # print(f"get land usage completed in {end - start:0.4f} seconds")
-    #
-    # # Step 4: Dump to .json.
-    # start = time.perf_counter()
-    # city_to_json(road_network, list(vertex_dict.keys()), land_usages)
-    # end = time.perf_counter()
-    # print(f"dump to json completed in {end - start:0.4f} seconds")
 
     if show_time:
         print('Time:', time.process_time() - t)

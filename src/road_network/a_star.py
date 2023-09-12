@@ -74,7 +74,7 @@ def get_neighbors(current, range_n):
     return neighbors
 
 
-def generate_a_star_roads(path):
+def generate_a_star_road(path):
     """
     Generate segments between each vertex in the path.
 
@@ -91,4 +91,20 @@ def generate_a_star_roads(path):
         segments.append(segment)
 
     print("End of A* path")
+    return segments
+
+
+def get_all_a_star_roads(population_centres, number_of_centres):
+    segments = []
+    for i in range(number_of_centres):
+        centre1 = population_centres[i]
+        j = i + 1
+        try:
+            centre2 = population_centres[j]
+            print(centre1, centre2)
+            path = generate_a_star_road(a_star_search(centre1, centre2))
+            segments.append(path)
+
+        except IndexError:
+            pass
     return segments
