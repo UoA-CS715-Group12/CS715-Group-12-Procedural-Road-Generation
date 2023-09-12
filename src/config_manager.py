@@ -8,16 +8,24 @@ from src.utilities import (find_legend_centers, normalise_pixel_values,
                            parse_image, parse_json, read_tif_file)
 
 
-class ConfigManager:
+class SingletonMeta(type):
+    """
+    Singleton Class
+    """
     _instance = None
 
-    def __new__(cls, *args, **kwargs):
+    def __call__(cls, *args, **kwargs):
         if cls._instance is None:
-            cls._instance = super(ConfigManager, cls).__new__(cls)
+            cls._instance = super().__call__(*args, **kwargs)
         return cls._instance
 
-    def __init__(self, config_path=None):
 
+class ConfigManager(metaclass=SingletonMeta):
+    def __init__(self,
+                 config_path=None,
+                 height_map_path=None,
+                 water_map_path=None,
+                 population_density_path=None):
         try:
             with open(config_path, "r") as config_file:
                 for key, value in json.load(config_file).items():
