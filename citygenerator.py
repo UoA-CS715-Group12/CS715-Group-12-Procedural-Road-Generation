@@ -33,7 +33,7 @@ def run_computations(config, road_network, vertex_dict, visualiser, height_map, 
     rng.generate_minor_roads(config, road_network, vertex_dict, height_map, water_map, visualiser)
 
 
-def generate(config_path, show_city=False, show_time=False, show_stats=False,  number_of_centres=5,
+def generate(config_path, show_city=False, show_time=False, show_stats=False, number_of_centres=5,
              height_map="input/images/greater_auckland/greater_auckland_height.png",
              water_map="input/images/greater_auckland/greater_auckland_coast.png",
              population_json="input/json/greater_auckland/auckland_pop_density_centres.json"):
@@ -57,8 +57,9 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False,  n
 
     # Step 2: Visualise road network.
     visualiser = Visualiser(config.height_map_array, road_network)
-    threading.Thread(target=run_computations, args=(config, road_network, vertex_dict, visualiser, height_map,
-                                                    water_map), daemon=True).start()
+    threading.Thread(target=run_computations,
+                     args=(config, road_network, vertex_dict, visualiser, height_map, water_map),
+                     daemon=True).start()
     while True:
         visualiser.visualise()
 
