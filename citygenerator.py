@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
 from src.to_json import city_to_json
-from src.config_loader import ConfigLoader
+from src.config_manager import ConfigManager
 from src.road_network.segment import Segment
 import src.road_network.road_network_generator as rng
 import src.city_blocks.polygons as polygons
@@ -42,7 +42,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
 
     # Step 0: Load config.
     start = time.perf_counter()
-    config = ConfigLoader(config_path)
+    config = ConfigManager(config_path)
     end = time.perf_counter()
     print(f"config completed in {end - start:0.4f} seconds")
 
