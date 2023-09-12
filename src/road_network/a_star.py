@@ -12,6 +12,31 @@ def heuristic(point_n, point_goal):
     return get_distance(point_n, point_goal)
 
 
+def cost_function(point1, point2, previous_point, height_map):
+    # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
+    distance = get_distance(point1, point2)
+    change_in_height = abs(height_map[point1[0], point1[1]] - height_map[point2[0], point2[1]])
+
+    if previous_point is None:
+        return change_in_height * distance
+
+    # Calculate slopes
+    m1 = (point2[1] - point1[1]) / (point2[0] - point1[0] + 1e-6)
+    m2 = (point1[1] - previous_point[1]) / (point1[0] - previous_point[0] + 1e-6)
+    # Calculate the angle in radians and degrees
+    angle_rad = abs(math.atan((m2 - m1) / (1 + m1 * m2 + 1e-6)))
+    angle_deg = math.degrees(angle_rad)
+
+    if abs(angle_deg) < 60:
+        ratio = 1
+    else:
+        ratio = 500
+
+    cost = change_in_height * distance * abs(angle_deg) / 60 * ratio
+
+    return cost
+
+
 def a_star_search(start, goal):
     # Initialize priority queue and add the start node
     height_map = get_height_map()
@@ -42,7 +67,7 @@ def a_star_search(start, goal):
             x, y = neighbor
             # Check if the neighbor is in the grid and is not an obstacle
             if 0 <= x < np.shape(water_map)[1] and 0 <= y < np.shape(water_map)[0] and water_map[y][x] < 200:
-                new_g_cost = g_cost[current] + 1
+                new_g_cost = g_cost[current] + cost_function(current, neighbor, came_from[current], height_map)
                 priority = new_g_cost + heuristic(neighbor, goal)
 
                 if neighbor not in f_value or priority < f_value[neighbor]:
