@@ -46,9 +46,9 @@ def initialise(config):
     return segment_added_list, vertex_added_dict
 
 
-def generate_major_roads(config, segment_added_list, vertex_added_dict, visualiser=None):
-    height_map = get_height_map()
-    water_map = get_water_map()
+def generate_major_roads(config, segment_added_list, vertex_added_dict, height_map, water_map, visualiser=None):
+    height_map = get_height_map(height_map)
+    water_map = get_water_map(water_map)
     segment_front_queue = Queue(maxsize=0)
 
     for segment in segment_added_list:
@@ -63,7 +63,8 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
         suggested_segments = suggest_major(config, current_segment, config.road_rules_array, config.population_density_array)
         for segment in suggested_segments:
             if not len(vertex_added_dict[current_segment.end_vert]) >= 4:
-                verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict, height_map, water_map)
+                verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict,
+                                                  height_map, water_map)
                 if verified_segment:
                     segment_front_queue.put(verified_segment)
                     segment_added_list.append(verified_segment)
@@ -92,9 +93,9 @@ def generate_major_roads_from_centres(config, segment_added_list, vertex_added_d
 # INPUT:    ConfigLoader, List, Dictionary
 # OUTPUT:   -
 # generate minor roads based on minor road seeds
-def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualiser=None):
-    height_map = get_height_map()
-    water_map = get_water_map()
+def generate_minor_roads(config, segment_added_list, vertex_added_dict, height_map, water_map, visualiser=None):
+    height_map = get_height_map(height_map)
+    water_map = get_water_map(water_map)
     # Extract all segments which are not part of an intersection,
     # i.e. segments with end vertices that have less than three segments connected to them.
     minor_road_seed_candidates = [segment for segment in segment_added_list if len(vertex_added_dict[segment.end_vert]) < 3]
@@ -108,7 +109,8 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualis
         suggested_seeds = minor_road_seed(config, seed, population_density)
 
         for suggested_seed in suggested_seeds:
-            verified_seed = verify_segment(config, suggested_seed, min_distance, segment_added_list, vertex_added_dict, height_map, water_map)
+            verified_seed = verify_segment(config, suggested_seed, min_distance, segment_added_list, vertex_added_dict,
+                                           height_map, water_map)
             if verified_seed:
                 minor_roads_queue.put(verified_seed)
                 segment_added_list.append(verified_seed)

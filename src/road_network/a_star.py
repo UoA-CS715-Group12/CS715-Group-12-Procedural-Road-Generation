@@ -12,10 +12,10 @@ def heuristic(point_n, point_goal):
     return get_distance(point_n, point_goal)
 
 
-def a_star_search(start, goal):
+def a_star_search(start, goal, height_map_path, water_map_path):
     # Initialize priority queue and add the start node
-    height_map = get_height_map()
-    water_map = get_water_map()
+    height_map = get_height_map(height_map_path)
+    water_map = get_water_map(water_map_path)
 
     frontier = PriorityQueue()
     frontier.put((0, start))
@@ -74,7 +74,7 @@ def get_neighbors(current, range_n):
     return neighbors
 
 
-def generate_a_star_roads(path):
+def generate_a_star_road(path):
     """
     Generate segments between each vertex in the path.
 
@@ -90,5 +90,19 @@ def generate_a_star_roads(path):
 
         segments.append(segment)
 
-    print("End of A* path")
+    return segments
+
+
+def get_all_a_star_roads(population_centres, number_of_centres, height_map, water_map):
+    segments = []
+    for i in range(number_of_centres):
+        centre1 = population_centres[i]
+        j = i + 1
+        try:
+            centre2 = population_centres[j]
+            path = generate_a_star_road(a_star_search(centre1, centre2, height_map, water_map))
+            segments.append(path)
+
+        except IndexError:
+            pass
     return segments

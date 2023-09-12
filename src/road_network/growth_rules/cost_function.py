@@ -4,32 +4,32 @@ from math import inf
 from src.utilities import parse_image, get_distance
 from src.utilities import rgb2gray
 
-height_map = None
-water_map = None
+global_height_map = None
+global_water_map = None
 
 
-def get_height_map():
-    global height_map
+def get_height_map(filename):
+    global global_height_map
 
-    if height_map is not None:
-        return height_map
+    if global_height_map is not None:
+        return global_height_map
 
-    path = os.path.join(os.getcwd(), "input/images/greater_auckland/greater_auckland_height.png")
-    height_map = parse_image(path)
-    height_map = rgb2gray(height_map)
-    return height_map
+    path = os.path.join(os.getcwd(), filename)
+    global_height_map = parse_image(path)
+    global_height_map = rgb2gray(global_height_map)
+    return global_height_map
 
 
-def get_water_map():
-    global water_map
+def get_water_map(filename):
+    global global_water_map
 
-    if water_map is not None:
-        return water_map
+    if global_water_map is not None:
+        return global_water_map
 
-    path = os.path.join(os.getcwd(), "input/images/greater_auckland/greater_auckland_coast.png")
-    water_map = parse_image(path)
-    water_map = rgb2gray(water_map)
-    return water_map
+    path = os.path.join(os.getcwd(), filename)
+    global_water_map = parse_image(path)
+    global_water_map = rgb2gray(global_water_map)
+    return global_water_map
 
 
 # Replace the major road generation using A* search
