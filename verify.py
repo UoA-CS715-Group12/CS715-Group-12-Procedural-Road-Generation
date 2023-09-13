@@ -6,7 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
-from src.config_loader import ConfigLoader
+from src.config_manager import ConfigManager
 from citygenerator import visualise
 
 # Import and re-use statistic functions.
@@ -20,7 +20,7 @@ from src.stats import compute_orientation_order
 from src.stats import compute_orientation_entropy
 from src.stats import show_orientation_histogram
 
-config = ConfigLoader('input/configs/auckland.json')
+config = ConfigManager('input/configs/auckland.json')
 ox.config(log_console=True, use_cache=True)
 weight_by_length = False
 NUM_BINS = 36
@@ -38,7 +38,7 @@ for edge in Auckland.edges:
     end_vert = Vertex(np.array((Auckland.nodes[end_id]["x"], Auckland.nodes[end_id]["y"])))
     road_segment = Segment(start_vert, end_vert)
     road_segments.append(road_segment)
-    
+
     if start_vert in vertex_dict:
         if road_segment not in vertex_dict[start_vert]:
             vertex_dict[start_vert].append(road_segment)

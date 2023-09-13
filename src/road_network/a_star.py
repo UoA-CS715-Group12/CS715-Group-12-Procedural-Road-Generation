@@ -1,8 +1,7 @@
-import math
 from queue import PriorityQueue
 import numpy as np
 
-from src.road_network.growth_rules.cost_function import get_height_map, get_water_map
+from src.config_manager import ConfigManager
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
 from src.utilities import get_distance
@@ -38,10 +37,9 @@ def cost_function(point1, point2, previous_point, height_map):
 
 
 def a_star_search(start, goal):
-    # Initialize priority queue and add the start node
-    height_map = get_height_map()
-    water_map = get_water_map()
+    config = ConfigManager()
 
+    # Initialize priority queue and add the start node
     frontier = PriorityQueue()
     frontier.put((0, start))
     came_from = {start: None}
@@ -66,7 +64,7 @@ def a_star_search(start, goal):
         for neighbor in neighbors:
             x, y = neighbor
             # Check if the neighbor is in the grid and is not an obstacle
-            if 0 <= x < np.shape(water_map)[1] and 0 <= y < np.shape(water_map)[0] and water_map[y][x] < 200:
+            if 0 <= x < np.shape(config.water_map_gray)[1] and 0 <= y < np.shape(config.water_map_gray)[0] and config.water_map_gray[y][x] < 200:
                 new_g_cost = g_cost[current] + cost_function(current, neighbor, came_from[current], height_map)
                 priority = new_g_cost + heuristic(neighbor, goal)
 
@@ -99,7 +97,7 @@ def get_neighbors(current, range_n):
     return neighbors
 
 
-def generate_a_star_roads(path):
+def generate_a_star_road(path):
     """
     Generate segments between each vertex in the path.
 
@@ -115,5 +113,19 @@ def generate_a_star_roads(path):
 
         segments.append(segment)
 
-    print("End of A* path")
+    return segments
+
+
+def get_all_a_star_roads(population_centres, number_of_centres):
+    segments = []
+    for i in range(number_of_centres):
+        centre1 = population_centres[i]
+        j = i + 1
+        try:
+            centre2 = population_centres[j]
+            path = generate_a_star_road(a_star_search(centre1, centre2))
+            segments.append(path)
+
+        except IndexError:
+            pass
     return segments

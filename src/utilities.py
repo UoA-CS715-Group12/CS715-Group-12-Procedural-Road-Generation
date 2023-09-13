@@ -3,8 +3,6 @@ import numpy as np
 from PIL import Image
 import skimage.morphology
 from osgeo import gdal
-from src.road_network.vertex import Vertex
-from src.road_network.segment import Segment
 import json
 
 
@@ -159,3 +157,13 @@ def get_distance(point1, point2):
     Get the distance between two points.
     """
     return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
+
+
+def get_first_n_population_centres(pop_density_centres, number):
+    results = []
+    for i in range(number):
+        x = round(pop_density_centres[i]['x'])
+        y = round(pop_density_centres[i]['y'])
+        results.append((x, y))
+
+    return results
