@@ -8,7 +8,7 @@ from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
 from src.utilities import get_distance
 
-WEIGHT_FACTOR = 70
+WEIGHT_FACTOR = 30
 
 def heuristic(point_n, point_goal):
     return get_distance(point_n, point_goal)
@@ -94,18 +94,16 @@ def generate_a_star_road(path):
     return segments
 
 
-def get_all_a_star_roads(population_centres, number_of_centres):
+def get_all_a_star_roads(population_centres):
     segments = []
-    for i in range(number_of_centres):
-        centre1 = population_centres[i]
-        j = i + 1
-        try:
-            centre2 = population_centres[j]
-            path = generate_a_star_road(a_star_search(centre1, centre2, height_map, water_map))
-            segments.append(path)
-
-        except IndexError:
-            pass
+    edges = get_edges_mst(population_centres)
+    
+    for edge in edges:
+        node1Idx, node2Idx = edge
+        x1, y1, *_ = population_centres[node1Idx]
+        x2, y2, *_ = population_centres[node2Idx]
+        path = generate_a_star_road([(x1, y1), (x2, y2)]) # TODO: Add A star search between each pair of centres
+        segments.append(path)
         
     return segments
 
