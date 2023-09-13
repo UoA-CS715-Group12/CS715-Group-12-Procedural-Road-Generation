@@ -42,7 +42,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
 
     # Step 0: Load config.
     start = time.perf_counter()
-    config = ConfigManager(config_path, height_map, water_map, population_json)
+    config = ConfigManager(config_path)
     end = time.perf_counter()
     print(f"config completed in {end - start:0.4f} seconds")
 
