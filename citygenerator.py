@@ -44,8 +44,8 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
     print(f"config completed in {end - start:0.4f} seconds")
 
     # Step 1: Grow road network.
-    population_centres = read_population_json(config.pop_density_centres,
-                                              number_of_centres)
+    population_centres = get_first_n_population_centres(config.pop_density_centres,
+                                                        number_of_centres)
     segments = get_all_a_star_roads(population_centres, number_of_centres)
     for path in segments:
         config.axiom.extend(path)

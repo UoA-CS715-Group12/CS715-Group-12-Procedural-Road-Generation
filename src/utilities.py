@@ -159,7 +159,7 @@ def get_distance(point1, point2):
     return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
 
 
-def read_population_json(pop_density_centres, number):
+def get_first_n_population_centres(pop_density_centres, number):
     results = []
     for i in range(number):
         x = round(pop_density_centres[i]['x'])
