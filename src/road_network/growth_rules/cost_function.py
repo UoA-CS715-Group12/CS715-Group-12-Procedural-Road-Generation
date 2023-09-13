@@ -4,33 +4,6 @@ from math import inf
 from src.utilities import parse_image, get_distance
 from src.utilities import rgb2gray
 
-global_height_map = None
-global_water_map = None
-
-
-def get_height_map(filename):
-    global global_height_map
-
-    if global_height_map is not None:
-        return global_height_map
-
-    path = os.path.join(os.getcwd(), filename)
-    global_height_map = parse_image(path)
-    global_height_map = rgb2gray(global_height_map)
-    return global_height_map
-
-
-def get_water_map(filename):
-    global global_water_map
-
-    if global_water_map is not None:
-        return global_water_map
-
-    path = os.path.join(os.getcwd(), filename)
-    global_water_map = parse_image(path)
-    global_water_map = rgb2gray(global_water_map)
-    return global_water_map
-
 
 # Replace the major road generation using A* search
 def height_cost_function(point1, point2, height_map):
