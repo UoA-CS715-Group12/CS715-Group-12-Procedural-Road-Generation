@@ -263,7 +263,7 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
     if ((segment.end_vert.position[0] > max_x or segment.end_vert.position[1] > max_y) or
             (segment.end_vert.position[0] < 0 or segment.end_vert.position[1] < 0)):
         return None
-    elif np.array_equal(find_pixel_value(segment, config.water_map_array), config.water_legend):
+    elif np.array_equal(find_pixel_value(segment, config.water_map_rgb), config.water_legend):
         return None
     elif check_too_high(segment, 65, height_map):
         return None

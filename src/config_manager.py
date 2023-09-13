@@ -5,7 +5,7 @@ import numpy as np
 
 from src.road_network.segment import Segment
 from src.utilities import (find_legend_centers, normalise_pixel_values,
-                           parse_image, parse_json, read_tif_file)
+                           parse_image, parse_json, read_tif_file, rgb2gray)
 
 
 class SingletonMeta(type):
@@ -43,7 +43,8 @@ class ConfigManager(metaclass=SingletonMeta):
         # find radial centers. Only relevant if radial road rule is used.
         self.radial_centers = find_legend_centers(self.road_rules_array, self.radial_legend)
         # Parse water map.
-        self.water_map_array = parse_image(image_path + self.water_map_image_name)
+        self.water_map_rgb = parse_image(image_path + self.water_map_image_name)
+        self.water_map_gray = rgb2gray(self.water_map_rgb)
         # Parse land usage map.
         self.land_use_array = read_tif_file(image_path + self.land_use_image_name)
         self.height_map_array = parse_image(image_path + self.height_map_image_name)
