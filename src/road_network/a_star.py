@@ -93,14 +93,12 @@ def generate_a_star_road(path):
 
 def get_all_a_star_roads(population_centres, number_of_centres):
     segments = []
-    for i in range(number_of_centres):
-        centre1 = population_centres[i]
-        j = i + 1
-        try:
-            centre2 = population_centres[j]
-            path = generate_a_star_road(a_star_search(centre1, centre2))
-            segments.append(path)
 
-        except IndexError:
-            pass
+    for i in range(number_of_centres - 1):
+        centre1 = population_centres[i]
+        centre2 = population_centres[i + 1]
+        path = generate_a_star_road(a_star_search(centre1, centre2))
+
+        segments.append(path)
+
     return segments
