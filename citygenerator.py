@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
 from src.to_json import city_to_json
-from src.config_loader import ConfigLoader
+from src.config_manager import ConfigManager
 from src.road_network.segment import Segment
 import src.road_network.road_network_generator as rng
 import src.city_blocks.polygons as polygons
@@ -28,37 +28,34 @@ from src.utilities import *
 # If show_city is true, the representation is visualised using matplotlib.
 # If show_time is true, the process time required to generate the intermediate representation is shown.
 # If show_stats is true, the statistics used to evaluate the representation are shown
-def run_computations(config, road_network, vertex_dict, visualiser, height_map, water_map):
-    rng.generate_major_roads(config, road_network, vertex_dict, height_map, water_map, visualiser)
-    rng.generate_minor_roads(config, road_network, vertex_dict, height_map, water_map, visualiser)
+def run_computations(config, road_network, vertex_dict, visualiser):
+    rng.generate_major_roads(config, road_network, vertex_dict, visualiser)
+    rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
 
 
-def generate(config_path, show_city=False, show_time=False, show_stats=False, number_of_centres=5,
-             height_map="input/images/greater_auckland/greater_auckland_height.png",
-             water_map="input/images/greater_auckland/greater_auckland_coast.png",
-             population_json="input/json/greater_auckland/auckland_pop_density_centres.json"):
+def generate(config_path, show_city=False, show_time=False, show_stats=False, number_of_centres=5):
     if show_time:
         t = time.process_time()
 
     # Step 0: Load config.
     start = time.perf_counter()
-    config = ConfigLoader(config_path)
+    config = ConfigManager(config_path)
     end = time.perf_counter()
     print(f"config completed in {end - start:0.4f} seconds")
 
     # Step 1: Grow road network.
-    population_centres = read_population_json(population_json,
-                                              number_of_centres)
-    segments = get_all_a_star_roads(population_centres, number_of_centres, height_map, water_map)
+    population_centres = get_first_n_population_centres(config.pop_density_centres,
+                                                        number_of_centres)
+    segments = get_all_a_star_roads(population_centres, number_of_centres)
     for path in segments:
         config.axiom.extend(path)
 
     road_network, vertex_dict = rng.initialise(config)
 
     # Step 2: Visualise road network.
-    visualiser = Visualiser(config.height_map_array, road_network)
+    visualiser = Visualiser(config.height_map_rgb, road_network)
     threading.Thread(target=run_computations,
-                     args=(config, road_network, vertex_dict, visualiser, height_map, water_map),
+                     args=(config, road_network, vertex_dict, visualiser),
                      daemon=True).start()
     while True:
         visualiser.visualise()
