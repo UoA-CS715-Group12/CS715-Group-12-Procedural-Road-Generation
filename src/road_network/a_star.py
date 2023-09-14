@@ -17,6 +17,10 @@ def heuristic(point_n, point_goal):
 
 
 def cost_function(point1, point2, previous_point, height_map):
+    # TODO: Implement cost function for A Star using the road economic factors, elevation changes
+    # TODO: Roads should be able to form bridges over water if the cost is less than taking the long way round
+    # TODO: Roads should consider the costs of generating roads through or over elevation changes
+
     # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
     distance = get_distance(point1, point2)
     change_in_height = abs(height_map[point1[0], point1[1]] - height_map[point2[0], point2[1]])
