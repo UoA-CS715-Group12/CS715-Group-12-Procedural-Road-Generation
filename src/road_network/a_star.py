@@ -4,6 +4,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 from src.config_manager import ConfigManager
+from src.road_network.growth_rules.cost_function import check_water
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
 from src.utilities import get_distance
@@ -15,7 +16,54 @@ def heuristic(point_n, point_goal):
     return get_distance(point_n, point_goal)
 
 
+def cost_function(point1, point2, previous_point):
+    # TODO: Implement cost function for A Star using the road economic factors, elevation changes
+    # TODO: Roads should be able to form bridges over water if the cost is less than taking the long way round
+    # TODO: Roads should consider the costs of generating roads through or over elevation changes
+    config = ConfigManager()
+    height_map = config.height_map_gray
+    water_map = config.water_map_gray
+
+    return 1
+
+    # TODO: Nick
+    if check_water(Segment(segment_array=[point1, point2]), water_map):
+        return 10
+    else:
+        return 1
+
+    # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
+    distance = get_distance(point1, point2)
+    change_in_height = abs(height_map[point1[0], point1[1]] - height_map[point2[0], point2[1]])
+
+    if previous_point is None:
+        return change_in_height * distance
+
+    # Calculate slopes
+    m1 = (point2[1] - point1[1]) / (point2[0] - point1[0] + 1e-6)
+    m2 = (point1[1] - previous_point[1]) / (point1[0] - previous_point[0] + 1e-6)
+    # Calculate the angle in radians and degrees
+    angle_rad = abs(math.atan((m2 - m1) / (1 + m1 * m2 + 1e-6)))
+    angle_deg = math.degrees(angle_rad)
+
+    if angle_deg < 10:
+        ratio = 1
+    else:
+        ratio = 500
+
+    cost = change_in_height * distance * (1 + angle_deg / 10) * ratio
+
+    return cost
+
+
 def a_star_search(start, goal):
+    """
+    A* search algorithm to find the shortest path from start point to goal point.
+
+    :param start: Start point
+    :param goal: Goal point
+    :return: Shortest path from start to goal
+    """
     config = ConfigManager()
 
     # Initialize priority queue and add the start node
@@ -43,8 +91,8 @@ def a_star_search(start, goal):
         for neighbor in neighbors:
             x, y = neighbor
             # Check if the neighbor is in the grid and is not an obstacle
-            if 0 <= x < np.shape(config.water_map_gray)[1] and 0 <= y < np.shape(config.water_map_gray)[0] and config.water_map_gray[y][x] < 200:
-                new_g_cost = g_cost[current] + 1
+            if 0 <= x < np.shape(config.water_map_gray)[1] and 0 <= y < np.shape(config.water_map_gray)[0]:
+                new_g_cost = g_cost[current] + cost_function(current, neighbor, came_from[current])
                 priority = new_g_cost + heuristic(neighbor, goal)
 
                 if neighbor not in f_value or priority < f_value[neighbor]:
@@ -96,6 +144,12 @@ def generate_a_star_road(path):
 
 
 def get_all_a_star_roads(population_centres):
+    """
+    Generate roads/segments between each pair of population density centres using A*.
+
+    :param population_centres: Population density centres
+    :return: An array of segments
+    """
     segments = []
     edges = get_edges_mst(population_centres)
 
@@ -103,7 +157,6 @@ def get_all_a_star_roads(population_centres):
         node1Idx, node2Idx = edge
         x1, y1, *_ = population_centres[node1Idx]
         x2, y2, *_ = population_centres[node2Idx]
-        # path = generate_a_star_road([(x1, y1), (x2, y2)])
         path = generate_a_star_road(a_star_search((x1, y1), (x2, y2)))
         segments.append(path)
 
@@ -111,11 +164,11 @@ def get_all_a_star_roads(population_centres):
 
 
 def get_edges_mst(nodes):
-    """ Returns a graph consisting of edges and nodes based on the population density centre nodes
+    """
+    Returns a graph consisting of edges and nodes based on the population density centre nodes
 
-    Args:
-        nodes (_type_): List of nodes in the form [(x1, y1, w1), (x2, y2, w2), ...]
-    return: A list of edges in the form [(n0, n2), (n1, n3)] where nx is the index of the node
+    :param nodes: List of nodes in the form [(x1, y1, w1), (x2, y2, w2), ...]
+    :return: A list of edges in the form [(n0, n2), (n1, n3)] where nx is the index of the node
     """
     # Create a graph
     G = nx.Graph()

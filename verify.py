@@ -20,7 +20,7 @@ from src.stats import compute_orientation_order
 from src.stats import compute_orientation_entropy
 from src.stats import show_orientation_histogram
 
-config = ConfigManager('input/configs/auckland.json')
+config = ConfigManager(getcwd() + 'input/configs/auckland.json')
 ox.config(log_console=True, use_cache=True)
 weight_by_length = False
 NUM_BINS = 36
