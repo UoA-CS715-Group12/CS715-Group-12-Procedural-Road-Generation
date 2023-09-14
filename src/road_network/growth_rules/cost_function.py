@@ -17,7 +17,7 @@ def check_gradient(point1, point2, height_map, gradient_threshold=7):
     """
     # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
     distance = get_distance(point1, point2)
-    change_in_height = abs(height_map[point1[0], point1[1]] - height_map[point2[0], point2[1]])
+    change_in_height = abs(height_map[point1[1], point1[0]] - height_map[point2[1], point2[0]])
     gradient = float(change_in_height) / distance
 
     if gradient > gradient_threshold:
