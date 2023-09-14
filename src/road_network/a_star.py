@@ -42,6 +42,13 @@ def cost_function(point1, point2, previous_point, height_map):
 
 
 def a_star_search(start, goal):
+    """
+    A* search algorithm to find the shortest path from start point to goal point.
+
+    :param start: Start point
+    :param goal: Goal point
+    :return: Shortest path from start to goal
+    """
     config = ConfigManager()
 
     # Initialize priority queue and add the start node
@@ -122,6 +129,12 @@ def generate_a_star_road(path):
 
 
 def get_all_a_star_roads(population_centres):
+    """
+    Generate roads/segments between each pair of population density centres using A*.
+
+    :param population_centres: Population density centres
+    :return: An array of segments
+    """
     segments = []
     edges = get_edges_mst(population_centres)
 
@@ -136,11 +149,11 @@ def get_all_a_star_roads(population_centres):
 
 
 def get_edges_mst(nodes):
-    """ Returns a graph consisting of edges and nodes based on the population density centre nodes
+    """
+    Returns a graph consisting of edges and nodes based on the population density centre nodes
 
-    Args:
-        nodes (_type_): List of nodes in the form [(x1, y1, w1), (x2, y2, w2), ...]
-    return: A list of edges in the form [(n0, n2), (n1, n3)] where nx is the index of the node
+    :param nodes: List of nodes in the form [(x1, y1, w1), (x2, y2, w2), ...]
+    :return: A list of edges in the form [(n0, n2), (n1, n3)] where nx is the index of the node
     """
     # Create a graph
     G = nx.Graph()
