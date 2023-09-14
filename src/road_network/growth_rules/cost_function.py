@@ -5,50 +5,51 @@ from src.utilities import parse_image, get_distance
 from src.utilities import rgb2gray
 
 
-# Replace the major road generation using A* search
-def height_cost_function(point1, point2, height_map):
+def check_gradient(point1, point2, height_map, gradient_threshold=7):
+    """
+    Check if the gradient between two points is too high.
+
+    :param point1: 1st point
+    :param point2: 2nd point
+    :param height_map: Height_map_gray
+    :param gradient_threshold: Threshold to check for the gradient
+    :return: True if the gradient is too high, False otherwise
+    """
     # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
     distance = get_distance(point1, point2)
     change_in_height = abs(height_map[point1[0], point1[1]] - height_map[point2[0], point2[1]])
-    cost = float(change_in_height / distance)
-    if cost > 7:
-        # print(cost)
+    gradient = float(change_in_height) / distance
+
+    if gradient > gradient_threshold:
         return True
     else:
         return False
 
 
 def check_too_high(segment, height_threshold, height_map):
-    try:
-        # Get the interpolated points along the segment
-        points = linear_interpolate(segment, 30)
-        iteration = 0
-        for x1, y1 in points:
-            height_value1 = height_map[y1][x1]
-            if height_value1 > height_threshold:
-                # print("Height > Threshold")
-                return True
+    """
+    Check if the segment or the gradient is too high.
 
-            try:
-                x2, y2 = points[iteration + 1]
-                x2, y2 = int(round(x2)), int(round(y2))
-                height_value2 = height_map[y2][x2]
-                if height_value2 > height_threshold:
-                    # print("Height > Threshold")
-                    return True
-                point1 = (x1, y1)
-                point2 = (x2, y2)
-                if height_cost_function(point1, point2, height_map):
-                    # print("Gradient > Threshold")
-                    return True
-            except IndexError:
-                return False
+    :param segment: Segment of 2 points
+    :param height_threshold: Height threshold to check
+    :param height_map: Height_map_gray
+    :return: True if the segment or the gradient is too high, False otherwise
+    """
+    # Get the interpolated points along the segment
+    points = linear_interpolate(segment, 30)
 
-            iteration += 1
+    for i in range(len(points) - 1):
+        x1, y1 = points[i]
+        x2, y2 = points[i + 1]
+        height_value1 = height_map[y1][x1]
+        height_value2 = height_map[y2][x2]
+        point1 = (x1, y1)
+        point2 = (x2, y2)
 
-    except IndexError:
-        # print("Check Too High Index Error")
-        return True
+        if (height_value1 > height_threshold
+                or height_value2 > height_threshold
+                or check_gradient(point1, point2, height_map)):
+            return True
 
     return False
 
@@ -99,11 +100,3 @@ def check_bridge(segment, water_map):
         return True
     else:
         return False
-
-
-# Apply cost multiplier to the segment distance
-def bridge_cost(segment):
-    x1, y1 = segment.start_vert.position
-    x2, y2 = segment.end_vert.position
-    distance = get_distance((x1, y1), (x2, y2))
-    return distance * 3.33
