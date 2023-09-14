@@ -10,6 +10,7 @@ from src.utilities import get_distance
 
 WEIGHT_FACTOR = 30
 
+
 def heuristic(point_n, point_goal):
     return get_distance(point_n, point_goal)
 
@@ -97,7 +98,7 @@ def generate_a_star_road(path):
 def get_all_a_star_roads(population_centres):
     segments = []
     edges = get_edges_mst(population_centres)
-    
+
     for edge in edges:
         node1Idx, node2Idx = edge
         x1, y1, *_ = population_centres[node1Idx]
@@ -105,7 +106,7 @@ def get_all_a_star_roads(population_centres):
         # path = generate_a_star_road([(x1, y1), (x2, y2)])
         path = generate_a_star_road(a_star_search((x1, y1), (x2, y2)))
         segments.append(path)
-        
+
     return segments
 
 
@@ -128,11 +129,11 @@ def get_edges_mst(nodes):
         for j in range(i + 1, len(nodes)):
             weight_i = nodes[i][2]
             weight_j = nodes[j][2]
-            distance = ((nodes[i][0] - nodes[j][0])**2 + (nodes[i][1] - nodes[j][1])**2)**0.5
-            weighted_dist = distance - WEIGHT_FACTOR * (weight_i + weight_j) # Less cost for more important nodes so we make sure they are connected
+            distance = get_distance(nodes[i], nodes[j])
+            weighted_dist = distance - WEIGHT_FACTOR * (weight_i + weight_j)  # Less cost for more important nodes so we make sure they are connected
             G.add_edge(i, j, weight=weighted_dist)
 
     # Find the Minimum Spanning Tree
     mst = nx.minimum_spanning_tree(G)
-    
+
     return mst.edges()
