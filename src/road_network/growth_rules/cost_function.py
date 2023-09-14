@@ -70,29 +70,22 @@ def linear_interpolate(segment, num_points=10):
 
 
 def check_water(segment, water_map):
-    try:
-        # Get the interpolated points along the segment
-        points = linear_interpolate(segment, 30)
-        iteration = 0
-        for x1, y1 in points:
-            water_value1 = water_map[y1][x1]
-            if water_value1 >= 250:
-                return True
+    """
+    Check if the segment intersects with water.
 
-            try:
-                x2, y2 = points[iteration + 1]
-                x2, y2 = int(round(x2)), int(round(y2))
-                water_value2 = water_map[y2][x2]
-                if water_value2 >= 250:
-                    return True
+    :param segment: A Segment
+    :param water_map: Water_map_gray
+    :return: True if the segment intersects with water, False otherwise
+    """
+    # Get the interpolated points along the segment
+    points = linear_interpolate(segment, 30)
 
-            except IndexError:
-                return False
+    for x, y in points:
+        water_value1 = water_map[y][x]
+        if water_value1 >= 250:
+            return True
 
-            iteration += 1
-
-    except IndexError:
-        return True
+    return False
 
 
 def check_bridge(segment, water_map):
