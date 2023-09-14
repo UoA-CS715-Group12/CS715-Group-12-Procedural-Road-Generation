@@ -159,6 +159,13 @@ def get_distance(point1, point2):
     return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
 
 
+def get_change_in_height(point1, point2, height_map):
+    """
+    Get the change in height between two points.
+    """
+    return abs(height_map[point1[1], point1[0]] - height_map[point2[1], point2[0]])
+
+
 def get_first_n_population_centres(pop_density_centres, number):
     results = []
     for i in range(number):

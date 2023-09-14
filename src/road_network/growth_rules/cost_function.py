@@ -1,7 +1,7 @@
 import math
 import os
 from math import inf
-from src.utilities import parse_image, get_distance
+from src.utilities import parse_image, get_distance, get_change_in_height
 from src.utilities import rgb2gray
 
 
@@ -17,7 +17,7 @@ def check_gradient(point1, point2, height_map, gradient_threshold=7):
     """
     # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
     distance = get_distance(point1, point2)
-    change_in_height = abs(height_map[point1[1], point1[0]] - height_map[point2[1], point2[0]])
+    change_in_height = get_change_in_height(point1, point2, height_map)
     gradient = float(change_in_height) / distance
 
     if gradient > gradient_threshold:

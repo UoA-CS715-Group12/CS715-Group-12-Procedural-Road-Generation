@@ -1,3 +1,4 @@
+import math
 from queue import PriorityQueue
 import numpy as np
 import networkx as nx
@@ -7,7 +8,7 @@ from src.config_manager import ConfigManager
 from src.road_network.growth_rules.cost_function import check_water
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
-from src.utilities import get_distance
+from src.utilities import get_distance, get_change_in_height
 
 WEIGHT_FACTOR = 30
 
@@ -28,13 +29,13 @@ def cost_function(point1, point2, previous_point):
 
     # TODO: Nick
     if check_water(Segment(segment_array=[point1, point2]), water_map):
-        return 10
+        road_type_cost_ratio = 1
     else:
-        return 1
+        road_type_cost_ratio = 1
 
     # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
     distance = get_distance(point1, point2)
-    change_in_height = abs(height_map[point1[1], point1[0]] - height_map[point2[1], point2[0]])
+    change_in_height = get_change_in_height(point1, point2, height_map)
 
     if previous_point is None:
         return change_in_height * distance
@@ -51,7 +52,8 @@ def cost_function(point1, point2, previous_point):
     else:
         ratio = 500
 
-    cost = change_in_height * distance * (1 + angle_deg / 10) * ratio
+    cost = change_in_height * distance * road_type_cost_ratio * (1 + angle_deg / 10) * ratio
+    cost = change_in_height * distance * road_type_cost_ratio
 
     return cost
 
