@@ -102,10 +102,12 @@ def get_all_a_star_roads(population_centres):
         node1Idx, node2Idx = edge
         x1, y1, *_ = population_centres[node1Idx]
         x2, y2, *_ = population_centres[node2Idx]
-        path = generate_a_star_road([(x1, y1), (x2, y2)]) # TODO: Add A star search between each pair of centres
+        # path = generate_a_star_road([(x1, y1), (x2, y2)])
+        path = generate_a_star_road(a_star_search((x1, y1), (x2, y2)))
         segments.append(path)
         
     return segments
+
 
 def get_edges_mst(nodes):
     """ Returns a graph consisting of edges and nodes based on the population density centre nodes
