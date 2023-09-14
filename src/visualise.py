@@ -19,24 +19,23 @@ class Visualiser:
         #     self.iteration_counter += 1
         visualise(self.map_array, self.road_network, self.major_lines, self.minor_lines, self.fig, self.ax, self.land_usages)
 
+
 def init_plot():
     fig, ax = plt.subplots()
     ax.axis('equal')
     major_lines = LineCollection([], linewidths=[1.0], colors=[[200, 100, 100, 1]])
-    minor_lines = LineCollection([], linewidths=[0.6], colors=[[70,200, 0, 0.8]])
+    minor_lines = LineCollection([], linewidths=[0.6], colors=[[70, 200, 0, 0.8]])
 
     ax.add_collection(major_lines)
     ax.add_collection(minor_lines)
 
     plt.ion()  # Turn on interactive mode
     plt.show()
-    
+
     return fig, ax, major_lines, minor_lines
 
 
-def visualise(map_array, road_network, major_lines, minor_lines, fig, ax, land_usages=None,):
-
-
+def visualise(map_array, road_network, major_lines, minor_lines, fig, ax, land_usages=None):
     major_segment_coords = [np.array([segment.start_vert.position, segment.end_vert.position]) for segment in road_network if not segment.is_minor_road]
     minor_segment_coords = [np.array([segment.start_vert.position, segment.end_vert.position]) for segment in road_network if segment.is_minor_road]
 
