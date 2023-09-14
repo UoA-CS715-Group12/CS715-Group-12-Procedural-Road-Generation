@@ -5,6 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 from src.config_manager import ConfigManager
+from src.road_network.growth_rules.cost_function import check_water
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
 from src.utilities import get_distance
@@ -16,10 +17,21 @@ def heuristic(point_n, point_goal):
     return get_distance(point_n, point_goal)
 
 
-def cost_function(point1, point2, previous_point, height_map):
+def cost_function(point1, point2, previous_point):
     # TODO: Implement cost function for A Star using the road economic factors, elevation changes
     # TODO: Roads should be able to form bridges over water if the cost is less than taking the long way round
     # TODO: Roads should consider the costs of generating roads through or over elevation changes
+    config = ConfigManager()
+    height_map = config.height_map_gray
+    water_map = config.water_map_gray
+
+    return 1
+
+    # TODO: Nick
+    if check_water(Segment(segment_array=[point1, point2]), water_map):
+        return 10
+    else:
+        return 1
 
     # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
     distance = get_distance(point1, point2)
@@ -81,7 +93,7 @@ def a_star_search(start, goal):
             x, y = neighbor
             # Check if the neighbor is in the grid and is not an obstacle
             if 0 <= x < np.shape(config.water_map_gray)[1] and 0 <= y < np.shape(config.water_map_gray)[0]:
-                new_g_cost = g_cost[current] + cost_function(current, neighbor, came_from[current], config.height_map_gray)
+                new_g_cost = g_cost[current] + cost_function(current, neighbor, came_from[current])
                 priority = new_g_cost + heuristic(neighbor, goal)
 
                 if neighbor not in f_value or priority < f_value[neighbor]:
