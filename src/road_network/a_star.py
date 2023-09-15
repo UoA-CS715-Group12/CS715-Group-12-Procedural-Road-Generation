@@ -11,6 +11,7 @@ from src.road_network.segment import Segment
 from src.utilities import get_distance, get_change_in_height
 
 WEIGHT_FACTOR = 30
+NEIGHBOR_RANGE = 15
 
 
 def heuristic(point_n, point_goal):
@@ -88,7 +89,7 @@ def a_star_search(start, goal):
             path.reverse()
             return path
 
-        neighbors = get_neighbors(current, 15)
+        neighbors = get_neighbors(current, NEIGHBOR_RANGE)
 
         for neighbor in neighbors:
             x, y = neighbor

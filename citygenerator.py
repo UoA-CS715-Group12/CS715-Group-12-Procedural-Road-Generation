@@ -29,7 +29,7 @@ from src.utilities import *
 # If show_time is true, the process time required to generate the intermediate representation is shown.
 # If show_stats is true, the statistics used to evaluate the representation are shown
 def run_computations(config, road_network, vertex_dict, visualiser):
-    rng.generate_major_roads(config, road_network, vertex_dict, visualiser) # Uncomment if we want to generate Major roads again from the output from the MST algorithm
+    rng.generate_major_roads(config, road_network, vertex_dict, visualiser)  # Uncomment if we want to generate Major roads again from the output from the MST algorithm
     rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
 
 
