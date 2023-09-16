@@ -13,45 +13,41 @@ from src.utilities import get_distance, get_change_in_height, get_angle
 WEIGHT_FACTOR = 30
 NEIGHBOR_RANGE = 15
 
+# Road cost ($?k/m)
+HIGHWAY_COST = 26.4
+BRIDGE_COST = 3330
+
 
 def heuristic(point_n, point_goal):
     return get_distance(point_n, point_goal)
 
 
-def cost_function(point1, point2, previous_point):
+def get_road_cost(point1, point2):
+    """
+    Get the cost of the road between 2 points.
+
+    :param point1: 1st point
+    :param point2: 2nd point
+    :return: Cost of the road
+    """
+    config = ConfigManager()
+    water_map = config.water_map_gray
+
+    if check_water(Segment(segment_array=[point1, point2]), water_map):
+        return BRIDGE_COST
+    else:
+        return HIGHWAY_COST
+
+
+def cost_function(point1, point2):
     # TODO: Implement cost function for A Star using the road economic factors, elevation changes
     # TODO: Roads should be able to form bridges over water if the cost is less than taking the long way round
     # TODO: Roads should consider the costs of generating roads through or over elevation changes
 
-    # TODO: distance * cost (https://docs.google.com/document/d/1hubDsC2LHeh9kCDam7XYKIemslLm6zdu7flQqzW9zCA/edit?pli=1#heading=h.e2eoze7bae2)
-    # TODO: normal road and bridge
-    config = ConfigManager()
-    height_map = config.height_map_gray
-    water_map = config.water_map_gray
-
-    return 1
-
-    # TODO: Nick
-    if check_water(Segment(segment_array=[point1, point2]), water_map):
-        road_type_cost_ratio = 100
-    else:
-        road_type_cost_ratio = 1
-
-    # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
     distance = get_distance(point1, point2)
-    change_in_height = get_change_in_height(point1, point2, height_map)
+    cost = get_road_cost(point1, point2)
 
-    angle_deg = get_angle(previous_point, point1, point2)
-
-    if angle_deg < 10:
-        curvature_ratio = 1
-    else:
-        curvature_ratio = 500
-
-    # cost = change_in_height * distance * road_type_cost_ratio * (1 + angle_deg / 10) * curvature_ratio
-    cost = road_type_cost_ratio
-
-    return cost
+    return distance * cost
 
 
 def a_star_search(start, goal):
@@ -90,7 +86,7 @@ def a_star_search(start, goal):
             x, y = neighbor
             # Check if the neighbor is in the grid and is not an obstacle
             if 0 <= x < np.shape(config.water_map_gray)[1] and 0 <= y < np.shape(config.water_map_gray)[0]:
-                new_g_cost = g_cost[current] + cost_function(current, neighbor, came_from[current])
+                new_g_cost = g_cost[current] + cost_function(current, neighbor)
                 priority = new_g_cost + heuristic(neighbor, goal)
 
                 if neighbor not in f_value or priority < f_value[neighbor]:
