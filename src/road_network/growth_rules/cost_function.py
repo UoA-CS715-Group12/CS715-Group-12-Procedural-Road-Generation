@@ -90,6 +90,11 @@ def check_water(segment, water_map):
 
 
 def check_bridge(segment, water_map):
+    """
+    Deprecate soon.
+
+    TODO: Remove this function if it is not used.
+    """
     has_water = check_water(segment, water_map)
     if not has_water:
         return False
