@@ -22,30 +22,28 @@ def heuristic(point_n, point_goal):
     return get_distance(point_n, point_goal)
 
 
-def get_road_cost(point1, point2):
+def get_road_cost(point1, point2, water_map):
     """
     Get the cost of the road between 2 points.
 
     :param point1: 1st point
     :param point2: 2nd point
+    :param water_map: Water_map_gray
     :return: Cost of the road
     """
-    config = ConfigManager()
-    water_map = config.water_map_gray
-
     if check_water(Segment(segment_array=[point1, point2]), water_map):
         return BRIDGE_COST
     else:
         return HIGHWAY_COST
 
 
-def cost_function(point1, point2):
+def cost_function(point1, point2, water_map):
     # TODO: Implement cost function for A Star using the road economic factors, elevation changes
     # TODO: Roads should be able to form bridges over water if the cost is less than taking the long way round
     # TODO: Roads should consider the costs of generating roads through or over elevation changes
 
     distance = get_distance(point1, point2)
-    cost = get_road_cost(point1, point2)
+    cost = get_road_cost(point1, point2, water_map)
 
     return distance * cost
 
@@ -86,7 +84,7 @@ def a_star_search(start, goal):
             x, y = neighbor
             # Check if the neighbor is in the grid and is not an obstacle
             if 0 <= x < np.shape(config.water_map_gray)[1] and 0 <= y < np.shape(config.water_map_gray)[0]:
-                new_g_cost = g_cost[current] + cost_function(current, neighbor)
+                new_g_cost = g_cost[current] + cost_function(current, neighbor, config.water_map_gray)
                 priority = new_g_cost + heuristic(neighbor, goal)
 
                 if neighbor not in f_value or priority < f_value[neighbor]:
