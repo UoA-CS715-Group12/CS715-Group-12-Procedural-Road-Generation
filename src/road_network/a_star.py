@@ -22,6 +22,9 @@ def cost_function(point1, point2, previous_point):
     # TODO: Implement cost function for A Star using the road economic factors, elevation changes
     # TODO: Roads should be able to form bridges over water if the cost is less than taking the long way round
     # TODO: Roads should consider the costs of generating roads through or over elevation changes
+
+    # TODO: distance * cost (https://docs.google.com/document/d/1hubDsC2LHeh9kCDam7XYKIemslLm6zdu7flQqzW9zCA/edit?pli=1#heading=h.e2eoze7bae2)
+    # TODO: normal road and bridge
     config = ConfigManager()
     height_map = config.height_map_gray
     water_map = config.water_map_gray
