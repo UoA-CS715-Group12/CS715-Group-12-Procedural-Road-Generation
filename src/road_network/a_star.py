@@ -8,7 +8,7 @@ from src.config_manager import ConfigManager
 from src.road_network.growth_rules.cost_function import check_water
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
-from src.utilities import get_distance, get_change_in_height
+from src.utilities import get_distance, get_change_in_height, get_angle
 
 WEIGHT_FACTOR = 30
 NEIGHBOR_RANGE = 15
@@ -30,7 +30,7 @@ def cost_function(point1, point2, previous_point):
 
     # TODO: Nick
     if check_water(Segment(segment_array=[point1, point2]), water_map):
-        road_type_cost_ratio = 1
+        road_type_cost_ratio = 100
     else:
         road_type_cost_ratio = 1
 
@@ -38,23 +38,15 @@ def cost_function(point1, point2, previous_point):
     distance = get_distance(point1, point2)
     change_in_height = get_change_in_height(point1, point2, height_map)
 
-    if previous_point is None:
-        return change_in_height * distance
-
-    # Calculate slopes
-    m1 = (point2[1] - point1[1]) / (point2[0] - point1[0] + 1e-6)
-    m2 = (point1[1] - previous_point[1]) / (point1[0] - previous_point[0] + 1e-6)
-    # Calculate the angle in radians and degrees
-    angle_rad = abs(math.atan((m2 - m1) / (1 + m1 * m2 + 1e-6)))
-    angle_deg = math.degrees(angle_rad)
+    angle_deg = get_angle(previous_point, point1, point2)
 
     if angle_deg < 10:
-        ratio = 1
+        curvature_ratio = 1
     else:
-        ratio = 500
+        curvature_ratio = 500
 
-    cost = change_in_height * distance * road_type_cost_ratio * (1 + angle_deg / 10) * ratio
-    cost = change_in_height * distance * road_type_cost_ratio
+    # cost = change_in_height * distance * road_type_cost_ratio * (1 + angle_deg / 10) * curvature_ratio
+    cost = road_type_cost_ratio
 
     return cost
 

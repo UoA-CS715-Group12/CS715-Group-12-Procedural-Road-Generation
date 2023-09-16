@@ -166,6 +166,48 @@ def get_change_in_height(point1, point2, height_map):
     return abs(height_map[point1[1], point1[0]] - height_map[point2[1], point2[0]])
 
 
+def get_angle(point0, point1, point2):
+    """
+    Get the angle between two vectors.
+    1st vector is point0 -> point1.
+    2nd vector is point1 -> point2.
+    Point is in the form (x, y).
+
+    Example angle calculation: https://www.desmos.com/geometry/e1x1yam26h
+
+    :param point0:
+    :param point1: Angle at this point
+    :param point2:
+    :return: Degrees rounded to 2dp in the range of [0, 180]
+    """
+    # Define the three points as tuples (x, y)
+    x0, y0 = point0
+    x1, y1 = point1
+    x2, y2 = point2
+
+    # Calculate the vectors representing the two lines
+    vector1 = (x1 - x0, y1 - y0)
+    vector2 = (x2 - x1, y2 - y1)
+
+    # Calculate the dot product of the two vectors
+    dot_product = vector1[0] * vector2[0] + vector1[1] * vector2[1]
+
+    # Calculate the magnitudes (lengths) of the vectors
+    magnitude1 = math.sqrt(vector1[0] ** 2 + vector1[1] ** 2)
+    magnitude2 = math.sqrt(vector2[0] ** 2 + vector2[1] ** 2)
+
+    # Calculate the cosine of the angle between the two lines using the dot product
+    cosine_theta = dot_product / (magnitude1 * magnitude2)
+
+    # Calculate the angle in radians
+    theta_rad = math.acos(cosine_theta)
+
+    # Convert the angle to degrees
+    theta_deg = math.degrees(theta_rad)
+
+    return round(theta_deg, 2)
+
+
 def get_first_n_population_centres(pop_density_centres, number):
     results = []
     for i in range(number):
