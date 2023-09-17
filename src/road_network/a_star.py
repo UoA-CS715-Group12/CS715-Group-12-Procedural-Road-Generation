@@ -81,9 +81,8 @@ def a_star_search(start, goal):
         neighbors = get_neighbors(current, NEIGHBOR_RANGE)
 
         for neighbor in neighbors:
-            x, y = neighbor
-            # Check if the neighbor is in the grid and is not an obstacle
-            if 0 <= x < np.shape(config.water_map_gray)[1] and 0 <= y < np.shape(config.water_map_gray)[0]:
+            # Check if the neighbor is in the grid
+            if config.is_in_the_map(neighbor):
                 new_g_cost = g_cost[current] + cost_function(current, neighbor, config.water_map_gray)
                 priority = new_g_cost + heuristic(neighbor, goal)
 
