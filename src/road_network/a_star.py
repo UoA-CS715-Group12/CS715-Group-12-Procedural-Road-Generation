@@ -63,7 +63,6 @@ def a_star_search(start, goal):
     frontier.put((0, start))
     came_from = {start: None}
     g_cost = {start: 0}
-    f_value = {start: 0}
 
     while not frontier.empty():
         current_priority, current = frontier.get()
@@ -86,9 +85,8 @@ def a_star_search(start, goal):
                 new_g_cost = g_cost[current] + cost_function(current, neighbor, config.water_map_gray)
                 priority = new_g_cost + heuristic(neighbor, goal)
 
-                if neighbor not in f_value or priority < f_value[neighbor]:
+                if neighbor not in g_cost or new_g_cost < g_cost[neighbor]:
                     g_cost[neighbor] = new_g_cost
-                    f_value[neighbor] = priority
                     frontier.put((priority, neighbor))
                     came_from[neighbor] = current
 
