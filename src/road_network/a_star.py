@@ -2,10 +2,9 @@ import math
 from queue import PriorityQueue
 import numpy as np
 import networkx as nx
-import matplotlib.pyplot as plt
 
 from src.config_manager import ConfigManager
-from src.road_network.growth_rules.cost_function import check_water
+from src.road_network.growth_rules.cost_function import check_water, check_curvature
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
 from src.utilities import get_distance, get_change_in_height, get_angle
@@ -80,8 +79,8 @@ def a_star_search(start, goal):
         neighbors = get_neighbors(current, NEIGHBOR_RANGE)
 
         for neighbor in neighbors:
-            # Check if the neighbor is in the grid
-            if config.is_in_the_map(neighbor):
+            # Check if the neighbor is in the grid and the road is not too curvy
+            if config.is_in_the_map(neighbor) and not check_curvature(came_from[current], current, neighbor, 90):
                 new_g_cost = g_cost[current] + cost_function(current, neighbor, config.water_map_gray)
                 priority = new_g_cost + heuristic(neighbor, goal)
 

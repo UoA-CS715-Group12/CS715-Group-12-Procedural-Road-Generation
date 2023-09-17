@@ -1,7 +1,7 @@
 import math
 import os
 from math import inf
-from src.utilities import parse_image, get_distance, get_change_in_height
+from src.utilities import parse_image, get_distance, get_change_in_height, get_angle
 from src.utilities import rgb2gray
 
 
@@ -105,3 +105,17 @@ def check_bridge(segment, water_map):
         return True
     else:
         return False
+
+
+def check_curvature(point0, point1, point2, degree_threshold=90):
+    """
+    Check if the angle between the 3 points is too high.
+    Or in other words, check if the road have sharp turns
+
+    :param point0:
+    :param point1:
+    :param point2:
+    :param degree_threshold: Determine how sharp the turn is
+    :return: True if the angle is too high, False otherwise
+    """
+    return get_angle(point0, point1, point2) > degree_threshold

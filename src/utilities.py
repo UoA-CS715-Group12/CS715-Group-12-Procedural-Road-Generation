@@ -180,6 +180,10 @@ def get_angle(point0, point1, point2):
     :param point2:
     :return: Degrees rounded to 2dp in the range of [0, 180]
     """
+    # There is no angle
+    if point0 is None:
+        return 0
+
     # Define the three points as tuples (x, y)
     x0, y0 = point0
     x1, y1 = point1
@@ -198,6 +202,9 @@ def get_angle(point0, point1, point2):
 
     # Calculate the cosine of the angle between the two lines using the dot product
     cosine_theta = dot_product / (magnitude1 * magnitude2)
+
+    # Clamp the value between -1 and 1
+    cosine_theta = max(-1, min(1, cosine_theta))
 
     # Calculate the angle in radians
     theta_rad = math.acos(cosine_theta)
