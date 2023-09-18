@@ -50,7 +50,7 @@ def a_star_search(start, goal):
         for neighbor in neighbors:
             # Check if the neighbor is in the grid and the road is not too curvy
             if config.is_in_the_map(neighbor) and not check_curvature(came_from[current], current, neighbor, 90):
-                new_g_cost = g_cost[current] + cost_function(current, neighbor, config.water_map_gray)
+                new_g_cost = g_cost[current] + cost_function(current, neighbor, config)
                 priority = new_g_cost + heuristic(neighbor, goal)
 
                 if neighbor not in g_cost or new_g_cost < g_cost[neighbor]:

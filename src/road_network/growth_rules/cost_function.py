@@ -1,9 +1,12 @@
 import math
+
+from src.config_manager import ConfigManager
 from src.road_network.segment import Segment
 from src.utilities import get_distance, get_change_in_height, get_angle
 
 # Road cost ($?M/m)
 HIGHWAY_COST = 0.0264
+TUNNEL_COST = 0.625
 BRIDGE_COST = 3.33
 
 
@@ -143,27 +146,31 @@ def check_curvature(point0, point1, point2, degree_threshold=90):
     return get_angle(point0, point1, point2) > degree_threshold
 
 
-def cost_function(point1, point2, water_map):
+def cost_function(point1, point2, config):
     # TODO: Implement cost function for A Star using the road economic factors, elevation changes
     # TODO: Roads should be able to form bridges over water if the cost is less than taking the long way round
     # TODO: Roads should consider the costs of generating roads through or over elevation changes
 
     distance = get_distance(point1, point2)
-    cost = get_road_cost(point1, point2, water_map)
+    cost = get_road_cost(point1, point2, config)
 
     return distance * cost
 
 
-def get_road_cost(point1, point2, water_map):
+def get_road_cost(point1, point2, config):
     """
     Get the cost of the road between 2 points.
 
     :param point1: 1st point
     :param point2: 2nd point
-    :param water_map: Water_map_gray
+    :param config: ConfigManager
     :return: Cost of the road
     """
-    if check_water(Segment(segment_array=[point1, point2]), water_map):
+    segment = Segment(segment_array=[point1, point2])
+
+    if check_water(segment, config.water_map_gray):
         return BRIDGE_COST
+    elif check_gradient(segment, 7, config.height_map_gray):
+        return TUNNEL_COST
     else:
         return HIGHWAY_COST
