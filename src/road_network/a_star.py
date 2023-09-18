@@ -31,6 +31,7 @@ def a_star_search(start, goal):
     frontier.put((0, start))
     came_from = {start: None}
     g_cost = {start: 0}
+
     while not frontier.empty():
         current_priority, current = frontier.get()
 

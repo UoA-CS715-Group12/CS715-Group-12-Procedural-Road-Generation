@@ -1,14 +1,11 @@
 import math
-import os
-from math import inf
 from src.road_network.segment import Segment
+from src.utilities import get_distance, get_change_in_height, get_angle
 
-from src.utilities import parse_image, get_distance, get_change_in_height, get_angle
-from src.utilities import rgb2gray
-
-# Road cost ($?k/m)
+# Road cost ($?M/m)
 HIGHWAY_COST = 0.0264
 BRIDGE_COST = 3.33
+
 
 def check_gradient_points(point1, point2, height_map, gradient_threshold=7):
     """
@@ -40,7 +37,7 @@ def check_gradient(segment, gradient_threshold, height_map):
     :param height_map: Height_map_gray
     :return: True if the gradient is too high, False otherwise
     """
-    points = linear_interpolate(segment, 30)
+    points = linear_interpolate(segment)
 
     for i in range(len(points) - 1):
         if check_gradient_points(points[i], points[i + 1], height_map, gradient_threshold):
@@ -59,7 +56,6 @@ def check_too_high(segment, height_threshold, height_map):
     :return: True if the segment or the gradient is too high, False otherwise
     """
     # Get the interpolated points along the segment
-    # points = linear_interpolate(segment, 30)
     points = linear_interpolate(segment)
 
     for i in range(len(points) - 1):
@@ -105,6 +101,7 @@ def check_water(segment, water_map):
     """
     # Get the interpolated points along the segment
     points = linear_interpolate(segment)
+    
     for x, y in points:
         water_value1 = water_map[y][x]
         if water_value1 >= 250:
