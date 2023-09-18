@@ -75,9 +75,10 @@ def check_too_high(segment, height_threshold, height_map):
 
 
 def linear_interpolate(segment):
-    num_points = math.floor(get_distance(segment.start_vert.position, segment.end_vert.position))
-    x1, y1 = segment.start_vert.position
-    x2, y2 = segment.end_vert.position
+    start_point, end_point = segment.start_vert.position, segment.end_vert.position
+    num_points = math.floor(get_distance(start_point, end_point))
+    x1, y1 = start_point
+    x2, y2 = end_point
 
     points = []
     for i in range(num_points + 1):
@@ -101,7 +102,7 @@ def check_water(segment, water_map):
     """
     # Get the interpolated points along the segment
     points = linear_interpolate(segment)
-    
+
     for x, y in points:
         water_value1 = water_map[y][x]
         if water_value1 >= 250:

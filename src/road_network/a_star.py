@@ -9,7 +9,7 @@ from src.road_network.segment import Segment
 from src.utilities import get_distance
 
 WEIGHT_FACTOR = 30
-NEIGHBOR_RANGE = 1
+NEIGHBOR_RANGE = 4
 
 
 def heuristic(point_n, point_goal):
