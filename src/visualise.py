@@ -23,8 +23,8 @@ class Visualiser:
 def init_plot():
     fig, ax = plt.subplots()
     ax.axis('equal')
-    major_lines = LineCollection([], linewidths=[1.0], colors=[[200, 100, 100, 1]])
-    minor_lines = LineCollection([], linewidths=[0.6], colors=[[70, 200, 0, 0.8]])
+    major_lines = LineCollection([], linewidths=[1.0], colors=[[0.2, 0.6, 0.6, 1]])
+    minor_lines = LineCollection([], linewidths=[0.6], colors=[[0.6, 0.2, 0, 0.8]])
 
     ax.add_collection(major_lines)
     ax.add_collection(minor_lines)
