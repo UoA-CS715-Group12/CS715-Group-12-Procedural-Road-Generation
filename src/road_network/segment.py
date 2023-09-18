@@ -1,8 +1,10 @@
 import numpy as np
 from src.road_network.vertex import Vertex
+from src.utilities import RoadTypes
+
 
 class Segment:
-    def __init__(self, segment_start=None, segment_end=None, segment_array=None):
+    def __init__(self, segment_start=None, segment_end=None, segment_array=None, road_type=RoadTypes.MINOR):
         if segment_start and segment_end:
             self.start_vert = segment_start
             self.end_vert = segment_end
@@ -12,7 +14,8 @@ class Segment:
         else:
             raise ValueError("segment start and end or segment array must be supplied!")
         self.is_minor_road = False
-    
+        self.road_type = road_type
+
     @classmethod
     def from_verts(cls, start_vert, end_vert):
         return cls(np.array([start_vert.position, end_vert.position]))
@@ -25,4 +28,4 @@ class Segment:
 
     def __eq__(self, other):
         return ((self.start_vert == other.start_vert and self.end_vert == other.end_vert)
-             or (self.start_vert == other.end_vert and self.end_vert == other.start_vert))
+                or (self.start_vert == other.end_vert and self.end_vert == other.start_vert))

@@ -2,7 +2,7 @@ import math
 
 from src.config_manager import ConfigManager
 from src.road_network.segment import Segment
-from src.utilities import get_distance, get_change_in_height, get_angle
+from src.utilities import get_distance, get_change_in_height, get_angle, RoadTypes
 
 # Road cost ($?M/m)
 HIGHWAY_COST = 0.0264
@@ -166,11 +166,30 @@ def get_road_cost(point1, point2, config):
     :param config: ConfigManager
     :return: Cost of the road
     """
-    segment = Segment(segment_array=[point1, point2])
+    road_type = get_road_type(point1, point2, config)
 
-    if check_water(segment, config.water_map_gray):
+    if road_type == RoadTypes.BRIDGE:
         return BRIDGE_COST
-    elif check_gradient(segment, 7, config.height_map_gray):
+    elif road_type == RoadTypes.TUNNEL:
         return TUNNEL_COST
     else:
         return HIGHWAY_COST
+
+
+def get_road_type(point1, point2, config):
+    """
+    Get the type of the road between 2 points.
+
+    :param point1: 1st point
+    :param point2: 2nd point
+    :param config: ConfigManager
+    :return: Road type
+    """
+    segment = Segment(segment_array=[point1, point2])
+
+    if check_water(segment, config.water_map_gray):
+        return RoadTypes.BRIDGE
+    elif check_gradient(segment, 7, config.height_map_gray):
+        return RoadTypes.TUNNEL
+    else:
+        return RoadTypes.HIGHWAY

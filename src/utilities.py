@@ -1,9 +1,18 @@
 import math
+from enum import Enum
+
 import numpy as np
 from PIL import Image
 import skimage.morphology
 from osgeo import gdal
 import json
+
+
+class RoadTypes(Enum):
+    BRIDGE = "bridge"
+    TUNNEL = "tunnel"
+    HIGHWAY = "highway"
+    MINOR = "minor"
 
 
 # INPUT:    String

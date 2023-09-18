@@ -3,13 +3,13 @@ import numpy as np
 import networkx as nx
 
 from src.config_manager import ConfigManager
-from src.road_network.growth_rules.cost_function import check_curvature, cost_function
+from src.road_network.growth_rules.cost_function import check_curvature, cost_function, get_road_type
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
 from src.utilities import get_distance
 
 WEIGHT_FACTOR = 30
-NEIGHBOR_RANGE = 4
+NEIGHBOR_RANGE = 1
 
 
 def heuristic(point_n, point_goal):
@@ -88,12 +88,14 @@ def generate_a_star_road(path):
     :param path: An array of vertices
     :return: An array of segments
     """
+    config = ConfigManager()
     segments = []
 
     for i in range(len(path) - 1):
         x1, y1 = path[i]
         x2, y2 = path[i + 1]
-        segment = Segment(segment_start=Vertex(np.array([x1, y1])), segment_end=Vertex(np.array([x2, y2])))
+        road_type = get_road_type(path[i], path[i + 1], config)
+        segment = Segment(segment_start=Vertex(np.array([x1, y1])), segment_end=Vertex(np.array([x2, y2])), road_type=road_type)
 
         segments.append(segment)
 
