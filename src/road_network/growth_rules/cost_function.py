@@ -5,7 +5,7 @@ from src.utilities import parse_image, get_distance, get_change_in_height, get_a
 from src.utilities import rgb2gray
 
 
-def check_gradient(point1, point2, height_map, gradient_threshold=7):
+def check_gradient_points(point1, point2, height_map, gradient_threshold=7):
     """
     Check if the gradient between two points is too high.
 
@@ -24,6 +24,24 @@ def check_gradient(point1, point2, height_map, gradient_threshold=7):
         return True
     else:
         return False
+
+
+def check_gradient(segment, gradient_threshold, height_map):
+    """
+    Check if the gradient of the segment is too high.
+
+    :param segment:
+    :param gradient_threshold: Threshold to check for the gradient
+    :param height_map: Height_map_gray
+    :return: True if the gradient is too high, False otherwise
+    """
+    points = linear_interpolate(segment, 30)
+
+    for i in range(len(points) - 1):
+        if check_gradient_points(points[i], points[i + 1], height_map, gradient_threshold):
+            return True
+
+    return False
 
 
 def check_too_high(segment, height_threshold, height_map):
@@ -48,7 +66,7 @@ def check_too_high(segment, height_threshold, height_map):
 
         if (height_value1 > height_threshold
                 or height_value2 > height_threshold
-                or check_gradient(point1, point2, height_map)):
+                or check_gradient_points(point1, point2, height_map)):
             return True
 
     return False
