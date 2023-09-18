@@ -1,9 +1,14 @@
 import math
 import os
 from math import inf
+from src.road_network.segment import Segment
+
 from src.utilities import parse_image, get_distance, get_change_in_height, get_angle
 from src.utilities import rgb2gray
 
+# Road cost ($?k/m)
+HIGHWAY_COST = 0.0264
+BRIDGE_COST = 3.33
 
 def check_gradient(point1, point2, height_map, gradient_threshold=7):
     """
@@ -36,7 +41,8 @@ def check_too_high(segment, height_threshold, height_map):
     :return: True if the segment or the gradient is too high, False otherwise
     """
     # Get the interpolated points along the segment
-    points = linear_interpolate(segment, 30)
+    # points = linear_interpolate(segment, 30)
+    points = linear_interpolate(segment)
 
     for i in range(len(points) - 1):
         x1, y1 = points[i]
@@ -54,7 +60,8 @@ def check_too_high(segment, height_threshold, height_map):
     return False
 
 
-def linear_interpolate(segment, num_points=10):
+def linear_interpolate(segment):
+    num_points = math.floor(get_distance(segment.start_vert.position, segment.end_vert.position))
     x1, y1 = segment.start_vert.position
     x2, y2 = segment.end_vert.position
 
@@ -79,8 +86,7 @@ def check_water(segment, water_map):
     :return: True if the segment intersects with water, False otherwise
     """
     # Get the interpolated points along the segment
-    points = linear_interpolate(segment, 30)
-
+    points = linear_interpolate(segment)
     for x, y in points:
         water_value1 = water_map[y][x]
         if water_value1 >= 250:
@@ -119,3 +125,29 @@ def check_curvature(point0, point1, point2, degree_threshold=90):
     :return: True if the angle is too high, False otherwise
     """
     return get_angle(point0, point1, point2) > degree_threshold
+
+
+def cost_function(point1, point2, water_map):
+    # TODO: Implement cost function for A Star using the road economic factors, elevation changes
+    # TODO: Roads should be able to form bridges over water if the cost is less than taking the long way round
+    # TODO: Roads should consider the costs of generating roads through or over elevation changes
+
+    distance = get_distance(point1, point2)
+    cost = get_road_cost(point1, point2, water_map)
+
+    return distance * cost
+
+
+def get_road_cost(point1, point2, water_map):
+    """
+    Get the cost of the road between 2 points.
+
+    :param point1: 1st point
+    :param point2: 2nd point
+    :param water_map: Water_map_gray
+    :return: Cost of the road
+    """
+    if check_water(Segment(segment_array=[point1, point2]), water_map):
+        return BRIDGE_COST
+    else:
+        return HIGHWAY_COST

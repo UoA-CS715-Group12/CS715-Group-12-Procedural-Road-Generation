@@ -1,50 +1,19 @@
-import math
 from queue import PriorityQueue
 import numpy as np
 import networkx as nx
 
 from src.config_manager import ConfigManager
-from src.road_network.growth_rules.cost_function import check_water, check_curvature
+from src.road_network.growth_rules.cost_function import check_curvature, cost_function
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
-from src.utilities import get_distance, get_change_in_height, get_angle
+from src.utilities import get_distance
 
 WEIGHT_FACTOR = 30
-NEIGHBOR_RANGE = 15
-
-# Road cost ($?k/m)
-HIGHWAY_COST = 26.4
-BRIDGE_COST = 3330
+NEIGHBOR_RANGE = 1
 
 
 def heuristic(point_n, point_goal):
     return get_distance(point_n, point_goal)
-
-
-def get_road_cost(point1, point2, water_map):
-    """
-    Get the cost of the road between 2 points.
-
-    :param point1: 1st point
-    :param point2: 2nd point
-    :param water_map: Water_map_gray
-    :return: Cost of the road
-    """
-    if check_water(Segment(segment_array=[point1, point2]), water_map):
-        return BRIDGE_COST
-    else:
-        return HIGHWAY_COST
-
-
-def cost_function(point1, point2, water_map):
-    # TODO: Implement cost function for A Star using the road economic factors, elevation changes
-    # TODO: Roads should be able to form bridges over water if the cost is less than taking the long way round
-    # TODO: Roads should consider the costs of generating roads through or over elevation changes
-
-    distance = get_distance(point1, point2)
-    cost = get_road_cost(point1, point2, water_map)
-
-    return distance * cost
 
 
 def a_star_search(start, goal):
@@ -62,7 +31,6 @@ def a_star_search(start, goal):
     frontier.put((0, start))
     came_from = {start: None}
     g_cost = {start: 0}
-
     while not frontier.empty():
         current_priority, current = frontier.get()
 
