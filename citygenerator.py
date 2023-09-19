@@ -29,8 +29,15 @@ from src.utilities import *
 # If show_time is true, the process time required to generate the intermediate representation is shown.
 # If show_stats is true, the statistics used to evaluate the representation are shown
 def run_computations(config, road_network, vertex_dict, visualiser):
+    start = time.perf_counter()
     rng.generate_major_roads(config, road_network, vertex_dict, visualiser)
+    end = time.perf_counter()
+    print(f"major roads completed in {end - start:0.4f} seconds")
+
+    start = time.perf_counter()
     rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
+    end = time.perf_counter()
+    print(f"minor roads completed in {end - start:0.4f} seconds")
 
 
 def generate(config_path, show_city=False, show_time=False, show_stats=False, number_of_centres=35):
@@ -44,19 +51,35 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
     print(f"config completed in {end - start:0.4f} seconds")
 
     # Step 1: Grow road network.
-    population_centres = get_first_n_population_centres(config.pop_density_centres,
-                                                        number_of_centres)
+    start = time.perf_counter()
+    population_centres = get_first_n_population_centres(config.pop_density_centres, number_of_centres)
+    end = time.perf_counter()
+    print(f"population centres completed in {end - start:0.4f} seconds")
+
+    # debug !!!!!!!!!!!!!!!!!!
+    population_centres = [(336,415,1),(302,235,1)]
+
+    start = time.perf_counter()
     segments = get_all_a_star_roads(population_centres)
+    end = time.perf_counter()
+    print(f"segments completed in {end - start:0.4f} seconds")
+
+    start = time.perf_counter()
     for path in segments:
         config.axiom.extend(path)
+    end = time.perf_counter()
+    print(f"axiom completed in {end - start:0.4f} seconds")
 
+    start = time.perf_counter()
     road_network, vertex_dict = rng.initialise(config)
+    end = time.perf_counter()
+    print(f"initialise completed in {end - start:0.4f} seconds")
 
     # Step 2: Visualise road network.
     visualiser = Visualiser(config.height_map_rgb, road_network)
-    threading.Thread(target=run_computations,
-                     args=(config, road_network, vertex_dict, visualiser),
-                     daemon=True).start()
+    # threading.Thread(target=run_computations,
+    #                  args=(config, road_network, vertex_dict, visualiser),
+    #                  daemon=True).start()
     while True:
         visualiser.visualise()
 

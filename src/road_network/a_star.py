@@ -116,6 +116,7 @@ def get_all_a_star_roads(population_centres):
         node1Idx, node2Idx = edge
         x1, y1, *_ = population_centres[node1Idx]
         x2, y2, *_ = population_centres[node2Idx]
+        print("processing search from ", (x1, y1), " to ", (x2, y2))
         path = generate_a_star_road(a_star_search((x1, y1), (x2, y2)))
         segments.append(path)
 
