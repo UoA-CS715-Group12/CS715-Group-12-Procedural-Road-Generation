@@ -37,18 +37,22 @@ def init_plot():
 
 
 def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, fig, ax, land_usages=None):
-    bridges_segment_coords = [np.array([segment.start_vert.position, segment.end_vert.position])
-                              for segment in road_network
-                              if segment.road_type == RoadTypes.BRIDGE]
-    tunnels_segment_coords = [np.array([segment.start_vert.position, segment.end_vert.position])
-                              for segment in road_network
-                              if segment.road_type == RoadTypes.TUNNEL]
-    highways_segment_coords = [np.array([segment.start_vert.position, segment.end_vert.position])
-                               for segment in road_network
-                               if segment.road_type == RoadTypes.HIGHWAY]
-    minor_segment_coords = [np.array([segment.start_vert.position, segment.end_vert.position])
-                            for segment in road_network
-                            if segment.road_type == RoadTypes.MINOR]
+    bridges_segment_coords = []
+    tunnels_segment_coords = []
+    highways_segment_coords = []
+    minor_segment_coords = []
+
+    for segment in road_network:
+        coors = np.array([segment.start_vert.position, segment.end_vert.position])
+
+        if segment.road_type == RoadTypes.BRIDGE:
+            bridges_segment_coords.append(coors)
+        elif segment.road_type == RoadTypes.TUNNEL:
+            tunnels_segment_coords.append(coors)
+        elif not segment.is_minor_road:
+            highways_segment_coords.append(coors)
+        else:
+            minor_segment_coords.append(coors)
 
     bridges.set_segments(bridges_segment_coords)
     tunnels.set_segments(tunnels_segment_coords)
