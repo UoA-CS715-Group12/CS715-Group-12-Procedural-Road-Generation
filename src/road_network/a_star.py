@@ -9,7 +9,7 @@ from src.road_network.segment import Segment
 from src.utilities import get_distance
 
 WEIGHT_FACTOR = 30
-NEIGHBOR_RANGE = 15
+NEIGHBOR_RANGE = 6
 BOUNDED_RELAXATION = 3
 
 

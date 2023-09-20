@@ -245,12 +245,16 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
         old_segment_split.is_minor_road = intersecting_segment.is_minor_road
         intersecting_segment.end_vert = new_segment.end_vert
 
-        # We update the dictionary with vertices and their segments to match the new intersection.
-        vertex_added_dict[abs_intersection] = [intersecting_segment, old_segment_split]
-        vertex_added_dict[old_segment_split.end_vert].remove(intersecting_segment)
-        vertex_added_dict[old_segment_split.end_vert].append(old_segment_split)
+        try:
+            # We update the dictionary with vertices and their segments to match the new intersection.
+            vertex_added_dict[abs_intersection] = [intersecting_segment, old_segment_split]
+            vertex_added_dict[old_segment_split.end_vert].remove(intersecting_segment)
+            vertex_added_dict[old_segment_split.end_vert].append(old_segment_split)
 
-        segment_added_list.append(old_segment_split)
+            segment_added_list.append(old_segment_split)
+        except ValueError:
+           pass
+            
         return new_segment
 
     # We do not consider the segment further if it breaks the boundaries or if it is located in water.

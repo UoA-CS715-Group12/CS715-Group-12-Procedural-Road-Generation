@@ -47,8 +47,15 @@ def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, 
     tunnels_segment_coords = []
     highways_segment_coords = []
     minor_segment_coords = []
+    vertex_x_coords = []
+    vertex_y_coords = []
 
     for segment in road_network:
+        vertex_x_coords.append(segment.start_vert.position[0])
+        vertex_y_coords.append(segment.start_vert.position[1])
+        vertex_x_coords.append(segment.end_vert.position[0])
+        vertex_y_coords.append(segment.end_vert.position[1])
+
         coors = np.array([segment.start_vert.position, segment.end_vert.position])
 
         if segment.road_type == RoadTypes.BRIDGE:
@@ -71,6 +78,7 @@ def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, 
     ax.add_collection(tunnels)
     ax.add_collection(highways)
     ax.add_collection(minor_lines)
+    ax.scatter(vertex_x_coords, vertex_y_coords, c='purple', s=2)
 
     if land_usages is not None:
         for use in land_usages:
