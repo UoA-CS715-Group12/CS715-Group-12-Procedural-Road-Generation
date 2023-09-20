@@ -19,13 +19,13 @@ from src.visualise import Visualiser
 # If show_city is true, the representation is visualised using matplotlib.
 # If show_time is true, the process time required to generate the intermediate representation is shown.
 # If show_stats is true, the statistics used to evaluate the representation are shown
-def run_computations(config, road_network, vertex_dict, visualiser):
+def run_computations(config, road_network, vertex_dict):
     timer = Timer("Major roads")
-    rng.generate_major_roads(config, road_network, vertex_dict, visualiser)
+    rng.generate_major_roads(config, road_network, vertex_dict)
     timer.stop()
 
     timer = Timer("Minor roads")
-    rng.generate_minor_roads(config, road_network, vertex_dict, visualiser)
+    rng.generate_minor_roads(config, road_network, vertex_dict)
     timer.stop()
 
 
@@ -63,7 +63,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
     # Step 2: Visualise road network.
     visualiser = Visualiser(config.height_map_rgb, road_network)
     threading.Thread(target=run_computations,
-                     args=(config, road_network, vertex_dict, visualiser),
+                     args=(config, road_network, vertex_dict),
                      daemon=True).start()
 
     while True:

@@ -38,7 +38,7 @@ def initialise(config):
     return segment_added_list, vertex_added_dict
 
 
-def generate_major_roads(config, segment_added_list, vertex_added_dict, visualiser=None):
+def generate_major_roads(config, segment_added_list, vertex_added_dict):
     segment_front_queue = Queue(maxsize=0)
 
     for segment in segment_added_list:
@@ -63,8 +63,6 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
                         else:
                             vertex_added_dict[vert] = [verified_segment]
 
-            # visualiser.visualise()
-
         iteration += 1
 
     return segment_added_list, vertex_added_dict
@@ -83,7 +81,7 @@ def generate_major_roads_from_centres(config, segment_added_list, vertex_added_d
 # INPUT:    ConfigLoader, List, Dictionary
 # OUTPUT:   -
 # generate minor roads based on minor road seeds
-def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualiser=None):
+def generate_minor_roads(config, segment_added_list, vertex_added_dict):
     # Extract all segments which are not part of an intersection,
     # i.e. segments with end vertices that have less than three segments connected to them.
     minor_road_seed_candidates = [segment for segment in segment_added_list if len(vertex_added_dict[segment.end_vert]) < 3]
@@ -107,7 +105,6 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualis
                         vertex_added_dict[vert].append(verified_seed)
                     else:
                         vertex_added_dict[vert] = [verified_seed]
-            # visualiser.visualise()
 
     iteration = 0
     # Iterate through max_minor_road_iterations and construct minor roads from stubs created above.
@@ -127,8 +124,6 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualis
                             vertex_added_dict[vert].append(verified_segment)
                         else:
                             vertex_added_dict[vert] = [verified_segment]
-
-            # visualiser.visualise()
 
         iteration += 1
 
