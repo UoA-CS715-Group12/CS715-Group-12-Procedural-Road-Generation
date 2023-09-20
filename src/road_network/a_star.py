@@ -9,11 +9,12 @@ from src.road_network.segment import Segment
 from src.utilities import get_distance
 
 WEIGHT_FACTOR = 30
-NEIGHBOR_RANGE = 1
+NEIGHBOR_RANGE = 4
+BOUNDED_RELAXATION = 5
 
 
 def heuristic(point_n, point_goal):
-    return get_distance(point_n, point_goal)
+    return BOUNDED_RELAXATION*get_distance(point_n, point_goal)
 
 
 def a_star_search(start, goal):
@@ -32,8 +33,10 @@ def a_star_search(start, goal):
     came_from = {start: None}
     g_cost = {start: 0}
 
+    count = 0
     while not frontier.empty():
         current_priority, current = frontier.get()
+        count += 1
 
         # Goal found
         if current == goal:
@@ -43,6 +46,7 @@ def a_star_search(start, goal):
                 path.append(current)
                 current = came_from[current]
             path.reverse()
+            print("A* path found in ", count, " iterations")
             return path
 
         neighbors = get_neighbors(current, NEIGHBOR_RANGE)
