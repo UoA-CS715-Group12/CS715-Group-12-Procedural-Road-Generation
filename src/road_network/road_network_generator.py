@@ -2,12 +2,14 @@ import random
 from enum import Enum
 from queue import Queue
 
+import numpy as np
 from scipy.spatial import cKDTree
 
 from src.road_network.growth_rules.cost_function import *
 from src.road_network.growth_rules.grid import grid
 from src.road_network.growth_rules.organic import organic
 from src.road_network.growth_rules.radial import radial
+from src.road_network.segment import Segment
 from src.road_network.vertex import Vertex
 from src.utilities import compute_intersection
 from src.utilities import find_pixel_value
