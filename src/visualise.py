@@ -14,11 +14,6 @@ class Visualiser:
         self.iteration_counter = 0
 
     def visualise(self):
-        # while True:
-        #     time.sleep(1)
-        #     visualise(self.map_array, self.road_network, self.major_lines, self.minor_lines, self.fig, self.ax, self.land_usages)
-        #     self.iteration_counter += 1
-
         self.iteration_counter += 1
         at_beginning = self.iteration_counter < 10
         visualise(self.map_array, self.road_network, self.highways, self.bridges, self.tunnels, self.minor_lines, self.fig, self.ax, at_beginning, self.land_usages)
@@ -33,7 +28,6 @@ def init_plot():
     minor_lines = LineCollection([], linewidths=[0.6], colors=[[0.6, 0.2, 0, 0.8]])
 
     plt.ion()  # Turn on interactive mode
-
     plt.show()
 
     return fig, ax, highways, bridges, tunnels, minor_lines
@@ -42,6 +36,7 @@ def init_plot():
 def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, fig, ax, at_beginning=True, land_usages=None):
     if not at_beginning:
         xlim, ylim = ax.get_xlim(), ax.get_ylim()
+
     bridges_segment_coords = []
     tunnels_segment_coords = []
     highways_segment_coords = []
@@ -99,7 +94,6 @@ def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, 
 
     if at_beginning:
         ax.autoscale_view()
-        xlim, ylim = ax.get_xlim(), ax.get_ylim()
     else:
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)

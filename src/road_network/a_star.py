@@ -10,8 +10,12 @@ from src.road_network.vertex import Vertex
 from src.utilities import get_distance, RoadTypes
 
 WEIGHT_FACTOR = 30
-NEIGHBOR_RANGE = 7  # Tweak this. Higher = more time, roads can take more angles
+
+# Heuristic related params
 BOUNDED_RELAXATION = 2  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
+
+# Neighbours related params
+NEIGHBOR_RANGE = 7  # Tweak this. Higher = more time, roads can take more angles
 MIN_TUNNEL_LEN = 5
 MIN_BRIDGE_LEN = 6
 
@@ -59,7 +63,9 @@ def a_star_search(start, goal):
 
         for neighbor in neighbors:
             # Check if the neighbor is in the grid and the road is not too curvy
-            if neighbor not in closed_set and config.is_in_the_map(neighbor) and not check_curvature(came_from[current], current, neighbor, 90):  ## TODO NICK Move to Cost Fn
+            if (neighbor not in closed_set
+                    and config.is_in_the_map(neighbor)
+                    and not check_curvature(came_from[current], current, neighbor, 90)):  ## TODO NICK Move to Cost Fn
                 cost, road_type = cost_function(current, neighbor, config)
                 new_g_cost = g_cost[current] + cost
                 priority = new_g_cost + heuristic(neighbor, goal)
@@ -150,10 +156,14 @@ def get_all_a_star_roads(population_centres):
         node1Idx, node2Idx = edge
         x1, y1, *_ = population_centres[node1Idx]
         x2, y2, *_ = population_centres[node2Idx]
+
+        print("==============================================================")
         print("processing search from ", (x1, y1), " to ", (x2, y2))
+
         path = generate_a_star_road(a_star_search((x1, y1), (x2, y2)))
         segments.append(path)
 
+    print("==============================================================")
     return segments
 
 
