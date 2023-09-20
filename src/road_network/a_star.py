@@ -6,12 +6,19 @@ from src.config_manager import ConfigManager
 from src.road_network.growth_rules.cost_function import check_curvature, cost_function, get_road_type
 from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
-from src.utilities import get_distance
+from src.utilities import get_distance, RoadTypes
+
+# Road cost ($?M/m)
+HIGHWAY_COST = 0.0264
+TUNNEL_COST = 0.625
+BRIDGE_COST = 3.33
 
 WEIGHT_FACTOR = 30
-NEIGHBOR_RANGE = 6
-BOUNDED_RELAXATION = 3
+NEIGHBOR_RANGE = 7
+BOUNDED_RELAXATION = 5
 
+MIN_TUNNEL_LEN = 5
+MIN_BRIDGE_LEN = 6
 
 def heuristic(point_n, point_goal):
     return BOUNDED_RELAXATION*get_distance(point_n, point_goal)
@@ -33,6 +40,7 @@ def a_star_search(start, goal):
     closed_set = set()
     came_from = {start: None}
     g_cost = {start: 0}
+    road_types = {start: ""}
 
     count = 0
     while not frontier.empty():
@@ -44,31 +52,33 @@ def a_star_search(start, goal):
             # Reconstruct path
             path = []
             while current is not None:
-                path.append(current)
+                path.append((current, road_types[current]))
                 current = came_from[current]
             path.reverse()
-            print("A* path found in ", count, " iterations")
+            print("A* path found in ", count, " iterations, cost: ", current_priority)
             return path
 
         closed_set.add(current)
-        neighbors = get_neighbors(current, NEIGHBOR_RANGE)
+        neighbors = get_neighbors(current, NEIGHBOR_RANGE, RoadTypes.HIGHWAY)
 
         for neighbor in neighbors:
             # Check if the neighbor is in the grid and the road is not too curvy
             if neighbor not in closed_set and config.is_in_the_map(neighbor) and not check_curvature(came_from[current], current, neighbor, 90): ## TODO NICK Move to Cost Fn
-                new_g_cost = g_cost[current] + cost_function(current, neighbor, config)
+                cost, road_type = cost_function(current, neighbor, config)
+                new_g_cost = g_cost[current] + cost
                 priority = new_g_cost + heuristic(neighbor, goal)
 
                 if neighbor not in g_cost or new_g_cost < g_cost[neighbor]:
                     g_cost[neighbor] = new_g_cost
                     frontier.put((priority, neighbor))
                     came_from[neighbor] = current
+                    road_types[neighbor] = road_type
 
     print("No A* path found")
     return None  # Path not found
 
 
-def get_neighbors(current, range_n):
+def get_neighbors(current, range_n, type):
     """
     Get the neighbor pixels/vertices of a cell in a grid.
 
@@ -76,16 +86,39 @@ def get_neighbors(current, range_n):
     :param range_n: Range of the neighbor pixels/vertices from current cell
     :return: An array of neighbor pixels/vertices
     """
-    neighbors = []
 
+    neighbors = []
     for dx in range(-range_n, range_n + 1):
         for dy in range(-range_n, range_n + 1):
             if dx == 0 and dy == 0:  # Skip the current cell itself
                 continue
 
-            neighbors.append((current[0] + dx, current[1] + dy))
+            if type == RoadTypes.HIGHWAY:
+                if dx ** 2 + dy ** 2 <= range_n ** 2:
+                    neighbors.append((current[0] + dx, current[1] + dy))
+            elif type == RoadTypes.TUNNEL:
+                if dx ** 2 + dy ** 2 <= range_n ** 2 and dx ** 2 + dy ** 2 >= MIN_TUNNEL_LEN ** 2:
+                    neighbors.append((current[0] + dx, current[1] + dy))
+            elif type == RoadTypes.BRIDGE:
+                if dx ** 2 + dy ** 2 <= range_n ** 2 and dx ** 2 + dy ** 2 >= MIN_BRIDGE_LEN ** 2:
+                    neighbors.append((current[0] + dx, current[1] + dy))
+    
+    # go through the neighbors and prune same ratio neighbors, such as 2,4 and 4,8, prune 4,8
+    result_set = []
+    final_neighbors = []
+    for neighbor in neighbors:
+        # reduce the neighbor to having a gcd of 1
+        x = neighbor[0] - current[0]
+        y = neighbor[1] - current[1]
+        gcd = np.gcd(x, y)
+        reduced_neighbor = (x // gcd, y // gcd)
+        if reduced_neighbor not in result_set:
+            result_set.append(reduced_neighbor)
+            final_neighbors.append((reduced_neighbor[0] + current[0], reduced_neighbor[1] + current[1]))
 
-    return neighbors
+
+    return final_neighbors
+
 
 
 def generate_a_star_road(path):
@@ -99,9 +132,9 @@ def generate_a_star_road(path):
     segments = []
 
     for i in range(len(path) - 1):
-        x1, y1 = path[i]
-        x2, y2 = path[i + 1]
-        road_type = get_road_type(path[i], path[i + 1], config)
+        x1, y1 = path[i][0]
+        x2, y2 = path[i + 1][0]
+        road_type = path[i + 1][1]
         segment = Segment(segment_start=Vertex(np.array([x1, y1])), segment_end=Vertex(np.array([x2, y2])), road_type=road_type)
 
         segments.append(segment)

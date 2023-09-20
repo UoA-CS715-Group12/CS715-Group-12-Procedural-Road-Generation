@@ -174,6 +174,11 @@ def get_change_in_height(point1, point2, height_map):
     """
     return abs(height_map[point1[1], point1[0]] - height_map[point2[1], point2[0]])
 
+def get_height(point, height_map):
+    """
+    Get the height of a point.
+    """
+    return height_map[point[1], point[0]]
 
 def get_angle(point0, point1, point2):
     """

@@ -78,7 +78,7 @@ def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, 
     ax.add_collection(tunnels)
     ax.add_collection(highways)
     ax.add_collection(minor_lines)
-    ax.scatter(vertex_x_coords, vertex_y_coords, c='purple', s=2)
+    # ax.scatter(vertex_x_coords, vertex_y_coords, c='purple', s=2)
 
     if land_usages is not None:
         for use in land_usages:
