@@ -82,6 +82,7 @@ def get_neighbors(current, range_n):
         for dy in range(-range_n, range_n + 1):
             if dx == 0 and dy == 0:  # Skip the current cell itself
                 continue
+
             neighbors.append((current[0] + dx, current[1] + dy))
 
     return neighbors
