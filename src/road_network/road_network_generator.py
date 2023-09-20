@@ -3,6 +3,7 @@
 # pixel size: 10 m x 10 m
 import math
 import random
+import time
 
 import numpy as np
 from enum import Enum
@@ -60,7 +61,7 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
 
         suggested_segments = suggest_major(config, current_segment, config.road_rules_array, config.population_density_array)
         for segment in suggested_segments:
-            if not len(vertex_added_dict[current_segment.end_vert]) >= 4:
+            if not len(vertex_added_dict[current_segment.end_vert]) >= 2:
                 verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict)
                 if verified_segment:
                     segment_front_queue.put(verified_segment)
@@ -70,6 +71,7 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict, visualis
                             vertex_added_dict[vert].append(verified_segment)
                         else:
                             vertex_added_dict[vert] = [verified_segment]
+
             # visualiser.visualise()
 
         iteration += 1
@@ -106,6 +108,7 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualis
         for suggested_seed in suggested_seeds:
             verified_seed = verify_segment(config, suggested_seed, min_distance, segment_added_list, vertex_added_dict)
             if verified_seed:
+                verified_seed.is_minor_road = True
                 minor_roads_queue.put(verified_seed)
                 segment_added_list.append(verified_seed)
                 for vert in [verified_seed.start_vert, verified_seed.end_vert]:
@@ -141,7 +144,7 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict, visualis
 
 def minor_road_seed(config, segment, population_density):
     probability_seed = config.minor_road_seed_probability
-    road_mininum_length = config.minor_road_min_length
+    road_minimum_length = config.minor_road_min_length
     road_maximum_length = config.minor_road_max_length
 
     suggested_segments = []
@@ -158,7 +161,7 @@ def minor_road_seed(config, segment, population_density):
 
     # Generate segment turning right.
     if random.uniform(0, 1) <= road_turn_probability:
-        turn_road_segment_array = random.uniform(road_mininum_length, road_maximum_length) * rotated_unit_vector
+        turn_road_segment_array = random.uniform(road_minimum_length, road_maximum_length) * rotated_unit_vector
         turn_road_segment_array += segment.end_vert.position
 
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array))
@@ -167,7 +170,7 @@ def minor_road_seed(config, segment, population_density):
 
     # Generate segment turning left.
     if random.uniform(0, 1) <= road_turn_probability:
-        turn_road_segment_array_left = random.uniform(road_mininum_length, road_maximum_length) * -rotated_unit_vector
+        turn_road_segment_array_left = random.uniform(road_minimum_length, road_maximum_length) * -rotated_unit_vector
         turn_road_segment_array_left += segment.end_vert.position
 
         new_segment = Segment(segment_start=segment.end_vert, segment_end=Vertex(turn_road_segment_array_left))
@@ -291,7 +294,6 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
                                    if segment.start_vert is seg.start_vert or segment.start_vert is seg.end_vert]
             if segments_same_start:
                 duplicate = True
-
             vertex_is_close = True
 
     # We find the maximum allowed segment length and query our tree to find any
