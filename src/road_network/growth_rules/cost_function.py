@@ -6,16 +6,16 @@ from src.utilities import get_distance, get_change_in_height, get_angle, RoadTyp
 import numpy as np
 
 # Road cost ($?M/m)
-# HIGHWAY_COST = 0.0264
-HIGHWAY_COST = 0.0264
-# TUNNEL_COST = 0.625
-TUNNEL_COST = 0.625
-# BRIDGE_COST = 3.33
-BRIDGE_COST = 3.33
-# GRADIENT_COST_FACTOR = 1
-GRADIENT_COST_FACTOR = 100
-# GRADIENT_CUTOFF = 5
-GRADIENT_CUTOFF = 2
+# HIGHWAY_COST = 0.0264     #Tweak this parameter
+HIGHWAY_COST = 0.0264     #Tweak this parameter
+# TUNNEL_COST = 0.625     #Tweak this parameter
+TUNNEL_COST = 0.625     #Tweak this parameter
+# BRIDGE_COST = 3.33     #Tweak this parameter
+BRIDGE_COST = 3.33     #Tweak this parameter
+# GRADIENT_COST_FACTOR = 1     #Tweak this parameter
+GRADIENT_COST_FACTOR = 100     #Tweak this parameter
+# GRADIENT_CUTOFF = 5     #Tweak this parameter
+GRADIENT_CUTOFF = 2     
 
 
 def check_gradient_points(point1, point2, height_map, gradient_threshold=7):

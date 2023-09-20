@@ -10,9 +10,8 @@ from src.utilities import get_distance, RoadTypes
 
 
 WEIGHT_FACTOR = 30
-NEIGHBOR_RANGE = 7
-BOUNDED_RELAXATION = 2
-
+NEIGHBOR_RANGE = 7        # Tweak this. Higher = more time, roads can take more angles
+BOUNDED_RELAXATION = 2   # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
 MIN_TUNNEL_LEN = 5
 MIN_BRIDGE_LEN = 6
 
