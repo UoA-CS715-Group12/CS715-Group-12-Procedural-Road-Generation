@@ -9,8 +9,8 @@ from src.road_network.segment import Segment
 from src.utilities import get_distance
 
 WEIGHT_FACTOR = 30
-NEIGHBOR_RANGE = 4
-BOUNDED_RELAXATION = 5
+NEIGHBOR_RANGE = 15
+BOUNDED_RELAXATION = 3
 
 
 def heuristic(point_n, point_goal):
@@ -30,6 +30,7 @@ def a_star_search(start, goal):
     # Initialize priority queue and add the start node
     frontier = PriorityQueue()
     frontier.put((0, start))
+    closed_set = set()
     came_from = {start: None}
     g_cost = {start: 0}
 
@@ -49,11 +50,12 @@ def a_star_search(start, goal):
             print("A* path found in ", count, " iterations")
             return path
 
+        closed_set.add(current)
         neighbors = get_neighbors(current, NEIGHBOR_RANGE)
 
         for neighbor in neighbors:
             # Check if the neighbor is in the grid and the road is not too curvy
-            if config.is_in_the_map(neighbor) and not check_curvature(came_from[current], current, neighbor, 90):
+            if neighbor not in closed_set and config.is_in_the_map(neighbor) and not check_curvature(came_from[current], current, neighbor, 90): ## TODO NICK Move to Cost Fn
                 new_g_cost = g_cost[current] + cost_function(current, neighbor, config)
                 priority = new_g_cost + heuristic(neighbor, goal)
 
