@@ -1,27 +1,18 @@
-# city size: 10.000 m x 10.000 m
-# input image size: 1000x1000
-# pixel size: 10 m x 10 m
-import math
 import random
-import time
-
-import numpy as np
 from enum import Enum
 from queue import Queue
+
 from scipy.spatial import cKDTree
-from src.road_network.vertex import Vertex
-from src.road_network.segment import Segment
-from src.road_network.growth_rules.grid import grid
-from src.road_network.growth_rules.radial import radial
-from src.road_network.growth_rules.organic import organic
-from src.utilities import find_pixel_value
-from src.utilities import compute_intersection
-from src.utilities import normalise_pixel_values
-from src.utilities import rotate
-from src.utilities import get_population_density_value
-# from src.visualise import visualise
-from src.visualise import visualise
+
 from src.road_network.growth_rules.cost_function import *
+from src.road_network.growth_rules.grid import grid
+from src.road_network.growth_rules.organic import organic
+from src.road_network.growth_rules.radial import radial
+from src.road_network.vertex import Vertex
+from src.utilities import compute_intersection
+from src.utilities import find_pixel_value
+from src.utilities import get_population_density_value
+from src.utilities import rotate
 
 
 class Rules(Enum):
@@ -256,8 +247,8 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
 
             segment_added_list.append(old_segment_split)
         except ValueError:
-           pass
-            
+            pass
+
         return new_segment
 
     # We do not consider the segment further if it breaks the boundaries or if it is located in water.

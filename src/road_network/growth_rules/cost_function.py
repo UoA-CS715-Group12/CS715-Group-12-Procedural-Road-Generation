@@ -1,21 +1,21 @@
 import math
 
-from src.config_manager import ConfigManager
+import numpy as np
+
 from src.road_network.segment import Segment
 from src.utilities import get_distance, get_change_in_height, get_angle, RoadTypes, get_height
-import numpy as np
 
 # Road cost ($?M/m)
 # HIGHWAY_COST = 0.0264     #Tweak this parameter
-HIGHWAY_COST = 0.0264     #Tweak this parameter
+HIGHWAY_COST = 0.0264  # Tweak this parameter
 # TUNNEL_COST = 0.625     #Tweak this parameter
-TUNNEL_COST = 0.625     #Tweak this parameter
+TUNNEL_COST = 0.625  # Tweak this parameter
 # BRIDGE_COST = 3.33     #Tweak this parameter
-BRIDGE_COST = 3.33     #Tweak this parameter
+BRIDGE_COST = 3.33  # Tweak this parameter
 # GRADIENT_COST_FACTOR = 1     #Tweak this parameter
-GRADIENT_COST_FACTOR = 100     #Tweak this parameter
+GRADIENT_COST_FACTOR = 100  # Tweak this parameter
 # GRADIENT_CUTOFF = 5     #Tweak this parameter
-GRADIENT_CUTOFF = 2     
+GRADIENT_CUTOFF = 2
 
 
 def check_gradient_points(point1, point2, height_map, gradient_threshold=7):
@@ -159,7 +159,6 @@ def cost_function(point1, point2, config):
     # TODO: Roads should be able to form bridges over water if the cost is less than taking the long way round
     # TODO: Roads should consider the costs of generating roads through or over elevation changes
 
-
     highway_cost = get_highway_cost(point1, point2, config)
     tunnel_cost = get_tunnel_cost(point1, point2, config)
     bridge_cost = get_bridge_cost(point1, point2, config)
@@ -173,36 +172,33 @@ def cost_function(point1, point2, config):
     else:
         return bridge_cost, RoadTypes.BRIDGE
 
-     
-
 
 def get_bridge_cost(point1, point2, config):
-        cost = 0
-        # if the gradient if too high or too low, return infinity cost
-        delta_height = get_change_in_height(point1, point2, config.height_map_gray)
-        distance = get_distance(point1, point2)
-        gradient = delta_height / distance
-        if gradient > GRADIENT_CUTOFF or gradient < -GRADIENT_CUTOFF:
+    cost = 0
+    # if the gradient if too high or too low, return infinity cost
+    delta_height = get_change_in_height(point1, point2, config.height_map_gray)
+    distance = get_distance(point1, point2)
+    gradient = delta_height / distance
+    if gradient > GRADIENT_CUTOFF or gradient < -GRADIENT_CUTOFF:
+        return math.inf
+
+    # else, linearly interpolate, check if above ground
+    points = linear_interpolate(Segment(segment_array=[point1, point2]))
+    start_height = get_height(points[0], config.height_map_gray)
+    end_height = get_height(points[1], config.height_map_gray)
+    bridge_section_heights = np.linspace(start_height, end_height, len(points))
+    section_dist = distance / len(points)
+    for i in range(len(points)):
+        curr_ground_altitude = get_height(points[i], config.height_map_gray)
+        if curr_ground_altitude > bridge_section_heights[i]:
             return math.inf
-        
-        # else, linearly interpolate, check if above ground
-        points = linear_interpolate(Segment(segment_array=[point1, point2]))
-        start_height = get_height(points[0], config.height_map_gray)
-        end_height = get_height(points[1], config.height_map_gray)
-        bridge_section_heights = np.linspace(start_height, end_height, len(points))
-        section_dist = distance / len(points)
-        for i in range(len(points)):
-            curr_ground_altitude = get_height(points[i], config.height_map_gray)
-            if curr_ground_altitude > bridge_section_heights[i]:
-                return math.inf
-            cost += BRIDGE_COST * section_dist    #  * (1 + bridge_section_heights[i] - curr_ground_altitude) #MAYBE * (1 + gradient * GRADIENT_COST_FACTOR)
-        
-        # else, calculate cost
-        return cost
+        cost += BRIDGE_COST * section_dist  # * (1 + bridge_section_heights[i] - curr_ground_altitude) #MAYBE * (1 + gradient * GRADIENT_COST_FACTOR)
+
+    # else, calculate cost
+    return cost
 
 
 def get_tunnel_cost(point1, point2, config):
-
     # if the gradient if too high or too low, return infinity cost
     delta_height = get_change_in_height(point1, point2, config.height_map_gray)
     distance = get_distance(point1, point2)
@@ -212,7 +208,7 @@ def get_tunnel_cost(point1, point2, config):
 
     if check_water(Segment(segment_array=[point1, point2]), config.water_map_gray):
         return math.inf
-    
+
     # else, linearly interpolate, sum up the gradient, analyse the 
     points = linear_interpolate(Segment(segment_array=[point1, point2]))
     gradient_sum = 0
@@ -222,26 +218,24 @@ def get_tunnel_cost(point1, point2, config):
     if gradient_sum > 7 or gradient_sum < -7:
         return math.inf
 
-
-    cost = TUNNEL_COST * distance #MAYBE? * (1 + gradient * GRADIENT_COST_FACTOR)
+    cost = TUNNEL_COST * distance  # MAYBE? * (1 + gradient * GRADIENT_COST_FACTOR)
     return cost
 
 
-
 def get_highway_cost(point1, point2, config):
-     # if the gradient if too high or too low, return infinity cost
+    # if the gradient if too high or too low, return infinity cost
     delta_height = get_change_in_height(point1, point2, config.height_map_gray)
     distance = get_distance(point1, point2)
     gradient = delta_height / distance
     if gradient > GRADIENT_CUTOFF or gradient < -GRADIENT_CUTOFF:
         return math.inf
-    
+
     if check_water(Segment(segment_array=[point1, point2]), config.water_map_gray):
         return math.inf
 
-    
     cost = HIGHWAY_COST * distance * (1 + gradient * GRADIENT_COST_FACTOR)
     return cost
+
 
 def get_road_type(point1, point2, config):
     """

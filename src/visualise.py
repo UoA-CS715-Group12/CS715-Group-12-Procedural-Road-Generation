@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.collections import LineCollection
-import time
 
 from src.utilities import RoadTypes
 
@@ -23,7 +22,7 @@ class Visualiser:
         self.iteration_counter += 1
         at_beginning = self.iteration_counter < 10
         visualise(self.map_array, self.road_network, self.highways, self.bridges, self.tunnels, self.minor_lines, self.fig, self.ax, at_beginning, self.land_usages)
-       
+
 
 def init_plot():
     fig, ax = plt.subplots()
@@ -97,13 +96,12 @@ def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, 
                 x_coords.append(vertex['x'])
                 y_coords.append(vertex['z'])
             ax.fill(x_coords, y_coords, color)
-   
+
     if at_beginning:
         ax.autoscale_view()
         xlim, ylim = ax.get_xlim(), ax.get_ylim()
     else:
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
-
 
     fig.canvas.flush_events()  # Update the plot

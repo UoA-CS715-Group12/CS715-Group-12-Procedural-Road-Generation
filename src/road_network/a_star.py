@@ -1,24 +1,23 @@
 from queue import PriorityQueue
-import numpy as np
+
 import networkx as nx
+import numpy as np
 
 from src.config_manager import ConfigManager
-from src.road_network.growth_rules.cost_function import check_curvature, cost_function, get_road_type
-from src.road_network.vertex import Vertex
+from src.road_network.growth_rules.cost_function import check_curvature, cost_function
 from src.road_network.segment import Segment
+from src.road_network.vertex import Vertex
 from src.utilities import get_distance, RoadTypes
 
-
 WEIGHT_FACTOR = 30
-NEIGHBOR_RANGE = 7        # Tweak this. Higher = more time, roads can take more angles
-BOUNDED_RELAXATION = 2   # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
+NEIGHBOR_RANGE = 7  # Tweak this. Higher = more time, roads can take more angles
+BOUNDED_RELAXATION = 2  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
 MIN_TUNNEL_LEN = 5
 MIN_BRIDGE_LEN = 6
 
 
-
 def heuristic(point_n, point_goal):
-    return BOUNDED_RELAXATION*get_distance(point_n, point_goal)
+    return BOUNDED_RELAXATION * get_distance(point_n, point_goal)
 
 
 def a_star_search(start, goal):
@@ -60,7 +59,7 @@ def a_star_search(start, goal):
 
         for neighbor in neighbors:
             # Check if the neighbor is in the grid and the road is not too curvy
-            if neighbor not in closed_set and config.is_in_the_map(neighbor) and not check_curvature(came_from[current], current, neighbor, 90): ## TODO NICK Move to Cost Fn
+            if neighbor not in closed_set and config.is_in_the_map(neighbor) and not check_curvature(came_from[current], current, neighbor, 90):  ## TODO NICK Move to Cost Fn
                 cost, road_type = cost_function(current, neighbor, config)
                 new_g_cost = g_cost[current] + cost
                 priority = new_g_cost + heuristic(neighbor, goal)
@@ -99,7 +98,7 @@ def get_neighbors(current, range_n, type):
             elif type == RoadTypes.BRIDGE:
                 if dx ** 2 + dy ** 2 <= range_n ** 2 and dx ** 2 + dy ** 2 >= MIN_BRIDGE_LEN ** 2:
                     neighbors.append((current[0] + dx, current[1] + dy))
-    
+
     # go through the neighbors and prune same ratio neighbors, such as 2,4 and 4,8, prune 4,8
     result_set = []
     final_neighbors = []
@@ -113,9 +112,7 @@ def get_neighbors(current, range_n, type):
             result_set.append(reduced_neighbor)
             final_neighbors.append((reduced_neighbor[0] + current[0], reduced_neighbor[1] + current[1]))
 
-
     return final_neighbors
-
 
 
 def generate_a_star_road(path):

@@ -1,25 +1,15 @@
 import os
-import time
 import random
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.collections import LineCollection
-from src.to_json import city_to_json
-from src.config_manager import ConfigManager
-from src.road_network.segment import Segment
-import src.road_network.road_network_generator as rng
-import src.city_blocks.polygons as polygons
-import src.city_blocks.land_usage as land_usage
-from src.stats import compute_orientation_histogram, show_orientation_histogram
-from src.stats import compute_orientation_entropy, compute_orientation_order
-from src.stats import compute_average_node_degree, compute_intersection_count, compute_total_road_length
-from src.stats import compute_proportion_3way_intersections, compute_proportion_4way_intersections, compute_proportion_dead_ends
-from src.visualise import Visualiser
-from matplotlib import animation
 import threading
+import time
+
+import matplotlib.pyplot as plt
+
+import src.road_network.road_network_generator as rng
+from src.config_manager import ConfigManager
 from src.road_network.a_star import get_all_a_star_roads
-from src.road_network.growth_rules.cost_function import *
-from src.utilities import *
+from src.utilities import get_first_n_population_centres
+from src.visualise import Visualiser
 
 
 # INPUT:    String, (Bool, Bool)
@@ -79,23 +69,15 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
 
     # Step 2: Visualise road network.
     visualiser = Visualiser(config.height_map_rgb, road_network)
-    # threading.Thread(target=run_computations,
-    #                  args=(config, road_network, vertex_dict, visualiser),
-    #                  daemon=True).start()
+    threading.Thread(target=run_computations,
+                     args=(config, road_network, vertex_dict, visualiser),
+                     daemon=True).start()
 
-
-    
     while True:
-        # detect if window is closed? 
-        # if so, break
         if not plt.fignum_exists(1):
             break
         visualiser.visualise()
 
-
-    print(123123123)
-
-   
 
 if __name__ == "__main__":
     random.seed(42)
