@@ -81,6 +81,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
     #                  args=(config, road_network, vertex_dict, visualiser),
     #                  daemon=True).start()
     while True:
+
         visualiser.visualise()
 
     if show_time:
