@@ -13,7 +13,7 @@ TUNNEL_COST = 0.625
 # BRIDGE_COST = 3.33
 BRIDGE_COST = 3.33
 # GRADIENT_COST_FACTOR = 1
-GRADIENT_COST_FACTOR = 2
+GRADIENT_COST_FACTOR = 100
 # GRADIENT_CUTOFF = 5
 GRADIENT_CUTOFF = 2
 
@@ -164,7 +164,7 @@ def cost_function(point1, point2, config):
     tunnel_cost = get_tunnel_cost(point1, point2, config)
     bridge_cost = get_bridge_cost(point1, point2, config)
 
-    print(f"{highway_cost:0.4f}, {tunnel_cost:0.4f}, {bridge_cost:0.4f}")
+    # print(f"{highway_cost:0.4f}, {tunnel_cost:0.4f}, {bridge_cost:0.4f}")
 
     if highway_cost < tunnel_cost and highway_cost < bridge_cost:
         return highway_cost, RoadTypes.HIGHWAY

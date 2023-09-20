@@ -8,17 +8,15 @@ from src.road_network.vertex import Vertex
 from src.road_network.segment import Segment
 from src.utilities import get_distance, RoadTypes
 
-# Road cost ($?M/m)
-HIGHWAY_COST = 0.0264
-TUNNEL_COST = 0.625
-BRIDGE_COST = 3.33
 
 WEIGHT_FACTOR = 30
 NEIGHBOR_RANGE = 7
-BOUNDED_RELAXATION = 5
+BOUNDED_RELAXATION = 2
 
 MIN_TUNNEL_LEN = 5
 MIN_BRIDGE_LEN = 6
+
+
 
 def heuristic(point_n, point_goal):
     return BOUNDED_RELAXATION*get_distance(point_n, point_goal)

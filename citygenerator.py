@@ -57,7 +57,9 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
     print(f"population centres completed in {end - start:0.4f} seconds")
 
     # debug !!!!!!!!!!!!!!!!!!
+    # (428, 537)  to  (398, 455)
     # population_centres = [(336,415,1),(302,235,1)]
+    # population_centres = [(428,537,1),(398,455,1)]
 
     start = time.perf_counter()
     segments = get_all_a_star_roads(population_centres)
