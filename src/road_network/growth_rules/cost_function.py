@@ -1,5 +1,7 @@
 import math
 
+import numpy as np
+
 from src.utilities import get_distance, get_change_in_height, get_angle
 
 
@@ -70,22 +72,23 @@ def check_too_high(segment, height_threshold, height_map):
     return False
 
 
-def linear_interpolate(segment):
-    start_point, end_point = segment.start_vert.position, segment.end_vert.position
+def linear_interpolate_points(start_point, end_point):
     num_points = min(math.floor(get_distance(start_point, end_point)), 20)
     x1, y1 = start_point
     x2, y2 = end_point
 
-    points = []
-    for i in range(num_points + 1):
-        t = i / num_points
-        x = x1 + t * (x2 - x1)
-        y = y1 + t * (y2 - y1)
-        points.append((round(x), round(y)))
+    all_x = np.linspace(x1, x2, num_points + 1)
+    all_y = np.linspace(y1, y2, num_points + 1)
+    points = [(round(x), round(y)) for x, y in zip(all_x, all_y)]
 
     unique_points = list(set(points))
 
     return unique_points
+
+
+def linear_interpolate(segment):
+    start_point, end_point = segment.start_vert.position, segment.end_vert.position
+    return linear_interpolate_points(start_point, end_point)
 
 
 def check_water(segment, water_map):
