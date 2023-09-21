@@ -159,6 +159,7 @@ def a_star_search(start, goal):
     came_from = {start: None}
     g_cost = {start: 0}
     road_types = {start: ""}
+    neighbors_mask = get_neighbors_mask(NEIGHBOR_RANGE)
 
     count = 0
     while not frontier.empty():
@@ -177,7 +178,7 @@ def a_star_search(start, goal):
             return path
 
         closed_set.add(current)
-        neighbors = get_neighbors(current, NEIGHBOR_RANGE)
+        neighbors = get_neighbors(current, neighbors_mask)
 
         for neighbor in neighbors:
             # Check if the neighbor is in the grid and the road is not too curvy
@@ -198,40 +199,44 @@ def a_star_search(start, goal):
     return None  # Path not found
 
 
-def get_neighbors(current, range_n):
+def get_neighbors(current, neighbors_mask):
     """
-    Get the neighbor pixels/vertices of a cell in a circle grid.
+    Get the neighbors of the current cell with the neighbors mask
 
     :param current: Current cell
-    :param range_n: Range of the neighbor pixels/vertices from current cell
+    :param neighbors_mask: 
     :return: An array of neighbor pixels/vertices
     """
+    return [(current[0] + mask[0], current[1] + mask[1]) for mask in neighbors_mask]
 
-    neighbors = []
-    for dx in range(-range_n, range_n + 1):
-        for dy in range(-range_n, range_n + 1):
-            if dx == 0 and dy == 0:  # Skip the current cell itself
+
+def get_neighbors_mask(n_range):
+    """
+    Get the neighbor pixels/vertices mask in a circle grid.
+
+    :param n_range: Radius of the neighbor pixels/vertices from current cell
+    :return: An array of neighbor pixels/vertices within the circle grid
+    """
+    neighbors = set()
+
+    for dx in range(-n_range, n_range + 1):
+        for dy in range(-n_range, n_range + 1):
+            # Skip the current cell itself
+            if dx == 0 and dy == 0:
                 continue
 
-            if dx ** 2 + dy ** 2 <= range_n ** 2:  # Neighbor is within the circle range
-                neighbors.append((current[0] + dx, current[1] + dy))
+            # Neighbor is within the circle range
+            if dx ** 2 + dy ** 2 <= n_range ** 2:
+                # Skip same ratio vector neighbor
+                # Eg: (2, 4) and (4, 8), ignore (4, 8)
+                # Calculate the vector and get the lowest equivalent vector
+                gcd = math.gcd(dx, dy)
+                vector_lowest = (dx // gcd, dy // gcd)
 
-    # Go through the neighbors and prune same ratio neighbors.
-    # Eg: (2, 4) and (4, 8), prune (4, 8)
-    all_vectors = []
-    final_neighbors = []
-    for neighbor in neighbors:
-        # Calculate the vector and get the lowest equivalent vector
-        x = neighbor[0] - current[0]
-        y = neighbor[1] - current[1]
-        gcd = math.gcd(x, y)
-        vector_lowest = (x // gcd, y // gcd)
+                # Add the lowest vector to the neighbors list
+                neighbors.add(vector_lowest)
 
-        if vector_lowest not in all_vectors:
-            all_vectors.append(vector_lowest)
-            final_neighbors.append((vector_lowest[0] + current[0], vector_lowest[1] + current[1]))
-
-    return final_neighbors
+    return neighbors
 
 
 def generate_a_star_road(path):
@@ -241,7 +246,6 @@ def generate_a_star_road(path):
     :param path: An array of vertices
     :return: An array of segments
     """
-    config = ConfigManager()
     segments = []
 
     for i in range(len(path) - 1):
