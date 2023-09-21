@@ -19,7 +19,7 @@ def check_gradient_points(point1, point2, height_map, gradient_threshold=7):
     change_in_height = get_change_in_height(point1, point2, height_map)
     gradient = float(change_in_height) / distance
 
-    if gradient > gradient_threshold:
+    if gradient < -gradient_threshold or gradient_threshold < gradient:
         return True
     else:
         return False

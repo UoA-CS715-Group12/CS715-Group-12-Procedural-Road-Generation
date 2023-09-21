@@ -168,11 +168,18 @@ def get_distance(point1, point2):
     return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
 
 
-def get_change_in_height(point1, point2, height_map):
+def get_change_in_height(point1, point2, height_map, positive_only=False):
     """
     Get the change in height between two points.
+
+    :return: height of point2 - height of point1
     """
-    return abs(height_map[point1[1], point1[0]] - height_map[point2[1], point2[0]])
+    delta_height = get_height(point2, height_map) - get_height(point1, height_map)
+
+    if positive_only:
+        return abs(delta_height)
+    else:
+        return delta_height
 
 
 def get_height(point, height_map):
