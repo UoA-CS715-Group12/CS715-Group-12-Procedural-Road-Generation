@@ -83,7 +83,7 @@ def linear_interpolate(segment):
         y = y1 + t * (y2 - y1)
         points.append((round(x), round(y)))
 
-    unique_points = sorted(set(points), key=points.index)
+    unique_points = list(set(points))
 
     return unique_points
 
