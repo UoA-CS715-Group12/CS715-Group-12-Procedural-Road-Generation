@@ -1,7 +1,5 @@
 import math
 
-import numpy as np
-
 from src.utilities import get_distance, get_change_in_height, get_angle
 
 
@@ -77,9 +75,12 @@ def linear_interpolate_points(start_point, end_point):
     x1, y1 = start_point
     x2, y2 = end_point
 
-    all_x = np.linspace(x1, x2, num_points + 1)
-    all_y = np.linspace(y1, y2, num_points + 1)
-    points = [(round(x), round(y)) for x, y in zip(all_x, all_y)]
+    points = []
+    for i in range(num_points + 1):
+        t = i / num_points
+        x = x1 + t * (x2 - x1)
+        y = y1 + t * (y2 - y1)
+        points.append((round(x), round(y)))
 
     unique_points = list(set(points))
 
