@@ -1,5 +1,6 @@
 import math
 
+from src.road_network.segment import Segment
 from src.utilities import get_distance, get_change_in_height, get_angle
 
 
@@ -90,7 +91,7 @@ def linear_interpolate_points(start_point, end_point):
     return unique_points
 
 
-def linear_interpolate(segment):
+def linear_interpolate(segment: Segment):
     start_point, end_point = segment.start_vert.position, segment.end_vert.position
     return linear_interpolate_points(start_point, end_point)
 
