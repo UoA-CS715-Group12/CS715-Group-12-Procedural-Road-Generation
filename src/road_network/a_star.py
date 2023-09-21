@@ -177,7 +177,7 @@ def a_star_search(start, goal):
             return path
 
         closed_set.add(current)
-        neighbors = get_neighbors(current, NEIGHBOR_RANGE, RoadTypes.HIGHWAY)
+        neighbors = get_neighbors(current, NEIGHBOR_RANGE)
 
         for neighbor in neighbors:
             # Check if the neighbor is in the grid and the road is not too curvy
@@ -198,9 +198,9 @@ def a_star_search(start, goal):
     return None  # Path not found
 
 
-def get_neighbors(current, range_n, type):
+def get_neighbors(current, range_n):
     """
-    Get the neighbor pixels/vertices of a cell in a grid.
+    Get the neighbor pixels/vertices of a cell in a circle grid.
 
     :param current: Current cell
     :param range_n: Range of the neighbor pixels/vertices from current cell
@@ -213,28 +213,23 @@ def get_neighbors(current, range_n, type):
             if dx == 0 and dy == 0:  # Skip the current cell itself
                 continue
 
-            if type == RoadTypes.HIGHWAY:
-                if dx ** 2 + dy ** 2 <= range_n ** 2:
-                    neighbors.append((current[0] + dx, current[1] + dy))
-            elif type == RoadTypes.TUNNEL:
-                if dx ** 2 + dy ** 2 <= range_n ** 2 and dx ** 2 + dy ** 2 >= MIN_TUNNEL_LEN ** 2:
-                    neighbors.append((current[0] + dx, current[1] + dy))
-            elif type == RoadTypes.BRIDGE:
-                if dx ** 2 + dy ** 2 <= range_n ** 2 and dx ** 2 + dy ** 2 >= MIN_BRIDGE_LEN ** 2:
-                    neighbors.append((current[0] + dx, current[1] + dy))
+            if dx ** 2 + dy ** 2 <= range_n ** 2:  # Neighbor is within the circle range
+                neighbors.append((current[0] + dx, current[1] + dy))
 
-    # go through the neighbors and prune same ratio neighbors, such as 2,4 and 4,8, prune 4,8
-    result_set = []
+    # Go through the neighbors and prune same ratio neighbors.
+    # Eg: (2, 4) and (4, 8), prune (4, 8)
+    all_vectors = []
     final_neighbors = []
     for neighbor in neighbors:
-        # reduce the neighbor to having a gcd of 1
+        # Calculate the vector and get the lowest equivalent vector
         x = neighbor[0] - current[0]
         y = neighbor[1] - current[1]
-        gcd = np.gcd(x, y)
-        reduced_neighbor = (x // gcd, y // gcd)
-        if reduced_neighbor not in result_set:
-            result_set.append(reduced_neighbor)
-            final_neighbors.append((reduced_neighbor[0] + current[0], reduced_neighbor[1] + current[1]))
+        gcd = math.gcd(x, y)
+        vector_lowest = (x // gcd, y // gcd)
+
+        if vector_lowest not in all_vectors:
+            all_vectors.append(vector_lowest)
+            final_neighbors.append((vector_lowest[0] + current[0], vector_lowest[1] + current[1]))
 
     return final_neighbors
 
