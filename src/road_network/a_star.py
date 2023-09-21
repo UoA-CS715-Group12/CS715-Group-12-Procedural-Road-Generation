@@ -178,13 +178,11 @@ def a_star_search(start, goal):
             return path
 
         closed_set.add(current)
-        neighbors = get_neighbors(current, neighbors_mask)
+        neighbors = get_neighbors(came_from[current], current, neighbors_mask)
 
         for neighbor in neighbors:
-            # Check if the neighbor is in the grid and the road is not too curvy
-            if (neighbor not in closed_set
-                    and config.is_in_the_map(neighbor)
-                    and not check_curvature(came_from[current], current, neighbor, 90)):  ## TODO NICK Move to Cost Fn
+            # Check if the neighbor is in the grid
+            if neighbor not in closed_set and config.is_in_the_map(neighbor):
                 cost, road_type = cost_function(current, neighbor, config)
                 new_g_cost = g_cost[current] + cost
                 priority = new_g_cost + heuristic(neighbor, goal)
@@ -199,15 +197,28 @@ def a_star_search(start, goal):
     return None  # Path not found
 
 
-def get_neighbors(current, neighbors_mask):
+def get_neighbors(previous, current, neighbors_mask):
     """
     Get the neighbors of the current cell with the neighbors mask
+    The neighbors are within 90 degrees of the current road
 
+    :param previous: Previous cell
     :param current: Current cell
     :param neighbors_mask: 
     :return: An array of neighbor pixels/vertices
     """
-    return [(current[0] + mask[0], current[1] + mask[1]) for mask in neighbors_mask]
+    neighbors = []
+
+    for mask in neighbors_mask:
+        neighbor = (current[0] + mask[0], current[1] + mask[1])
+
+        # Skip if the neighbor is facing behind the road
+        if previous is not None and check_curvature(previous, current, neighbor, 90):
+            continue
+
+        neighbors.append(neighbor)
+
+    return neighbors
 
 
 def get_neighbors_mask(n_range):
