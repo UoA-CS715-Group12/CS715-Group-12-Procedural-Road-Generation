@@ -82,7 +82,10 @@ def linear_interpolate_points(start_point, end_point):
         y = y1 + t * (y2 - y1)
         points.append((round(x), round(y)))
 
-    unique_points = list(set(points))
+    unique_points = []
+    for p in points:
+        if p not in unique_points:
+            unique_points.append(p)
 
     return unique_points
 

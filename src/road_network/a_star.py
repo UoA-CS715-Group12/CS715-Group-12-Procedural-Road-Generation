@@ -125,7 +125,7 @@ def get_bridge_cost(point1, point2, config):
     # else, linearly interpolate, check if above ground
     points = linear_interpolate(Segment(segment_array=[point1, point2]))
     start_height = get_height(points[0], config.height_map_gray)
-    end_height = get_height(points[1], config.height_map_gray)
+    end_height = get_height(points[-1], config.height_map_gray)
     bridge_section_heights = np.linspace(start_height, end_height, len(points))
     section_dist = distance / len(points)
     for i in range(len(points)):
