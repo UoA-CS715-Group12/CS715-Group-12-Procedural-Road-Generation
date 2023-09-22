@@ -17,7 +17,7 @@ WEIGHT_FACTOR = 30
 BOUNDED_RELAXATION = 2  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
 
 # Neighbours related params
-NEIGHBOR_RANGE = 15  # Tweak this. Higher = more time, roads can take more angles
+NEIGHBOR_RANGE = 15  # Tweak this. Higher = more time, roads can take more angles, has to be bigger than MIN_TUNNEL_LEN and MIN_BRIDGE_LEN
 MIN_TUNNEL_LEN = 5
 MIN_BRIDGE_LEN = 6
 
@@ -29,7 +29,7 @@ GRADIENT_COST_FACTOR = 10  # Tweak this parameter
 GRADIENT_CUTOFF = 2  # Tweak this parameter
 
 
-def cost_function(point1, point2, config):
+def cost_function(point1, point2, config, road_type):
     """
     Cost function to determine the cost (g value) of a segment between two points.
 
@@ -38,16 +38,22 @@ def cost_function(point1, point2, config):
     :param config: ConfigManager
     :return: The cheapest cost of the segment and the type of road
     """
-    highway_cost = get_highway_cost(point1, point2, config)
-    tunnel_cost = get_tunnel_cost(point1, point2, config)
-    bridge_cost = get_bridge_cost(point1, point2, config)
-
-    if highway_cost < tunnel_cost and highway_cost < bridge_cost:
-        return highway_cost, RoadTypes.HIGHWAY
-    elif tunnel_cost < bridge_cost:
-        return tunnel_cost, RoadTypes.TUNNEL
-    else:
-        return bridge_cost, RoadTypes.BRIDGE
+    if road_type == RoadTypes.HIGHWAY:
+        return get_highway_cost(point1, point2, config), road_type
+    elif road_type == RoadTypes.TUNNEL:
+        return get_tunnel_cost(point1, point2, config), road_type
+    elif road_type == RoadTypes.BRIDGE:
+        return get_bridge_cost(point1, point2, config), road_type
+    # highway_cost = get_highway_cost(point1, point2, config)
+    # tunnel_cost = get_tunnel_cost(point1, point2, config)
+    # bridge_cost = get_bridge_cost(point1, point2, config)
+    #
+    # if highway_cost < tunnel_cost and highway_cost < bridge_cost:
+    #     return highway_cost, RoadTypes.HIGHWAY
+    # elif tunnel_cost < bridge_cost:
+    #     return tunnel_cost, RoadTypes.TUNNEL
+    # else:
+    #     return bridge_cost, RoadTypes.BRIDGE
 
 
 def get_highway_cost(point1, point2, config):
@@ -155,12 +161,16 @@ def a_star_search(start, goal):
     came_from = {start: None}
     g_cost = {start: 0}
     road_types = {start: ""}
-    neighbors_mask = get_neighbors_mask(NEIGHBOR_RANGE)
+    neighbors_mask_highway, neighbors_mask_tunnel, neighbors_mask_bridge = get_neighbors_masks(NEIGHBOR_RANGE)
 
     count = 0
     while not frontier.empty():
         current_priority, current = frontier.get()
         count += 1
+
+        # Current node has been visited before with a cheaper cost
+        if current in closed_set:
+            continue
 
         # Goal found
         if current == goal:
@@ -174,12 +184,44 @@ def a_star_search(start, goal):
             return path
 
         closed_set.add(current)
-        neighbors = get_neighbors(came_from[current], current, neighbors_mask)
 
-        for neighbor in neighbors:
+        # Get neighbors for all road types
+        neighbors_highway, neighbors_tunnel, neighbors_bridge = (
+            get_neighbors(came_from[current], current,
+                          neighbors_mask_highway, neighbors_mask_tunnel, neighbors_mask_bridge
+                          )
+        )
+
+        for neighbor in neighbors_highway:
             # Check if the neighbor is in the grid
             if neighbor not in closed_set and config.is_in_the_map(neighbor):
-                cost, road_type = cost_function(current, neighbor, config)
+                cost, road_type = cost_function(current, neighbor, config, RoadTypes.HIGHWAY)
+                new_g_cost = g_cost[current] + cost
+                priority = new_g_cost + heuristic(neighbor, goal)
+
+                if neighbor not in g_cost or new_g_cost < g_cost[neighbor]:
+                    g_cost[neighbor] = new_g_cost
+                    frontier.put((priority, neighbor))
+                    came_from[neighbor] = current
+                    road_types[neighbor] = road_type
+
+        for neighbor in neighbors_tunnel:
+            # Check if the neighbor is in the grid
+            if neighbor not in closed_set and config.is_in_the_map(neighbor):
+                cost, road_type = cost_function(current, neighbor, config, RoadTypes.TUNNEL)
+                new_g_cost = g_cost[current] + cost
+                priority = new_g_cost + heuristic(neighbor, goal)
+
+                if neighbor not in g_cost or new_g_cost < g_cost[neighbor]:
+                    g_cost[neighbor] = new_g_cost
+                    frontier.put((priority, neighbor))
+                    came_from[neighbor] = current
+                    road_types[neighbor] = road_type
+
+        for neighbor in neighbors_bridge:
+            # Check if the neighbor is in the grid
+            if neighbor not in closed_set and config.is_in_the_map(neighbor):
+                cost, road_type = cost_function(current, neighbor, config, RoadTypes.BRIDGE)
                 new_g_cost = g_cost[current] + cost
                 priority = new_g_cost + heuristic(neighbor, goal)
 
@@ -193,38 +235,53 @@ def a_star_search(start, goal):
     return None  # Path not found
 
 
-def get_neighbors(previous, current, neighbors_mask):
+def get_neighbors(previous, current, *neighbors_masks):
     """
-    Get the neighbors of the current cell with the neighbors mask
+    Get the neighbors of the current cell with the neighbors masks
     The neighbors are within 90 degrees of the current road
+
+    You can pass as many neighbors masks as you want, and it will return the neighbors of all the masks.
+    Also, the number of neighbors arrays returned is the same as the number of neighbors masks passed in.
 
     :param previous: Previous cell
     :param current: Current cell
-    :param neighbors_mask: 
-    :return: An array of neighbor pixels/vertices
+    :param neighbors_masks: Neighbors masks, eg: neighbors_mask_highway, neighbors_mask_tunnel, neighbors_mask_bridge
+    :return: Array(s) of neighbor pixels/vertices
     """
-    neighbors = []
+    all_neighbors = []
 
-    for mask in neighbors_mask:
-        neighbor = (current[0] + mask[0], current[1] + mask[1])
+    for neighbors_mask in neighbors_masks:
+        neighbors = []
 
-        # Skip if the neighbor is facing behind the road
-        if previous is not None and check_curvature(previous, current, neighbor, 90):
-            continue
+        for mask in neighbors_mask:
+            neighbor = (current[0] + mask[0], current[1] + mask[1])
 
-        neighbors.append(neighbor)
+            # Skip if the neighbor is facing behind the road
+            if previous is not None and check_curvature(previous, current, neighbor, 90):
+                continue
 
-    return neighbors
+            neighbors.append(neighbor)
+
+        all_neighbors.append(neighbors)
+
+    return tuple(all_neighbors)
 
 
-def get_neighbors_mask(n_range):
+def get_neighbors_masks(n_range):
     """
     Get the neighbor pixels/vertices mask in a circle grid.
 
+    Return masks' orders:
+        1. Highway neighbors are the lowest equivalent vector.
+        2. Tunnel neighbors are at least MIN_TUNNEL_LEN away.
+        3. Bridge neighbors are at least MIN_BRIDGE_LEN away.
+
     :param n_range: Radius of the neighbor pixels/vertices from current cell
-    :return: An array of neighbor pixels/vertices within the circle grid
+    :return: An array of neighbor pixels/vertices within the circle grid.
     """
-    neighbors = set()
+    neighbors_highway = set()
+    neighbors_tunnel = set()
+    neighbors_bridge = set()
 
     for dx in range(-n_range, n_range + 1):
         for dy in range(-n_range, n_range + 1):
@@ -234,16 +291,23 @@ def get_neighbors_mask(n_range):
 
             # Neighbor is within the circle range
             if dx ** 2 + dy ** 2 <= n_range ** 2:
-                # Skip same ratio vector neighbor
-                # Eg: (2, 4) and (4, 8), ignore (4, 8)
                 # Calculate the vector and get the lowest equivalent vector
+                # Eg: (2, 4) and (4, 8), ignore (4, 8)
                 gcd = math.gcd(dx, dy)
                 vector_lowest = (dx // gcd, dy // gcd)
 
-                # Add the lowest vector to the neighbors list
-                neighbors.add(vector_lowest)
+                # Highway neighbor add the lowest vector
+                neighbors_highway.add(vector_lowest)
 
-    return neighbors
+                # Tunnel neighbor needs to be at least MIN_TUNNEL_LEN away
+                if dx ** 2 + dy ** 2 >= MIN_TUNNEL_LEN ** 2:
+                    neighbors_tunnel.add((dx, dy))
+
+                # Same as Bridge neighbor
+                if dx ** 2 + dy ** 2 >= MIN_BRIDGE_LEN ** 2:
+                    neighbors_bridge.add((dx, dy))
+
+    return neighbors_highway, neighbors_tunnel, neighbors_bridge
 
 
 def generate_a_star_road(path):
