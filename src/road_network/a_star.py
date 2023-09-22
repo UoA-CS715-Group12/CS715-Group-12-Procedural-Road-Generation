@@ -36,24 +36,15 @@ def cost_function(point1, point2, config, road_type):
     :param point1: Start point of the segment
     :param point2: End point of the segment
     :param config: ConfigManager
+    :param road_type: Road type of the segment
     :return: The cheapest cost of the segment and the type of road
     """
     if road_type == RoadTypes.HIGHWAY:
-        return get_highway_cost(point1, point2, config), road_type
+        return get_highway_cost(point1, point2, config)
     elif road_type == RoadTypes.TUNNEL:
-        return get_tunnel_cost(point1, point2, config), road_type
+        return get_tunnel_cost(point1, point2, config)
     elif road_type == RoadTypes.BRIDGE:
-        return get_bridge_cost(point1, point2, config), road_type
-    # highway_cost = get_highway_cost(point1, point2, config)
-    # tunnel_cost = get_tunnel_cost(point1, point2, config)
-    # bridge_cost = get_bridge_cost(point1, point2, config)
-    #
-    # if highway_cost < tunnel_cost and highway_cost < bridge_cost:
-    #     return highway_cost, RoadTypes.HIGHWAY
-    # elif tunnel_cost < bridge_cost:
-    #     return tunnel_cost, RoadTypes.TUNNEL
-    # else:
-    #     return bridge_cost, RoadTypes.BRIDGE
+        return get_bridge_cost(point1, point2, config)
 
 
 def get_highway_cost(point1, point2, config):
@@ -152,6 +143,27 @@ def a_star_search(start, goal):
     :param goal: Goal point
     :return: Shortest path from start to goal
     """
+
+    def process_neighbors(road_type, neighbors):
+        """
+        Process the neighbors of the current node.
+
+        :param road_type: Road type of all the neighbors
+        :param neighbors:
+        """
+        for neighbor in neighbors:
+            # Check if the neighbor is in the grid
+            if neighbor not in closed_set and config.is_in_the_map(neighbor):
+                new_g_cost = g_cost[current] + cost_function(current, neighbor, config, road_type)
+                priority = new_g_cost + heuristic(neighbor, goal)
+
+                # If the neighbor cost is cheaper, update the cost and add it to the frontier
+                if neighbor not in g_cost or new_g_cost < g_cost[neighbor]:
+                    g_cost[neighbor] = new_g_cost
+                    frontier.put((priority, neighbor))
+                    came_from[neighbor] = current
+                    road_types[neighbor] = road_type
+
     config = ConfigManager()
 
     # Initialize priority queue and add the start node
@@ -192,44 +204,9 @@ def a_star_search(start, goal):
                           )
         )
 
-        for neighbor in neighbors_highway:
-            # Check if the neighbor is in the grid
-            if neighbor not in closed_set and config.is_in_the_map(neighbor):
-                cost, road_type = cost_function(current, neighbor, config, RoadTypes.HIGHWAY)
-                new_g_cost = g_cost[current] + cost
-                priority = new_g_cost + heuristic(neighbor, goal)
-
-                if neighbor not in g_cost or new_g_cost < g_cost[neighbor]:
-                    g_cost[neighbor] = new_g_cost
-                    frontier.put((priority, neighbor))
-                    came_from[neighbor] = current
-                    road_types[neighbor] = road_type
-
-        for neighbor in neighbors_tunnel:
-            # Check if the neighbor is in the grid
-            if neighbor not in closed_set and config.is_in_the_map(neighbor):
-                cost, road_type = cost_function(current, neighbor, config, RoadTypes.TUNNEL)
-                new_g_cost = g_cost[current] + cost
-                priority = new_g_cost + heuristic(neighbor, goal)
-
-                if neighbor not in g_cost or new_g_cost < g_cost[neighbor]:
-                    g_cost[neighbor] = new_g_cost
-                    frontier.put((priority, neighbor))
-                    came_from[neighbor] = current
-                    road_types[neighbor] = road_type
-
-        for neighbor in neighbors_bridge:
-            # Check if the neighbor is in the grid
-            if neighbor not in closed_set and config.is_in_the_map(neighbor):
-                cost, road_type = cost_function(current, neighbor, config, RoadTypes.BRIDGE)
-                new_g_cost = g_cost[current] + cost
-                priority = new_g_cost + heuristic(neighbor, goal)
-
-                if neighbor not in g_cost or new_g_cost < g_cost[neighbor]:
-                    g_cost[neighbor] = new_g_cost
-                    frontier.put((priority, neighbor))
-                    came_from[neighbor] = current
-                    road_types[neighbor] = road_type
+        process_neighbors(RoadTypes.HIGHWAY, neighbors_highway)
+        process_neighbors(RoadTypes.TUNNEL, neighbors_tunnel)
+        process_neighbors(RoadTypes.BRIDGE, neighbors_bridge)
 
     print("No A* path found")
     return None  # Path not found
