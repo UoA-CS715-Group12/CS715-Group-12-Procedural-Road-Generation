@@ -29,7 +29,7 @@ GRADIENT_COST_FACTOR = 10  # Tweak this parameter
 GRADIENT_CUTOFF = 2  # Tweak this parameter
 
 
-def cost_function(point1, point2, config, road_type):
+def cost_function(point1, point2, config, road_type: RoadTypes):
     """
     Cost function to determine the cost (g value) of a segment between two points.
 
@@ -144,12 +144,12 @@ def a_star_search(start, goal):
     :return: Shortest path from start to goal
     """
 
-    def process_neighbors(road_type, neighbors):
+    def process_neighbors(neighbors, road_type: RoadTypes):
         """
         Process the neighbors of the current node.
 
-        :param road_type: Road type of all the neighbors
         :param neighbors:
+        :param road_type: Road type of all the neighbors
         """
         for neighbor in neighbors:
             # Check if the neighbor is in the grid
@@ -172,7 +172,7 @@ def a_star_search(start, goal):
     closed_set = set()
     came_from = {start: None}
     g_cost = {start: 0}
-    road_types = {start: ""}
+    road_types = {start: RoadTypes.NULL}
     neighbors_mask_highway, neighbors_mask_tunnel, neighbors_mask_bridge = get_neighbors_masks(NEIGHBOR_RANGE)
 
     count = 0
@@ -204,9 +204,9 @@ def a_star_search(start, goal):
                           )
         )
 
-        process_neighbors(RoadTypes.HIGHWAY, neighbors_highway)
-        process_neighbors(RoadTypes.TUNNEL, neighbors_tunnel)
-        process_neighbors(RoadTypes.BRIDGE, neighbors_bridge)
+        process_neighbors(neighbors_highway, RoadTypes.HIGHWAY)
+        process_neighbors(neighbors_tunnel, RoadTypes.TUNNEL)
+        process_neighbors(neighbors_bridge, RoadTypes.BRIDGE)
 
     print("No A* path found")
     return None  # Path not found

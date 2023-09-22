@@ -13,6 +13,7 @@ class RoadTypes(Enum):
     TUNNEL = "tunnel"
     HIGHWAY = "highway"
     MINOR = "minor"
+    NULL = ""
 
 
 # INPUT:    String
