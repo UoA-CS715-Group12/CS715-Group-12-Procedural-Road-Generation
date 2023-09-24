@@ -79,6 +79,7 @@ def get_cluster_coordinates(data, labels):
     
     return clusters
 
+
 def get_cluster_centroids(data, labels):
     """Get the centroids of each cluster."""
     # Create a list to store the cluster centroids

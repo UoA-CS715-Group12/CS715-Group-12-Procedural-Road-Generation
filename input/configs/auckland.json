@@ -1,10 +1,7 @@
 {
     "axiom": {
         "description": "Default starting segments.",
-        "value": [
-            [[343,398],[343,400]],
-            [[315,194],[312,199]]
-        ]
+        "value": []
     },
     "rule_image_name": {
         "description": "Name of image used for road network pattern rules.",

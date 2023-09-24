@@ -1,61 +1,138 @@
 import math
 from queue import PriorityQueue
-import numpy as np
+
 import networkx as nx
-import matplotlib.pyplot as plt
+import numpy as np
 
 from src.config_manager import ConfigManager
-from src.road_network.growth_rules.cost_function import check_water
-from src.road_network.vertex import Vertex
+from src.road_network.growth_rules.cost_function import check_curvature, check_water, linear_interpolate_points
 from src.road_network.segment import Segment
-from src.utilities import get_distance, get_change_in_height
+from src.road_network.vertex import Vertex
+from src.utilities import get_distance, RoadTypes, get_change_in_height, get_height
 
+# Minimum Spanning Tree related params
 WEIGHT_FACTOR = 30
+
+# Heuristic related params
+BOUNDED_RELAXATION = 2  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
+
+# Neighbours related params
+NEIGHBOR_RANGE = 15  # Tweak this. Higher = more time, roads can take more angles, has to be bigger than MIN_TUNNEL_LEN and MIN_BRIDGE_LEN
+MIN_TUNNEL_LEN = 5  # Tweak this
+MIN_BRIDGE_LEN = 6  # Tweak this
+
+# Cost function related params (Road cost $?M/m)
+HIGHWAY_COST = 0.0264  # Tweak this parameter
+TUNNEL_COST = 0.625  # Tweak this parameter
+BRIDGE_COST = 3.33  # Tweak this parameter
+GRADIENT_COST_FACTOR = 10  # Tweak this parameter
+GRADIENT_CUTOFF = 2  # Tweak this parameter
+
+
+def cost_function(point1, point2, config, road_type: RoadTypes):
+    """
+    Cost function to determine the cost (g value) of a segment between two points.
+
+    :param point1: Start point of the segment
+    :param point2: End point of the segment
+    :param config: ConfigManager
+    :param road_type: Road type of the segment
+    :return: The cheapest cost of the segment and the type of road
+    """
+    if road_type == RoadTypes.HIGHWAY:
+        return get_highway_cost(point1, point2, config)
+    elif road_type == RoadTypes.TUNNEL:
+        return get_tunnel_cost(point1, point2, config)
+    elif road_type == RoadTypes.BRIDGE:
+        return get_bridge_cost(point1, point2, config)
+
+
+def get_highway_cost(point1, point2, config):
+    """
+    Get the cost of a highway segment between two points.
+
+    :param point1: Start point of the segment
+    :param point2: End point of the segment
+    :param config: ConfigManager
+    :return: The cost of the highway segment
+    """
+    delta_height = get_change_in_height(point1, point2, config.height_map_gray)
+    distance = get_distance(point1, point2)
+    gradient = delta_height / distance
+
+    # Check if the gradient is too steep
+    if gradient < -GRADIENT_CUTOFF or GRADIENT_CUTOFF < gradient:
+        return math.inf
+
+    # Check if the segment in on water
+    if check_water(Segment(segment_array=[point1, point2]), config.water_map_gray):
+        return math.inf
+
+    return HIGHWAY_COST * distance * (1 + gradient * GRADIENT_COST_FACTOR)
+
+
+def get_tunnel_cost(point1, point2, config):
+    """
+    Get the cost of a tunnel segment between two points.
+
+    :param point1: Start point of the segment
+    :param point2: End point of the segment
+    :param config: ConfigManager
+    :return: The cost of the tunnel segment
+    """
+    delta_height = get_change_in_height(point1, point2, config.height_map_gray)
+    distance = get_distance(point1, point2)
+    gradient = delta_height / distance
+
+    # Check if the gradient is too steep
+    if gradient < -GRADIENT_CUTOFF or GRADIENT_CUTOFF < gradient:
+        return math.inf
+
+    # Check if the segment in on water
+    if check_water(Segment(segment_array=[point1, point2]), config.water_map_gray):
+        return math.inf
+
+    return TUNNEL_COST * distance
+
+
+def get_bridge_cost(point1, point2, config):
+    """
+    Get the cost of a bridge segment between two points.
+
+    :param point1: Start point of the segment
+    :param point2: End point of the segment
+    :param config: ConfigManager
+    :return: The cost of the bridge segment
+    """
+    delta_height = get_change_in_height(point1, point2, config.height_map_gray)
+    distance = get_distance(point1, point2)
+    gradient = delta_height / distance
+
+    # Check if the gradient is too steep
+    if gradient < -GRADIENT_CUTOFF or GRADIENT_CUTOFF < gradient:
+        return math.inf
+
+    points = linear_interpolate_points(point1, point2)
+    start_height = get_height(point1, config.height_map_gray)
+    end_height = get_height(point2, config.height_map_gray)
+
+    bridge_section_heights = np.linspace(start_height, end_height, len(points))
+    section_dist = distance / len(points)
+    cost = 0
+
+    # Check no terrain is above the bridge
+    for i in range(len(points)):
+        curr_ground_altitude = get_height(points[i], config.height_map_gray)
+        if curr_ground_altitude > bridge_section_heights[i]:
+            return math.inf
+
+        cost += BRIDGE_COST * section_dist
+
+    return cost
 
 
 def heuristic(point_n, point_goal):
-    return get_distance(point_n, point_goal)
-
-
-def cost_function(point1, point2, previous_point):
-    # TODO: Implement cost function for A Star using the road economic factors, elevation changes
-    # TODO: Roads should be able to form bridges over water if the cost is less than taking the long way round
-    # TODO: Roads should consider the costs of generating roads through or over elevation changes
-    config = ConfigManager()
-    height_map = config.height_map_gray
-    water_map = config.water_map_gray
-
-    return 1
-
-    # TODO: Nick
-    if check_water(Segment(segment_array=[point1, point2]), water_map):
-        road_type_cost_ratio = 1
-    else:
-        road_type_cost_ratio = 1
-
-    # Get absolute distance between pixel1 and pixel2 as a multiplier to the cost
-    distance = get_distance(point1, point2)
-    change_in_height = get_change_in_height(point1, point2, height_map)
-
-    if previous_point is None:
-        return change_in_height * distance
-
-    # Calculate slopes
-    m1 = (point2[1] - point1[1]) / (point2[0] - point1[0] + 1e-6)
-    m2 = (point1[1] - previous_point[1]) / (point1[0] - previous_point[0] + 1e-6)
-    # Calculate the angle in radians and degrees
-    angle_rad = abs(math.atan((m2 - m1) / (1 + m1 * m2 + 1e-6)))
-    angle_deg = math.degrees(angle_rad)
-
-    if angle_deg < 10:
-        ratio = 1
-    else:
-        ratio = 500
-
-    cost = change_in_height * distance * road_type_cost_ratio * (1 + angle_deg / 10) * ratio
-    cost = change_in_height * distance * road_type_cost_ratio
-
-    return cost
+    return BOUNDED_RELAXATION * get_distance(point_n, point_goal)
 
 
 def a_star_search(start, goal):
@@ -66,64 +143,148 @@ def a_star_search(start, goal):
     :param goal: Goal point
     :return: Shortest path from start to goal
     """
+
+    def process_neighbors(neighbors, road_type: RoadTypes):
+        """
+        Process the neighbors of the current node.
+
+        :param neighbors:
+        :param road_type: Road type of all the neighbors
+        """
+        for neighbor in neighbors:
+            # Check if the neighbor is in the grid
+            if neighbor not in closed_set and config.is_in_the_map(neighbor):
+                new_g_cost = g_cost[current] + cost_function(current, neighbor, config, road_type)
+                priority = new_g_cost + heuristic(neighbor, goal)
+
+                # If the neighbor cost is cheaper, update the cost and add it to the frontier
+                if neighbor not in g_cost or new_g_cost < g_cost[neighbor]:
+                    g_cost[neighbor] = new_g_cost
+                    frontier.put((priority, neighbor))
+                    came_from[neighbor] = current
+                    road_types[neighbor] = road_type
+
     config = ConfigManager()
 
     # Initialize priority queue and add the start node
     frontier = PriorityQueue()
     frontier.put((0, start))
+    closed_set = set()
     came_from = {start: None}
     g_cost = {start: 0}
-    f_value = {start: 0}
+    road_types = {start: RoadTypes.NULL}
+    neighbors_mask_highway, neighbors_mask_tunnel, neighbors_mask_bridge = get_neighbors_masks(NEIGHBOR_RANGE)
 
+    count = 0
     while not frontier.empty():
         current_priority, current = frontier.get()
+        count += 1
+
+        # Current node has been visited before with a cheaper cost
+        if current in closed_set:
+            continue
 
         # Goal found
         if current == goal:
             # Reconstruct path
             path = []
             while current is not None:
-                path.append(current)
+                path.append((current, road_types[current]))
                 current = came_from[current]
             path.reverse()
+            print("A* path found in ", count, " iterations, cost: ", current_priority)
             return path
 
-        neighbors = get_neighbors(current, 15)
+        closed_set.add(current)
 
-        for neighbor in neighbors:
-            x, y = neighbor
-            # Check if the neighbor is in the grid and is not an obstacle
-            if 0 <= x < np.shape(config.water_map_gray)[1] and 0 <= y < np.shape(config.water_map_gray)[0]:
-                new_g_cost = g_cost[current] + cost_function(current, neighbor, came_from[current])
-                priority = new_g_cost + heuristic(neighbor, goal)
+        # Get neighbors for all road types
+        neighbors_highway, neighbors_tunnel, neighbors_bridge = (
+            get_neighbors(came_from[current], current,
+                          neighbors_mask_highway, neighbors_mask_tunnel, neighbors_mask_bridge
+                          )
+        )
 
-                if neighbor not in f_value or priority < f_value[neighbor]:
-                    g_cost[neighbor] = new_g_cost
-                    f_value[neighbor] = priority
-                    frontier.put((priority, neighbor))
-                    came_from[neighbor] = current
+        process_neighbors(neighbors_highway, RoadTypes.HIGHWAY)
+        process_neighbors(neighbors_tunnel, RoadTypes.TUNNEL)
+        process_neighbors(neighbors_bridge, RoadTypes.BRIDGE)
 
     print("No A* path found")
     return None  # Path not found
 
 
-def get_neighbors(current, range_n):
+def get_neighbors(previous, current, *neighbors_masks):
     """
-    Get the neighbor pixels/vertices of a cell in a grid.
+    Get the neighbors of the current cell with the neighbors masks
+    The neighbors are within 90 degrees of the current road
 
+    You can pass as many neighbors masks as you want, and it will return the neighbors of all the masks.
+    Also, the number of neighbors arrays returned is the same as the number of neighbors masks passed in.
+
+    :param previous: Previous cell
     :param current: Current cell
-    :param range_n: Range of the neighbor pixels/vertices from current cell
-    :return: An array of neighbor pixels/vertices
+    :param neighbors_masks: Neighbors masks, eg: neighbors_mask_highway, neighbors_mask_tunnel, neighbors_mask_bridge
+    :return: Array(s) of neighbor pixels/vertices
     """
-    neighbors = []
+    all_neighbors = []
 
-    for dx in range(-range_n, range_n + 1):
-        for dy in range(-range_n, range_n + 1):
-            if dx == 0 and dy == 0:  # Skip the current cell itself
+    for neighbors_mask in neighbors_masks:
+        neighbors = []
+
+        for mask in neighbors_mask:
+            neighbor = (current[0] + mask[0], current[1] + mask[1])
+
+            # Skip if the neighbor is facing behind the road
+            if previous is not None and check_curvature(previous, current, neighbor, 90):
                 continue
-            neighbors.append((current[0] + dx, current[1] + dy))
 
-    return neighbors
+            neighbors.append(neighbor)
+
+        all_neighbors.append(neighbors)
+
+    return tuple(all_neighbors)
+
+
+def get_neighbors_masks(n_range):
+    """
+    Get the neighbor pixels/vertices mask in a circle grid.
+
+    Return masks' orders:
+        1. Highway neighbors are the lowest equivalent vector.
+        2. Tunnel neighbors are at least MIN_TUNNEL_LEN away.
+        3. Bridge neighbors are at least MIN_BRIDGE_LEN away.
+
+    :param n_range: Radius of the neighbor pixels/vertices from current cell
+    :return: An array of neighbor pixels/vertices within the circle grid.
+    """
+    neighbors_highway = set()
+    neighbors_tunnel = set()
+    neighbors_bridge = set()
+
+    for dx in range(-n_range, n_range + 1):
+        for dy in range(-n_range, n_range + 1):
+            # Skip the current cell itself
+            if dx == 0 and dy == 0:
+                continue
+
+            # Neighbor is within the circle range
+            if dx ** 2 + dy ** 2 <= n_range ** 2:
+                # Calculate the vector and get the lowest equivalent vector
+                # Eg: (2, 4) and (4, 8), ignore (4, 8)
+                gcd = math.gcd(dx, dy)
+                vector_lowest = (dx // gcd, dy // gcd)
+
+                # Highway neighbor add the lowest vector
+                neighbors_highway.add(vector_lowest)
+
+                # Tunnel neighbor needs to be at least MIN_TUNNEL_LEN away
+                if dx ** 2 + dy ** 2 >= MIN_TUNNEL_LEN ** 2:
+                    neighbors_tunnel.add((dx, dy))
+
+                # Same as Bridge neighbor
+                if dx ** 2 + dy ** 2 >= MIN_BRIDGE_LEN ** 2:
+                    neighbors_bridge.add((dx, dy))
+
+    return neighbors_highway, neighbors_tunnel, neighbors_bridge
 
 
 def generate_a_star_road(path):
@@ -136,9 +297,10 @@ def generate_a_star_road(path):
     segments = []
 
     for i in range(len(path) - 1):
-        x1, y1 = path[i]
-        x2, y2 = path[i + 1]
-        segment = Segment(segment_start=Vertex(np.array([x1, y1])), segment_end=Vertex(np.array([x2, y2])))
+        x1, y1 = path[i][0]
+        x2, y2 = path[i + 1][0]
+        road_type = path[i + 1][1]
+        segment = Segment(segment_start=Vertex(np.array([x1, y1])), segment_end=Vertex(np.array([x2, y2])), road_type=road_type)
 
         segments.append(segment)
 
@@ -159,9 +321,14 @@ def get_all_a_star_roads(population_centres):
         node1Idx, node2Idx = edge
         x1, y1, *_ = population_centres[node1Idx]
         x2, y2, *_ = population_centres[node2Idx]
+
+        print("==============================================================")
+        print("processing search from ", (x1, y1), " to ", (x2, y2))
+
         path = generate_a_star_road(a_star_search((x1, y1), (x2, y2)))
         segments.append(path)
 
+    print("==============================================================")
     return segments
 
 
