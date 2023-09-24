@@ -16,6 +16,7 @@ from src.utilities import find_pixel_value
 from src.utilities import get_population_density_value
 from src.utilities import rotate
 
+HEIGHT_THRESHOLD = 100  # Tweak this to set the maximum height L-system roads can be generated
 
 class Rules(Enum):
     RULE_SEED = 1
@@ -72,7 +73,6 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict):
 
 def generate_major_roads_from_centres(config, segment_added_list, vertex_added_dict, visualiser):
     # Build major road from each centre to every other centre
-    # TODO: Connect centres using A* and take into account of terrain etc.
     # Extract coordinates of the pop density centres
     pop_density_centres_arr = config.pop_density_centres[:20:]  # Only take top 10 largest pop
 
@@ -100,11 +100,14 @@ def generate_minor_roads(config, segment_added_list, vertex_added_dict):
             verified_seed = verify_segment(config, suggested_seed, min_distance, segment_added_list, vertex_added_dict)
             if verified_seed:
                 verified_seed.is_minor_road = True
-                minor_roads_queue.put(verified_seed)
-                segment_added_list.append(verified_seed)
+                if verified_seed not in segment_added_list:
+                    minor_roads_queue.put(verified_seed)
+                    segment_added_list.append(verified_seed)
+
                 for vert in [verified_seed.start_vert, verified_seed.end_vert]:
                     if vert in vertex_added_dict:
-                        vertex_added_dict[vert].append(verified_seed)
+                        if verified_seed not in vertex_added_dict[vert]:
+                            vertex_added_dict[vert].append(verified_seed)
                     else:
                         vertex_added_dict[vert] = [verified_seed]
 
@@ -254,7 +257,7 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
         return None
     elif np.array_equal(find_pixel_value(segment, config.water_map_rgb), config.water_legend):
         return None
-    elif check_too_high(segment, 65, config.height_map_gray):
+    elif check_too_high(segment, HEIGHT_THRESHOLD, config.height_map_gray):
         return None
     elif check_water(segment, config.water_map_gray):
         return None
