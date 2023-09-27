@@ -1,15 +1,31 @@
+import matplotlib.patches as mpatches
+import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.collections import LineCollection
-import matplotlib.patheffects as pe
 
 from src.utilities import RoadTypes
 
-
 HIGHWAY_COLOUR = [[255/255, 179/255, 102/255, 1]]
-MINOR_ROAD_COLOUR = [[ 1, 1, 1, 1]]
-TUNNER_COLOUR = [[ 255/255, 204/255, 153/255, 1]]
-BRIDGE_COLOUR = [[ 219/255, 181/255, 0/255, 1]]
+MINOR_ROAD_COLOUR = [[1, 1, 1, 1]]
+TUNNER_COLOUR = [[227/255, 227/255, 227/255, 1]]
+BRIDGE_COLOUR = [[219/255, 181/255, 0/255, 1]]
+
+# Define labels for the legend
+legend_labels = {
+    'Highway': 'Highway',
+    'Bridge': 'Bridge',
+    'Tunnel': 'Tunnel',
+    'Minor Road': 'Minor Road',
+}
+
+legend_handles = [
+    mpatches.Patch(color=HIGHWAY_COLOUR[0], label=legend_labels['Highway']),
+    mpatches.Patch(color=BRIDGE_COLOUR[0], label=legend_labels['Bridge']),
+    mpatches.Patch(color=TUNNER_COLOUR[0], label=legend_labels['Tunnel']),
+    mpatches.Patch(
+        color=MINOR_ROAD_COLOUR[0], label=legend_labels['Minor Road']),
+]
 
 
 class Visualiser:
@@ -23,18 +39,33 @@ class Visualiser:
     def visualise(self):
         self.iteration_counter += 1
         at_beginning = self.iteration_counter < 10
-        visualise(self.map_array, self.road_network, self.highways, self.bridges, self.tunnels, self.minor_lines, self.fig, self.ax, at_beginning, self.land_usages)
+        visualise(self.map_array, self.road_network, self.highways, self.bridges,
+                  self.tunnels, self.minor_lines, self.fig, self.ax, at_beginning, self.land_usages)
 
 
 def init_plot():
     fig, ax = plt.subplots()
     ax.axis('equal')
-    highways = LineCollection([], linewidths=[1.8], colors=HIGHWAY_COLOUR, edgecolors="orange", antialiased=False, zorder=10)
-    bridges = LineCollection([], linewidths=[2.0], colors=BRIDGE_COLOUR, zorder=12)
-    tunnels = LineCollection([], linewidths=[1.8], colors=TUNNER_COLOUR, zorder=11)
-    minor_lines = LineCollection([], linewidths=[1.2], colors=MINOR_ROAD_COLOUR, zorder=2)
+    highways = LineCollection([], linewidths=[
+                              1.8], colors=HIGHWAY_COLOUR, edgecolors="orange", antialiased=False, zorder=10)
+    bridges = LineCollection([], linewidths=[2.0],
+                             colors=BRIDGE_COLOUR, zorder=12)
+    tunnels = LineCollection([], linewidths=[1.8],
+                             colors=TUNNER_COLOUR, zorder=11)
+    minor_lines = LineCollection(
+        [], linewidths=[1.2], colors=MINOR_ROAD_COLOUR, zorder=2)
 
     plt.ion()  # Turn on interactive mode
+
+    # Plot the legend
+    highway_patch = mpatches.Patch(color=HIGHWAY_COLOUR[0], label='Highway')
+    minor_road_patch = mpatches.Patch(
+        color=MINOR_ROAD_COLOUR[0], label='Minor Road')
+    bridge_patch = mpatches.Patch(color=BRIDGE_COLOUR[0], label='Bridge')
+    tunnel_patch = mpatches.Patch(color=TUNNER_COLOUR[0], label='Tunnel')
+    fig.legend(loc="upper left", handles=[
+               highway_patch, minor_road_patch, bridge_patch, tunnel_patch])
+
     plt.show()
 
     return fig, ax, highways, bridges, tunnels, minor_lines
@@ -57,7 +88,8 @@ def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, 
         vertex_x_coords.append(segment.end_vert.position[0])
         vertex_y_coords.append(segment.end_vert.position[1])
 
-        coors = np.array([segment.start_vert.position, segment.end_vert.position])
+        coors = np.array([segment.start_vert.position,
+                         segment.end_vert.position])
 
         if segment.road_type == RoadTypes.BRIDGE:
             bridges_segment_coords.append(coors)
@@ -69,11 +101,14 @@ def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, 
             minor_segment_coords.append(coors)
 
     bridges.set_segments(bridges_segment_coords)
-    bridges.set_path_effects([pe.Stroke(linewidth=4, foreground='dimgray'), pe.Normal()])
+    bridges.set_path_effects(
+        [pe.Stroke(linewidth=4, foreground='dimgray'), pe.Normal()])
     tunnels.set_segments(tunnels_segment_coords)
-    tunnels.set_path_effects([pe.Stroke(linewidth=2, foreground='white'), pe.Normal()])
+    tunnels.set_path_effects(
+        [pe.Stroke(linewidth=2, foreground='white'), pe.Normal()])
     highways.set_segments(highways_segment_coords)
-    highways.set_path_effects([pe.Stroke(linewidth=2, foreground='white'), pe.Normal()])
+    highways.set_path_effects(
+        [pe.Stroke(linewidth=2, foreground='white'), pe.Normal()])
     minor_lines.set_segments(minor_segment_coords)
 
     ax.clear()  # Clear previous fill polygons if you want to
