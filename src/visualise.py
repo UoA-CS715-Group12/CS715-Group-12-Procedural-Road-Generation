@@ -11,21 +11,11 @@ MINOR_ROAD_COLOUR = [[1, 1, 1, 1]]
 TUNNER_COLOUR = [[227/255, 227/255, 227/255, 1]]
 BRIDGE_COLOUR = [[219/255, 181/255, 0/255, 1]]
 
-# Define labels for the legend
-legend_labels = {
-    'Highway': 'Highway',
-    'Bridge': 'Bridge',
-    'Tunnel': 'Tunnel',
-    'Minor Road': 'Minor Road',
+EDGE_COLOURS = {
+    "HIGHWAY": "white",
+    "TUNNEL": "gray",
+    "BRIDGE": "dimgray"
 }
-
-legend_handles = [
-    mpatches.Patch(color=HIGHWAY_COLOUR[0], label=legend_labels['Highway']),
-    mpatches.Patch(color=BRIDGE_COLOUR[0], label=legend_labels['Bridge']),
-    mpatches.Patch(color=TUNNER_COLOUR[0], label=legend_labels['Tunnel']),
-    mpatches.Patch(
-        color=MINOR_ROAD_COLOUR[0], label=legend_labels['Minor Road']),
-]
 
 
 class Visualiser:
@@ -47,7 +37,7 @@ def init_plot():
     fig, ax = plt.subplots()
     ax.axis('equal')
     highways = LineCollection([], linewidths=[
-                              1.8], colors=HIGHWAY_COLOUR, edgecolors="orange", antialiased=False, zorder=10)
+                              1.8], colors=HIGHWAY_COLOUR, antialiased=False, zorder=10)
     bridges = LineCollection([], linewidths=[2.0],
                              colors=BRIDGE_COLOUR, zorder=12)
     tunnels = LineCollection([], linewidths=[1.8],
@@ -58,11 +48,14 @@ def init_plot():
     plt.ion()  # Turn on interactive mode
 
     # Plot the legend
-    highway_patch = mpatches.Patch(color=HIGHWAY_COLOUR[0], label='Highway')
-    minor_road_patch = mpatches.Patch(
-        color=MINOR_ROAD_COLOUR[0], label='Minor Road')
-    bridge_patch = mpatches.Patch(color=BRIDGE_COLOUR[0], label='Bridge')
-    tunnel_patch = mpatches.Patch(color=TUNNER_COLOUR[0], label='Tunnel')
+    highway_patch = mpatches.Patch(facecolor=HIGHWAY_COLOUR[0], edgecolor=EDGE_COLOURS["HIGHWAY"],
+                                   label='Highway')
+    minor_road_patch = mpatches.Patch(facecolor=MINOR_ROAD_COLOUR[0],
+                                      label='Minor Road')
+    bridge_patch = mpatches.Patch(facecolor=BRIDGE_COLOUR[0], edgecolor=EDGE_COLOURS["BRIDGE"],
+                                  label='Bridge')
+    tunnel_patch = mpatches.Patch(facecolor=TUNNER_COLOUR[0], edgecolor=EDGE_COLOURS["TUNNEL"],
+                                  label='Tunnel')
     fig.legend(loc="upper left", handles=[
                highway_patch, minor_road_patch, bridge_patch, tunnel_patch])
 
@@ -102,13 +95,13 @@ def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, 
 
     bridges.set_segments(bridges_segment_coords)
     bridges.set_path_effects(
-        [pe.Stroke(linewidth=4, foreground='dimgray'), pe.Normal()])
+        [pe.Stroke(linewidth=4, foreground=EDGE_COLOURS["BRIDGE"]), pe.Normal()])
     tunnels.set_segments(tunnels_segment_coords)
     tunnels.set_path_effects(
-        [pe.Stroke(linewidth=4, foreground='gray'), pe.Normal()])
+        [pe.Stroke(linewidth=4, foreground=EDGE_COLOURS["TUNNEL"]), pe.Normal()])
     highways.set_segments(highways_segment_coords)
     highways.set_path_effects(
-        [pe.Stroke(linewidth=2, foreground='white'), pe.Normal()])
+        [pe.Stroke(linewidth=2, foreground=EDGE_COLOURS["HIGHWAY"]), pe.Normal()])
     minor_lines.set_segments(minor_segment_coords)
 
     ax.clear()  # Clear previous fill polygons if you want to
