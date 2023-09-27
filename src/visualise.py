@@ -1,8 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.collections import LineCollection
+import matplotlib.patheffects as pe
 
 from src.utilities import RoadTypes
+
+
+HIGHWAY_COLOUR = [[255/255, 179/255, 102/255, 1]]
+MINOR_ROAD_COLOUR = [[ 1, 1, 1, 1]]
+TUNNER_COLOUR = [[ 255/255, 204/255, 153/255, 1]]
+BRIDGE_COLOUR = [[ 150/255, 179/255, 102/255, 1]]
 
 
 class Visualiser:
@@ -22,10 +29,10 @@ class Visualiser:
 def init_plot():
     fig, ax = plt.subplots()
     ax.axis('equal')
-    highways = LineCollection([], linewidths=[1.0], colors=[[0.2, 0.6, 0.6, 1]])
-    bridges = LineCollection([], linewidths=[1.0], colors=[[1, 1, 0, 1]])
-    tunnels = LineCollection([], linewidths=[1.0], colors=[[0.5, 1, 0, 1]])
-    minor_lines = LineCollection([], linewidths=[0.6], colors=[[0.6, 0.2, 0, 0.8]])
+    highways = LineCollection([], linewidths=[1.8], colors=HIGHWAY_COLOUR, edgecolors="orange", antialiased=False, zorder=10)
+    bridges = LineCollection([], linewidths=[2.0], colors=BRIDGE_COLOUR, zorder=12)
+    tunnels = LineCollection([], linewidths=[1.8], colors=TUNNER_COLOUR, zorder=11)
+    minor_lines = LineCollection([], linewidths=[1.3], colors=MINOR_ROAD_COLOUR, zorder=2)
 
     plt.ion()  # Turn on interactive mode
     plt.show()
@@ -62,8 +69,11 @@ def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, 
             minor_segment_coords.append(coors)
 
     bridges.set_segments(bridges_segment_coords)
+    bridges.set_path_effects([pe.Stroke(linewidth=4, foreground='dimgray'), pe.Normal()])
     tunnels.set_segments(tunnels_segment_coords)
+    tunnels.set_path_effects([pe.Stroke(linewidth=2, foreground='white'), pe.Normal()])
     highways.set_segments(highways_segment_coords)
+    highways.set_path_effects([pe.Stroke(linewidth=2, foreground='white'), pe.Normal()])
     minor_lines.set_segments(minor_segment_coords)
 
     ax.clear()  # Clear previous fill polygons if you want to
