@@ -9,7 +9,7 @@ from src.utilities import RoadTypes
 HIGHWAY_COLOUR = [[255/255, 179/255, 102/255, 1]]
 MINOR_ROAD_COLOUR = [[ 1, 1, 1, 1]]
 TUNNER_COLOUR = [[ 255/255, 204/255, 153/255, 1]]
-BRIDGE_COLOUR = [[ 150/255, 179/255, 102/255, 1]]
+BRIDGE_COLOUR = [[ 219/255, 181/255, 0/255, 1]]
 
 
 class Visualiser:
@@ -32,7 +32,7 @@ def init_plot():
     highways = LineCollection([], linewidths=[1.8], colors=HIGHWAY_COLOUR, edgecolors="orange", antialiased=False, zorder=10)
     bridges = LineCollection([], linewidths=[2.0], colors=BRIDGE_COLOUR, zorder=12)
     tunnels = LineCollection([], linewidths=[1.8], colors=TUNNER_COLOUR, zorder=11)
-    minor_lines = LineCollection([], linewidths=[1.3], colors=MINOR_ROAD_COLOUR, zorder=2)
+    minor_lines = LineCollection([], linewidths=[1.2], colors=MINOR_ROAD_COLOUR, zorder=2)
 
     plt.ion()  # Turn on interactive mode
     plt.show()
