@@ -105,7 +105,7 @@ def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, 
         [pe.Stroke(linewidth=4, foreground='dimgray'), pe.Normal()])
     tunnels.set_segments(tunnels_segment_coords)
     tunnels.set_path_effects(
-        [pe.Stroke(linewidth=2, foreground='white'), pe.Normal()])
+        [pe.Stroke(linewidth=4, foreground='gray'), pe.Normal()])
     highways.set_segments(highways_segment_coords)
     highways.set_path_effects(
         [pe.Stroke(linewidth=2, foreground='white'), pe.Normal()])
