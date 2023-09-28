@@ -61,7 +61,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
     timer.stop()
 
     # Step 2: Visualise road network.
-    visualiser = Visualiser(config.height_map_rgb, road_network)
+    visualiser = Visualiser(config.visualisation_background, road_network)
     threading.Thread(target=run_computations,
                      args=(config, road_network, vertex_dict),
                      daemon=True).start()

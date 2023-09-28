@@ -36,3 +36,6 @@ pip install -r requirements.txt
 ```
 
 Run the `citygenerator.py` file either using an IDE or the command line
+
+# Acknowledgements:
+- Input images are source from [Koordinates.com](https://koordinates.com/) and [Mapbox](https://www.mapbox.com/)
