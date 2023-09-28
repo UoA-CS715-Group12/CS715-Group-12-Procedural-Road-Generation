@@ -14,12 +14,13 @@ from src.utilities import get_distance, RoadTypes, get_change_in_height, get_hei
 WEIGHT_FACTOR = 30
 
 # Heuristic related params
-BOUNDED_RELAXATION = 2  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
+BOUNDED_RELAXATION = 2 #2  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
 
 # Neighbours related params
 NEIGHBOR_RANGE = 15  # Tweak this. Higher = more time, roads can take more angles, has to be bigger than MIN_TUNNEL_LEN and MIN_BRIDGE_LEN
 MIN_TUNNEL_LEN = 5  # Tweak this
 MIN_BRIDGE_LEN = 6  # Tweak this
+MIN_HIGHWAY_LEN = 0
 
 # Cost function related params (Road cost $?M/m)
 HIGHWAY_COST = 0.0264  # Tweak this parameter
@@ -273,8 +274,10 @@ def get_neighbors_masks(n_range):
                 gcd = math.gcd(dx, dy)
                 vector_lowest = (dx // gcd, dy // gcd)
 
-                # Highway neighbor add the lowest vector
-                neighbors_highway.add(vector_lowest)
+
+                #  neighbor needs to be at least MIN_HIGHWAY_LEN away
+                if dx ** 2 + dy ** 2 >= MIN_HIGHWAY_LEN ** 2:
+                    neighbors_highway.add((dx, dy))
 
                 # Tunnel neighbor needs to be at least MIN_TUNNEL_LEN away
                 if dx ** 2 + dy ** 2 >= MIN_TUNNEL_LEN ** 2:

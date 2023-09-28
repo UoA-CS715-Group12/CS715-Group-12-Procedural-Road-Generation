@@ -17,7 +17,8 @@ from src.utilities import get_population_density_value
 from src.utilities import rotate
 
 HEIGHT_THRESHOLD = 100  # Tweak this to set the maximum height L-system roads can be generated
-
+DIRECTION_SIMILARITY_THRESHOLD = 0.9
+CLOSE_THRESHOLD = 10
 class Rules(Enum):
     RULE_SEED = 1
     RULE_RADIAL = 2
@@ -29,7 +30,7 @@ class Rules(Enum):
 def initialise(config):
     segment_added_list = []
     vertex_added_dict = {}
-
+    min_distance = 5 #config.major_vertex_min_distance  # Min distance between major road vertices.
     for segment in config.axiom:
         segment_added_list.append(segment)
         for vert in [segment.start_vert, segment.end_vert]:
@@ -37,8 +38,113 @@ def initialise(config):
                 vertex_added_dict[vert].append(segment)
             else:
                 vertex_added_dict[vert] = [segment]
-
     return segment_added_list, vertex_added_dict
+
+def fix_overlapping_segments(config, segment_added_list, vertex_added_dict):
+    pending_removal = []
+    for segment in segment_added_list:
+        starting_vertex = segment.start_vert
+        ending_vertex = segment.end_vert
+        vertex_added_list = list(vertex_added_dict.keys())
+        all_segments_around_current = []
+        
+        vertex_tree = cKDTree([vertex.position for vertex in vertex_added_list])
+
+        _, result_index = vertex_tree.query(starting_vertex.position, k=5, distance_upper_bound=config.major_vertex_min_distance)
+        try:
+                
+            if len(result_index) > 1 or result_index != len(vertex_added_dict.keys()):
+                for i in result_index:
+                    curr_vertex = vertex_added_list[i]
+                    all_segments_around_current += vertex_added_dict[curr_vertex]
+            
+            _, result_index = vertex_tree.query(ending_vertex.position, k=5, distance_upper_bound=config.major_vertex_min_distance)
+            if len(result_index) > 1 or result_index != len(vertex_added_dict.keys()):
+                for i in result_index:
+                    curr_vertex = vertex_added_list[i]
+                    all_segments_around_current += vertex_added_dict[curr_vertex]
+        except IndexError as e :
+            print(e)
+            print(result_index)
+            print(i)
+        # remove duplicate and current segment
+        all_segments_around_current = list(set(all_segments_around_current))
+        if segment in all_segments_around_current:
+            all_segments_around_current.remove(segment)
+
+
+        for other_segment in all_segments_around_current:
+            is_close_return_val = is_close(segment, other_segment)
+            is_similar_direction_return_val = is_similar_direction(segment, other_segment)
+            print(is_close_return_val)
+            print(is_similar_direction_return_val)
+            print()
+            if is_similar_direction_return_val and is_close_return_val:
+                
+                same_direction = is_close_return_val[0] < is_close_return_val[1]
+                segments_connected_to_the_other_segment = list(set(vertex_added_dict[other_segment.end_vert]))
+                for connected_segment in segments_connected_to_the_other_segment:
+                    # find the vertex in connected_segment that is the other_segment.end_vert, and replace it with segment.end_vert
+                    if connected_segment.start_vert == other_segment.end_vert:
+                        if same_direction:
+                            connected_segment.start_vert = segment.end_vert
+                            vertex_added_dict[segment.end_vert].append(connected_segment)
+                        else:
+                            connected_segment.start_vert = segment.start_vert
+                            vertex_added_dict[segment.end_vert].append(connected_segment)
+                    elif connected_segment.end_vert == other_segment.end_vert:
+                        if same_direction:
+                            connected_segment.end_vert = segment.end_vert
+                            vertex_added_dict[segment.end_vert].append(connected_segment)
+                        else:
+                            connected_segment.end_vert = segment.start_vert 
+                            vertex_added_dict[segment.end_vert].append(connected_segment)
+                segments_connected_to_the_other_segment = vertex_added_dict[other_segment.start_vert]
+                for connected_segment in segments_connected_to_the_other_segment:
+                    # find the vertex in connected_segment that is the other_segment.start_vert, and replace it with segment.start_vert
+                    if connected_segment.start_vert == other_segment.start_vert:
+                        if same_direction:
+                            connected_segment.start_vert = segment.start_vert
+                            vertex_added_dict[segment.start_vert].append(connected_segment)
+                        else:
+                            connected_segment.start_vert = segment.end_vert
+                            vertex_added_dict[segment.start_vert].append(connected_segment)
+                    elif connected_segment.end_vert == other_segment.start_vert:
+                        if same_direction:
+                            connected_segment.end_vert = segment.start_vert
+                            vertex_added_dict[segment.start_vert].append(connected_segment)
+                        else:
+                            connected_segment.end_vert = segment.end_vert
+                            vertex_added_dict[segment.start_vert].append(connected_segment)
+                # remove other segment
+                # pending_removal.append(other_segment)
+                segment_added_list.remove(segment)
+                # remove other segment from vertex_added_dict
+                for vert in [other_segment.start_vert, other_segment.end_vert]:
+                    vertex_added_dict[vert].remove(other_segment)
+                    if len(vertex_added_dict[vert]) == 0:
+                        del vertex_added_dict[vert]
+    # for segment in pending_removal:
+    #     segment_added_list.remove(segment)
+
+def is_similar_direction(segment1, segment2):
+    # Normalize the direction vectors of the segments.
+    dir1 = (segment1.end_vert.position - segment1.start_vert.position) / np.linalg.norm(segment1.end_vert.position - segment1.start_vert.position)
+    dir2 = (segment2.end_vert.position - segment2.start_vert.position) / np.linalg.norm(segment2.end_vert.position - segment2.start_vert.position)
+    
+    # Check if the cosine of the angle between the segments is close to 1 (i.e., they're nearly parallel).
+    return abs(np.dot(dir1, dir2)) > DIRECTION_SIMILARITY_THRESHOLD
+
+def is_close(segment1, segment2):
+    d1 = get_distance(segment1.start_vert.position, segment2.start_vert.position)
+    d1 += get_distance(segment1.end_vert.position, segment2.end_vert.position) 
+    d2 = get_distance(segment1.start_vert.position, segment2.end_vert.position)
+    d2 += get_distance(segment1.end_vert.position, segment2.start_vert.position)
+        
+    if min(d1, d2) < CLOSE_THRESHOLD:
+        return [d1,d2]
+    else: 
+        return False
 
 
 def generate_major_roads(config, segment_added_list, vertex_added_dict):
@@ -225,8 +331,10 @@ def verify_segment(config, segment, min_vertex_distance, segment_added_list, ver
     max_roads_intersection = 4  # maximum allowed roads in an intersection
     vertex_added_list = list(vertex_added_dict.keys())  # list of unique vertex positions
     # KDTree of unique vertices used to compute nearest neighbours
-    vertex_tree = cKDTree([vertex.position for vertex in vertex_added_list])
-
+    try:
+        vertex_tree = cKDTree([vertex.position for vertex in vertex_added_list])
+    except ValueError:
+        return segment
     # INPUT:    Segment, Segment  
     # OUTPUT:   Segment
     # Creates a new intersection using the two segments. The existing segment is
