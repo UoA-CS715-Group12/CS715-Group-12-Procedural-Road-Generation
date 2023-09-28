@@ -26,7 +26,6 @@ class Rules(Enum):
     RULE_GRID = 4
     RULE_MINOR = 5
 
-
 def initialise(config):
     segment_added_list = []
     vertex_added_dict = {}
@@ -117,15 +116,17 @@ def fix_overlapping_segments(config, segment_added_list, vertex_added_dict):
                             connected_segment.end_vert = segment.end_vert
                             vertex_added_dict[segment.start_vert].append(connected_segment)
                 # remove other segment
-                # pending_removal.append(other_segment)
-                segment_added_list.remove(segment)
+                pending_removal.append(other_segment)
+                # segment_added_list.remove(segment)
                 # remove other segment from vertex_added_dict
                 for vert in [other_segment.start_vert, other_segment.end_vert]:
                     vertex_added_dict[vert].remove(other_segment)
                     if len(vertex_added_dict[vert]) == 0:
                         del vertex_added_dict[vert]
-    # for segment in pending_removal:
-    #     segment_added_list.remove(segment)
+    for segment in pending_removal:
+        segment_added_list.remove(segment)
+    
+
 
 def is_similar_direction(segment1, segment2):
     # Normalize the direction vectors of the segments.
@@ -158,8 +159,11 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict):
     min_distance = config.major_vertex_min_distance  # Min distance between major road vertices.
     while not segment_front_queue.empty() and iteration < config.max_road_network_iterations:
         current_segment = segment_front_queue.get()
-
-        suggested_segments = suggest_major(config, current_segment, config.road_rules_array, config.population_density_array)
+        try:
+            suggested_segments = suggest_major(config, current_segment, config.road_rules_array, config.population_density_array)
+        except Exception as e:
+            print(e)
+            
         for segment in suggested_segments:
             if not len(vertex_added_dict[current_segment.end_vert]) >= 2:
                 verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict)
