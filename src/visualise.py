@@ -20,7 +20,7 @@ EDGE_COLOURS = {
 
 class Visualiser:
     def __init__(self, map_array, road_network, land_usages=None):
-        self.fig, self.ax, self.highways, self.bridges, self.tunnels, self.minor_lines = init_plot()
+        self.fig, self.ax, self.highways, self.bridges, self.tunnels, self.minor_lines, self.legend = init_plot()
         self.map_array = map_array
         self.road_network = road_network
         self.land_usages = land_usages
@@ -31,6 +31,13 @@ class Visualiser:
         at_beginning = self.iteration_counter < 10
         visualise(self.map_array, self.road_network, self.highways, self.bridges,
                   self.tunnels, self.minor_lines, self.fig, self.ax, at_beginning, self.land_usages)
+    
+    def saveImage(self):
+        self.fig.axes[0].get_xaxis().set_visible(False)
+        self.fig.axes[0].get_yaxis().set_visible(False)
+        self.legend.remove()
+        # Save the graph 
+        self.fig.savefig('output/visualisation.png', bbox_inches='tight', pad_inches=0, dpi = 3000) 
 
 
 def init_plot():
@@ -56,13 +63,12 @@ def init_plot():
                                   label='Bridge')
     tunnel_patch = mpatches.Patch(facecolor=TUNNER_COLOUR[0], edgecolor=EDGE_COLOURS["TUNNEL"],
                                   label='Tunnel')
-    fig.legend(loc="upper left", handles=[
+    legend = fig.legend(loc="upper left", handles=[
                highway_patch, minor_road_patch, bridge_patch, tunnel_patch])
 
     plt.show()
 
-    return fig, ax, highways, bridges, tunnels, minor_lines
-
+    return fig, ax, highways, bridges, tunnels, minor_lines, legend
 
 def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, fig, ax, at_beginning=True, land_usages=None):
     if not at_beginning:
