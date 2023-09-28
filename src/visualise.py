@@ -50,7 +50,7 @@ def init_plot():
     # Plot the legend
     highway_patch = mpatches.Patch(facecolor=HIGHWAY_COLOUR[0], edgecolor=EDGE_COLOURS["HIGHWAY"],
                                    label='Highway')
-    minor_road_patch = mpatches.Patch(facecolor=MINOR_ROAD_COLOUR[0],
+    minor_road_patch = mpatches.Patch(facecolor=MINOR_ROAD_COLOUR[0], edgecolor="gray",
                                       label='Minor Road')
     bridge_patch = mpatches.Patch(facecolor=BRIDGE_COLOUR[0], edgecolor=EDGE_COLOURS["BRIDGE"],
                                   label='Bridge')
