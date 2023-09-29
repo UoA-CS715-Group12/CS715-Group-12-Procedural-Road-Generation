@@ -68,6 +68,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
 
     while True:
         if not plt.fignum_exists(1):
+            visualiser.saveImage()
             break
         visualiser.visualise()
 
