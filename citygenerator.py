@@ -20,10 +20,6 @@ from src.visualise import Visualiser
 # If show_time is true, the process time required to generate the intermediate representation is shown.
 # If show_stats is true, the statistics used to evaluate the representation are shown
 def run_computations(config, road_network, vertex_dict):
-    for i in range(10):
-        print(i)
-        # sleep for 1 sec
-        time.sleep(1)
     timer = Timer("Road network generator")
     # rng.fix_overlapping_segments(config, road_network, vertex_dict)
     timer.stop()
