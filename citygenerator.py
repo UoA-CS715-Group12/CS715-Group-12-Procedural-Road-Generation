@@ -35,10 +35,6 @@ def run_computations(config, road_network, vertex_dict):
     rng.generate_major_roads(config, road_network, vertex_dict)
     # rng.fix_overlapping_segments(config, road_network, vertex_dict)
     timer.stop()
-    for i in range(10):
-        print(i)
-        # sleep for 1 sec
-        time.sleep(1)
     timer = Timer("Minor roads")
     rng.generate_minor_roads(config, road_network, vertex_dict)
     timer.stop()
