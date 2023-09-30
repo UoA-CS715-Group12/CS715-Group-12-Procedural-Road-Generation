@@ -6,10 +6,10 @@ from matplotlib.collections import LineCollection
 
 from src.utilities import RoadTypes
 
-HIGHWAY_COLOUR = [[255/255, 179/255, 102/255, 1]]
-MINOR_ROAD_COLOUR = [[183/255, 185/255, 187/255, 1]]
-TUNNER_COLOUR = [[227/255, 227/255, 227/255, 1]]
-BRIDGE_COLOUR = [[219/255, 181/255, 0/255, 1]]
+HIGHWAY_COLOUR = [[255 / 255, 179 / 255, 102 / 255, 1]]
+MINOR_ROAD_COLOUR = [[183 / 255, 185 / 255, 187 / 255, 1]]
+TUNNER_COLOUR = [[227 / 255, 227 / 255, 227 / 255, 1]]
+BRIDGE_COLOUR = [[219 / 255, 181 / 255, 0 / 255, 1]]
 
 EDGE_COLOURS = {
     "HIGHWAY": "white",
@@ -31,20 +31,20 @@ class Visualiser:
         at_beginning = self.iteration_counter < 10
         visualise(self.map_array, self.road_network, self.highways, self.bridges,
                   self.tunnels, self.minor_lines, self.fig, self.ax, at_beginning, self.land_usages)
-    
+
     def saveImage(self):
         self.fig.axes[0].get_xaxis().set_visible(False)
         self.fig.axes[0].get_yaxis().set_visible(False)
         self.legend.remove()
         # Save the graph 
-        self.fig.savefig('output/visualisation.png', bbox_inches='tight', pad_inches=0, dpi = 3000) 
+        self.fig.savefig('output/visualisation.png', bbox_inches='tight', pad_inches=0, dpi=1200)
 
 
 def init_plot():
     fig, ax = plt.subplots()
     ax.axis('equal')
     highways = LineCollection([], linewidths=[
-                              1.8], colors=HIGHWAY_COLOUR, antialiased=False, zorder=10)
+        1.8], colors=HIGHWAY_COLOUR, antialiased=False, zorder=10)
     bridges = LineCollection([], linewidths=[2.0],
                              colors=BRIDGE_COLOUR, zorder=12)
     tunnels = LineCollection([], linewidths=[1.8],
@@ -64,11 +64,12 @@ def init_plot():
     tunnel_patch = mpatches.Patch(facecolor=TUNNER_COLOUR[0], edgecolor=EDGE_COLOURS["TUNNEL"],
                                   label='Tunnel')
     legend = fig.legend(loc="upper left", handles=[
-               highway_patch, minor_road_patch, bridge_patch, tunnel_patch])
+        highway_patch, minor_road_patch, bridge_patch, tunnel_patch])
 
     plt.show()
 
     return fig, ax, highways, bridges, tunnels, minor_lines, legend
+
 
 def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, fig, ax, at_beginning=True, land_usages=None):
     if not at_beginning:
@@ -88,7 +89,7 @@ def visualise(map_array, road_network, highways, bridges, tunnels, minor_lines, 
         vertex_y_coords.append(segment.end_vert.position[1])
 
         coors = np.array([segment.start_vert.position,
-                         segment.end_vert.position])
+                          segment.end_vert.position])
 
         if segment.road_type == RoadTypes.BRIDGE:
             bridges_segment_coords.append(coors)

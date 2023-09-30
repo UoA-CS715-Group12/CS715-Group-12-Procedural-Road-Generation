@@ -58,7 +58,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
     for path in segments:
         config.axiom.extend(path)
     timer.stop()
-    
+
     timer = Timer("Road network generator initialise")
     road_network, vertex_dict = rng.initialise(config)
     timer.stop()
