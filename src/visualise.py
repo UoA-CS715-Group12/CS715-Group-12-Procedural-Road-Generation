@@ -7,7 +7,7 @@ from matplotlib.collections import LineCollection
 from src.utilities import RoadTypes
 
 HIGHWAY_COLOUR = [[255/255, 179/255, 102/255, 1]]
-MINOR_ROAD_COLOUR = [[1, 1, 1, 1]]
+MINOR_ROAD_COLOUR = [[183/255, 185/255, 187/255, 1]]
 TUNNER_COLOUR = [[227/255, 227/255, 227/255, 1]]
 BRIDGE_COLOUR = [[219/255, 181/255, 0/255, 1]]
 
@@ -50,7 +50,7 @@ def init_plot():
     tunnels = LineCollection([], linewidths=[1.8],
                              colors=TUNNER_COLOUR, zorder=11)
     minor_lines = LineCollection(
-        [], linewidths=[1.2], colors=MINOR_ROAD_COLOUR, zorder=2)
+        [], linewidths=[1], colors=MINOR_ROAD_COLOUR, zorder=2)
 
     plt.ion()  # Turn on interactive mode
 
