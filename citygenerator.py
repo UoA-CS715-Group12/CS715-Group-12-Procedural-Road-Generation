@@ -25,7 +25,7 @@ def run_computations(config, road_network, vertex_dict):
         # sleep for 1 sec
         time.sleep(1)
     timer = Timer("Road network generator")
-    rng.fix_overlapping_segments(config, road_network, vertex_dict)
+    # rng.fix_overlapping_segments(config, road_network, vertex_dict)
     timer.stop()
     for i in range(10):
         print(i)
@@ -33,6 +33,7 @@ def run_computations(config, road_network, vertex_dict):
         time.sleep(1)
     timer = Timer("Major roads")
     rng.generate_major_roads(config, road_network, vertex_dict)
+    # rng.fix_overlapping_segments(config, road_network, vertex_dict)
     timer.stop()
     for i in range(10):
         print(i)

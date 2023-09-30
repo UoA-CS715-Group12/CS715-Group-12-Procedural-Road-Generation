@@ -14,12 +14,12 @@ from src.utilities import get_distance, RoadTypes, get_change_in_height, get_hei
 WEIGHT_FACTOR = 30
 
 # Heuristic related params
-BOUNDED_RELAXATION = 1 #2  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
+BOUNDED_RELAXATION = 2 #2  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
 
 # Neighbours related params
 NEIGHBOR_RANGE = 15  # Tweak this. Higher = more time, roads can take more angles, has to be bigger than MIN_TUNNEL_LEN and MIN_BRIDGE_LEN
 MIN_TUNNEL_LEN = 5  # Tweak this
-MIN_BRIDGE_LEN = 6  # Tweak this
+MIN_BRIDGE_LEN = 6 # Tweak this
 MIN_HIGHWAY_LEN = 0
 
 # Cost function related params (Road cost $?M/m)
@@ -69,7 +69,7 @@ def get_highway_cost(point1, point2, config):
     if check_water(Segment(segment_array=[point1, point2]), config.water_map_gray):
         return math.inf
 
-    return HIGHWAY_COST * distance * (1 + gradient * GRADIENT_COST_FACTOR)
+    return HIGHWAY_COST * distance * (1 + abs(gradient) * GRADIENT_COST_FACTOR)
 
 
 def get_tunnel_cost(point1, point2, config):
@@ -235,7 +235,7 @@ def get_neighbors(previous, current, *neighbors_masks):
             neighbor = (current[0] + mask[0], current[1] + mask[1])
 
             # Skip if the neighbor is facing behind the road
-            if previous is not None and check_curvature(previous, current, neighbor, 90):
+            if previous is not None and check_curvature(previous, current, neighbor, 25):
                 continue
 
             neighbors.append(neighbor)
