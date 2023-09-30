@@ -14,7 +14,7 @@ from src.utilities import get_distance, RoadTypes, get_change_in_height, get_hei
 WEIGHT_FACTOR = 30
 
 # Heuristic related params
-BOUNDED_RELAXATION = 2 #2  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
+BOUNDED_RELAXATION = 1 #2  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
 
 # Neighbours related params
 NEIGHBOR_RANGE = 15  # Tweak this. Higher = more time, roads can take more angles, has to be bigger than MIN_TUNNEL_LEN and MIN_BRIDGE_LEN

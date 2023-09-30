@@ -26,6 +26,27 @@ class Rules(Enum):
     RULE_GRID = 4
     RULE_MINOR = 5
 
+
+def fix_data(segment_added_list, vertex_added_dict):
+    for vert in vertex_added_dict.keys():
+        if len(vertex_added_dict[vert]) == 0:
+            del vertex_added_dict[vert]
+        vertex_added_dict[vert] = list(set(vertex_added_dict[vert]))
+
+    segment_added_list = list(set(segment_added_list))
+    for segment in segment_added_list:
+        start = segment.start_vert.position
+        end = segment.end_vert.position
+        # check if any position is nan
+        if np.isnan(start[0]) or np.isnan(start[1]) or np.isnan(end[0]) or np.isnan(end[1]):
+            segment_added_list.remove(segment)
+            for vert in [segment.start_vert, segment.end_vert]:
+                vertex_added_dict[vert].remove(segment)
+                if len(vertex_added_dict[vert]) == 0:
+                    del vertex_added_dict[vert]
+
+    
+
 def initialise(config):
     segment_added_list = []
     vertex_added_dict = {}
@@ -63,9 +84,10 @@ def fix_overlapping_segments(config, segment_added_list, vertex_added_dict):
                     curr_vertex = vertex_added_list[i]
                     all_segments_around_current += vertex_added_dict[curr_vertex]
         except IndexError as e :
-            print(e)
-            print(result_index)
-            print(i)
+            # print(e)
+            # print(result_index)
+            # print(i)
+            pass
         # remove duplicate and current segment
         all_segments_around_current = list(set(all_segments_around_current))
         if segment in all_segments_around_current:
@@ -75,9 +97,9 @@ def fix_overlapping_segments(config, segment_added_list, vertex_added_dict):
         for other_segment in all_segments_around_current:
             is_close_return_val = is_close(segment, other_segment)
             is_similar_direction_return_val = is_similar_direction(segment, other_segment)
-            print(is_close_return_val)
-            print(is_similar_direction_return_val)
-            print()
+            # print(is_close_return_val)
+            # print(is_similar_direction_return_val)
+            # print()
             if is_similar_direction_return_val and is_close_return_val:
                 
                 same_direction = is_close_return_val[0] < is_close_return_val[1]
@@ -87,45 +109,56 @@ def fix_overlapping_segments(config, segment_added_list, vertex_added_dict):
                     if connected_segment.start_vert == other_segment.end_vert:
                         if same_direction:
                             connected_segment.start_vert = segment.end_vert
-                            vertex_added_dict[segment.end_vert].append(connected_segment)
+                            if connected_segment not in vertex_added_dict[segment.end_vert]:
+                                vertex_added_dict[segment.end_vert].append(connected_segment)
                         else:
                             connected_segment.start_vert = segment.start_vert
-                            vertex_added_dict[segment.end_vert].append(connected_segment)
+                            if connected_segment not in vertex_added_dict[segment.end_vert]:
+                                vertex_added_dict[segment.end_vert].append(connected_segment)
                     elif connected_segment.end_vert == other_segment.end_vert:
                         if same_direction:
                             connected_segment.end_vert = segment.end_vert
-                            vertex_added_dict[segment.end_vert].append(connected_segment)
+                            if connected_segment not in vertex_added_dict[segment.end_vert]:
+                                vertex_added_dict[segment.end_vert].append(connected_segment)
                         else:
                             connected_segment.end_vert = segment.start_vert 
-                            vertex_added_dict[segment.end_vert].append(connected_segment)
-                segments_connected_to_the_other_segment = vertex_added_dict[other_segment.start_vert]
+                            if connected_segment not in vertex_added_dict[segment.end_vert]:
+                                vertex_added_dict[segment.end_vert].append(connected_segment)
+                segments_connected_to_the_other_segment = list(set(vertex_added_dict[other_segment.start_vert]))
                 for connected_segment in segments_connected_to_the_other_segment:
                     # find the vertex in connected_segment that is the other_segment.start_vert, and replace it with segment.start_vert
                     if connected_segment.start_vert == other_segment.start_vert:
                         if same_direction:
                             connected_segment.start_vert = segment.start_vert
-                            vertex_added_dict[segment.start_vert].append(connected_segment)
+                            if connected_segment not in vertex_added_dict[segment.start_vert]:
+                             vertex_added_dict[segment.start_vert].append(connected_segment)
                         else:
                             connected_segment.start_vert = segment.end_vert
-                            vertex_added_dict[segment.start_vert].append(connected_segment)
+                            if connected_segment not in vertex_added_dict[segment.start_vert]:
+                                vertex_added_dict[segment.start_vert].append(connected_segment)
                     elif connected_segment.end_vert == other_segment.start_vert:
                         if same_direction:
                             connected_segment.end_vert = segment.start_vert
-                            vertex_added_dict[segment.start_vert].append(connected_segment)
+                            if connected_segment not in vertex_added_dict[segment.start_vert]:
+                                vertex_added_dict[segment.start_vert].append(connected_segment)
                         else:
                             connected_segment.end_vert = segment.end_vert
-                            vertex_added_dict[segment.start_vert].append(connected_segment)
+                            if connected_segment not in vertex_added_dict[segment.start_vert]:
+                                vertex_added_dict[segment.start_vert].append(connected_segment)
                 # remove other segment
                 pending_removal.append(other_segment)
                 # segment_added_list.remove(segment)
                 # remove other segment from vertex_added_dict
                 for vert in [other_segment.start_vert, other_segment.end_vert]:
-                    vertex_added_dict[vert].remove(other_segment)
-                    if len(vertex_added_dict[vert]) == 0:
-                        del vertex_added_dict[vert]
+                    try:
+                        vertex_added_dict[vert].remove(other_segment)
+                        if len(vertex_added_dict[vert]) == 0:
+                            del vertex_added_dict[vert]
+                    except Exception as e:
+                        print(e)
     for segment in pending_removal:
         segment_added_list.remove(segment)
-    
+    fix_data(segment_added_list, vertex_added_dict)
 
 
 def is_similar_direction(segment1, segment2):
@@ -163,7 +196,7 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict):
             suggested_segments = suggest_major(config, current_segment, config.road_rules_array, config.population_density_array)
         except Exception as e:
             print(e)
-            
+
         for segment in suggested_segments:
             if not len(vertex_added_dict[current_segment.end_vert]) >= 2:
                 verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict)
