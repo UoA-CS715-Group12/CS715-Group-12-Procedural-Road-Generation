@@ -191,14 +191,18 @@ def get_height(point, height_map):
 
 
 def get_water_depth(point, depth_map):
-    if depth_map[point[1], point[0]][0] == 63 and depth_map[point[1], point[0]][1] == 191 and depth_map[point[1], point[0]][2] == 127:
-        return 0.4
+    # White
+    if depth_map[point[1], point[0]][0] == 255 and depth_map[point[1], point[0]][1] == 255 and depth_map[point[1], point[0]][2] == 255:
+        return 1
+    # Light blue
     elif depth_map[point[1], point[0]][0] == 191 and depth_map[point[1], point[0]][1] == 255 and depth_map[point[1], point[0]][2] == 255:
         return 0.8
-    elif depth_map[point[1], point[0]][0] == 255 and depth_map[point[1], point[0]][1] == 255 and depth_map[point[1], point[0]][2] == 255:
-        return 1
+    # Blue
     elif depth_map[point[1], point[0]][0] == 63 and depth_map[point[1], point[0]][1] == 191 and depth_map[point[1], point[0]][2] == 255:
         return 0.6
+    # Green
+    elif depth_map[point[1], point[0]][0] == 63 and depth_map[point[1], point[0]][1] == 191 and depth_map[point[1], point[0]][2] == 127:
+        return 0.4
     else:
         return 1  # land bridge
 
