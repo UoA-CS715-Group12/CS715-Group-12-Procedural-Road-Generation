@@ -274,9 +274,9 @@ def get_neighbors_masks(n_range):
                 gcd = math.gcd(dx, dy)
                 vector_lowest = (dx // gcd, dy // gcd)
 
-                #  neighbor needs to be at least MIN_HIGHWAY_LEN away
+                # Highway neighbor add the lowest vector
                 if dx ** 2 + dy ** 2 >= MIN_HIGHWAY_LEN ** 2:
-                    neighbors_highway.add((dx, dy))
+                    neighbors_highway.add(vector_lowest)
 
                 # Tunnel neighbor needs to be at least MIN_TUNNEL_LEN away
                 if dx ** 2 + dy ** 2 >= MIN_TUNNEL_LEN ** 2:
