@@ -15,6 +15,10 @@
         "description": "Name of image used for water",
         "value": "greater_auckland/greater_auckland_coast.png"
     },
+    "water_depth_map_image_name": {
+        "description": "Name of image used for water depth",
+        "value": "greater_auckland/greater_auckland_water_depth_v2.png"
+    },
     "land_use_image_name": {
         "description": "Name of image used for land use",
         "value": "Zoning_Raster_low_res.tif"
@@ -122,10 +126,6 @@
     "minor_road_organic_probability": {
         "description": "Probability [0-1] of using the organic rule for minor roads.",
         "value": 0.1
-    },
-    "water_depth_map_image_name": {
-        "description": "Water depth image",
-        "value": "greater_auckland/greater_auckland_water_depth_v2.png"
     },
     "water_legend": {
         "description": "Color used to represent water.",
