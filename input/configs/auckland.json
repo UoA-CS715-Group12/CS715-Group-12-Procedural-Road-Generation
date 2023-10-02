@@ -123,6 +123,10 @@
         "description": "Probability [0-1] of using the organic rule for minor roads.",
         "value": 0.1
     },
+    "water_depth_map_image_name": {
+        "description": "Water depth image",
+        "value": "greater_auckland/greater_auckland_water_depth_v2.png"
+    },
     "water_legend": {
         "description": "Color used to represent water.",
         "value": [255, 255, 255]

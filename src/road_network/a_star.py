@@ -8,7 +8,7 @@ from src.config_manager import ConfigManager
 from src.road_network.growth_rules.cost_function import check_curvature, check_water, linear_interpolate_points
 from src.road_network.segment import Segment
 from src.road_network.vertex import Vertex
-from src.utilities import get_distance, RoadTypes, get_change_in_height, get_height
+from src.utilities import get_distance, RoadTypes, get_change_in_height, get_height, get_water_depth
 
 # Minimum Spanning Tree related params
 WEIGHT_FACTOR = 30
@@ -121,13 +121,12 @@ def get_bridge_cost(point1, point2, config):
     section_dist = distance / len(points)
     cost = 0
 
-    # Check no terrain is above the bridge
     for i in range(len(points)):
         curr_ground_altitude = get_height(points[i], config.height_map_gray)
-        if curr_ground_altitude > bridge_section_heights[i]:
+        if curr_ground_altitude > bridge_section_heights[i]:  # Check no terrain is above the bridge
             return math.inf
 
-        cost += BRIDGE_COST * section_dist
+        cost += BRIDGE_COST * section_dist * get_water_depth(points[i], config.water_depth_map)
 
     return cost
 

@@ -51,7 +51,7 @@ class ConfigManager(metaclass=SingletonMeta):
         self.visualisation_background = parse_image(image_path + self.visualise_image_name)
         self.height_map_gray = rgb2gray(self.height_map_rgb)
         self.pop_density_centres = parse_json(json_path + self.pop_density_centres_name)
-
+        self.water_depth_map = parse_image(image_path + self.water_depth_map_image_name)
         self.map_height, self.map_width = np.shape(self.water_map_gray)
 
     def is_in_the_map(self, pixel):

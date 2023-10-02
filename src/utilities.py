@@ -190,6 +190,18 @@ def get_height(point, height_map):
     return height_map[point[1], point[0]]
 
 
+def get_water_depth(point, depth_map):
+    if depth_map[point[1], point[0]][0] == 63 and depth_map[point[1], point[0]][1] == 191 and depth_map[point[1], point[0]][2] == 127:
+        return 0.4
+    elif depth_map[point[1], point[0]][0] == 191 and depth_map[point[1], point[0]][1] == 255 and depth_map[point[1], point[0]][2] == 255:
+        return 0.8
+    elif depth_map[point[1], point[0]][0] == 255 and depth_map[point[1], point[0]][1] == 255 and depth_map[point[1], point[0]][2] == 255:
+        return 1
+    elif depth_map[point[1], point[0]][0] == 63 and depth_map[point[1], point[0]][1] == 191 and depth_map[point[1], point[0]][2] == 255:
+        return 0.6
+    else:
+        return 1  # land bridge
+
 def get_angle(point0, point1, point2):
     """
     Get the angle between two vectors.
