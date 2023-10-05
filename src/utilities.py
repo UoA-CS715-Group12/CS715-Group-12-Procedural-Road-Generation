@@ -246,5 +246,5 @@ def get_first_n_population_centres(pop_density_centres, number):
         y = round(pop_density_centres[i]['y'])
         w = round(pop_density_centres[i]['weight'])
         results.append((x, y, w))
-        
+
     return results
