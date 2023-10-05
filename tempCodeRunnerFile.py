@@ -1,1 +1,0 @@
-  # rng.generate_maj

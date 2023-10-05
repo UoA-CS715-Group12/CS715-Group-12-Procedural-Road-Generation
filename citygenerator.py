@@ -41,7 +41,6 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
     config = ConfigManager(config_path)
     timer.stop()
 
-
     # Step 1: Grow road network.
     timer = Timer("Population centres")
     population_centres = get_first_n_population_centres(config.pop_density_centres, number_of_centres)

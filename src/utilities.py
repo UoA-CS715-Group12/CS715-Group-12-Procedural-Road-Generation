@@ -241,12 +241,9 @@ def get_angle(point0, point1, point2):
 
 def get_first_n_population_centres(pop_density_centres, number):
     results = []
-    for i in range(number):
-        try:
-            x = round(pop_density_centres[i]['x'])
-            y = round(pop_density_centres[i]['y'])
-            w = round(pop_density_centres[i]['weight'])
-            results.append((x, y, w))
-        except IndexError:
-            break
+    for i in range(min(number, len(pop_density_centres))):
+        x = round(pop_density_centres[i]['x'])
+        y = round(pop_density_centres[i]['y'])
+        w = round(pop_density_centres[i]['weight'])
+        results.append((x, y, w))
     return results
