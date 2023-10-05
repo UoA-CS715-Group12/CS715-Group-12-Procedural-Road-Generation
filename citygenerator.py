@@ -24,7 +24,7 @@ def run_computations(config, road_network, vertex_dict):
     # rng.fix_overlapping_segments(config, road_network, vertex_dict)
     timer.stop()
     timer = Timer("Major roads")
-    rng.generate_major_roads(config, road_network, vertex_dict)
+    # rng.generate_major_roads(config, road_network, vertex_dict)
     # rng.fix_overlapping_segments(config, road_network, vertex_dict)
     timer.stop()
     timer = Timer("Minor roads")
@@ -40,6 +40,7 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
     timer = Timer("Config loader")
     config = ConfigManager(config_path)
     timer.stop()
+
 
     # Step 1: Grow road network.
     timer = Timer("Population centres")

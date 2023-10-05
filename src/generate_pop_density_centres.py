@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 from sklearn.cluster import DBSCAN
+from scipy.spatial import distance_matrix
+from sklearn.neighbors import kneighbors_graph
 
 
 def load_image(image_path):
@@ -150,6 +152,17 @@ def write_to_json(centroids, weights):
     with open('pop_density_centres.json', 'w') as f:
         json.dump(centroid_data, f, indent=4)
 
+
+        
+def create_relative_neighbor_graph(data):
+    """Create a relative neighbor graph using the given data points."""
+    # Compute the relative neighbor graph
+    graph = relative_neighbor_graph(data)
+    
+    # Extract the edges of the graph
+    edges = graph.edges
+    
+    return edges
     
 def main():
     # Load the image using Pillow
@@ -163,27 +176,32 @@ def main():
         
     image = load_image(filename)
     data = extract_data_points(image)
-    labels = cluster_data_points(data)
-    centroids = get_cluster_centroids(data, labels)
-    weights = get_cluster_weights(data, labels)
-    
-    # Save as json file
-    write_to_json(centroids, weights)
+    # labels = cluster_data_points(data)
+    # centroids = get_cluster_centroids(data, labels)
+    # weights = get_cluster_weights(data, labels)
+    edges = create_relative_neighbor_graph(data)
+
+
+    # # Save as json file
+    # write_to_json(centroids, weights)
 
     # Plot the image
     plt.imshow(image, cmap='gray')
 
     # Plot the clustered points
-    plt.scatter(data[:, 1], data[:, 0], c=labels, cmap='rainbow')
+    # plt.scatter(data[:, 1], data[:, 0], c=labels, cmap='rainbow')
 
-    # Plot the cluster centroids
-    plt.scatter(centroids[:, 1], centroids[:, 0], c='black', marker='x')
+    # # Plot the cluster centroids
+    # plt.scatter(centroids[:, 1], centroids[:, 0], c='black', marker='x')
 
-    # Annotate the centroids with their weights
-    for i, centroid in enumerate(centroids):
-        plt.annotate(f'{weights[i]:.2f}', (centroid[1], centroid[0]), color='white', fontsize=8)
+    # # Annotate the centroids with their weights
+    # for i, centroid in enumerate(centroids):
+    #     plt.annotate(f'{weights[i]:.2f}', (centroid[1], centroid[0]), color='white', fontsize=8)
     
-    # Show the plot
+    for edge in edges:
+        plt.plot([data[edge[0], 1], data[edge[1], 1]], 
+                    [data[edge[0], 0], data[edge[1], 0]], 'b-')
+        # Show the plot
     plt.show()
     
 if __name__ == "__main__":

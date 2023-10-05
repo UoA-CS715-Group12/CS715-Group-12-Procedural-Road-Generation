@@ -10,11 +10,15 @@ from src.road_network.segment import Segment
 from src.road_network.vertex import Vertex
 from src.utilities import get_distance, RoadTypes, get_change_in_height, get_height
 
+from relativeNeighborhoodGraph import returnRNG
+from scipy.spatial import distance_matrix
+
+
 # Minimum Spanning Tree related params
 WEIGHT_FACTOR = 30
 
 # Heuristic related params
-BOUNDED_RELAXATION = 2  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
+BOUNDED_RELAXATION = 10  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
 
 # Neighbours related params
 NEIGHBOR_RANGE = 15  # Tweak this. Higher = more time, roads can take more angles, has to be bigger than MIN_TUNNEL_LEN and MIN_BRIDGE_LEN
@@ -317,7 +321,8 @@ def get_all_a_star_roads(population_centres):
     :return: An array of segments
     """
     segments = []
-    edges = get_edges_mst(population_centres)
+    # edges = get_edges_mst(population_centres)
+    edges = get_edges_rng(population_centres)
 
     for edge in edges:
         node1Idx, node2Idx = edge
@@ -361,3 +366,50 @@ def get_edges_mst(nodes):
     mst = nx.minimum_spanning_tree(G)
 
     return mst.edges()
+
+def get_edges_rng(nodes):
+    """
+    Returns a graph consisting of edges based on the population density centre nodes
+    using Relative Neighborhood Graph (RNG).
+
+    :param nodes: List of nodes in the form [(x1, y1, w1), (x2, y2, w2), ...]
+    :return: A list of edges in the form [(n0, n2), (n1, n3)] where nx is the index of the node
+    """
+    # Extract the positions of nodes
+    positions = [(x, y) for x, y, w in nodes]
+    
+    # Compute the distance matrix
+    dist_matrix = distance_matrix(positions, positions)
+    
+    # Compute the relative neighbor graph
+    RNG = returnRNG.returnRNG(dist_matrix)
+#     [[  0.           0.         123.06908629 ...   0.           0.
+#   183.18296864]
+#  [  0.           0.           0.         ...   0.           0.
+#     0.        ]
+#  [123.06908629   0.           0.         ...   0.           0.
+#     0.        ]
+#  ...
+#  [  0.           0.           0.         ...   0.           0.
+#     0.        ]
+#  [  0.           0.           0.         ...   0.           0.
+#     0.        ]
+#  [183.18296864   0.           0.         ...   0.           0.
+#     0.        ]]
+    def adjacency_matrix_to_edges(adjacency_matrix):
+        """
+        Convert the adjacency matrix to a list of edges.
+
+        :param adjacency_matrix: Adjacency matrix
+        :return: A list of edges in the form [(n0, n2), (n1, n3)] where nx is the index of the node
+        """
+        edges = []
+        for i in range(len(adjacency_matrix)):
+            for j in range(i + 1, len(adjacency_matrix)):
+                if adjacency_matrix[i][j] != 0:
+                    edges.append((i, j))
+        return edges
+
+    RNG = adjacency_matrix_to_edges(RNG.values)
+    print(RNG)
+    return RNG
