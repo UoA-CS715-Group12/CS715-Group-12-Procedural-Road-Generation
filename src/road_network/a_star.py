@@ -339,6 +339,8 @@ def get_all_a_star_roads(population_centres):
         print("processing search from ", (x1, y1), " to ", (x2, y2))
 
         path = generate_a_star_road(a_star_search((x1, y1), (x2, y2)))
+        # path = generate_a_star_road([[[x1,y1]],[[x2,y2], RoadTypes.HIGHWAY]]) # No A Star
+        # print(path)
         segments.append(path)
 
     print("==============================================================")

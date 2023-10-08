@@ -43,10 +43,10 @@ class Visualiser:
 def init_plot():
     fig, ax = plt.subplots()
     ax.axis('equal')
-    highways = LineCollection([], linewidths=[1.6], colors=HIGHWAY_COLOUR, zorder=10)
-    bridges = LineCollection([], linewidths=[1.8], colors=BRIDGE_COLOUR, zorder=12)
-    tunnels = LineCollection([], linewidths=[1.8], colors=TUNNER_COLOUR, zorder=11)
-    minor_lines = LineCollection([], linewidths=[0.8], colors=MINOR_ROAD_COLOUR, zorder=2)
+    highways = LineCollection([], linewidths=[1.2], colors=HIGHWAY_COLOUR, zorder=10)
+    bridges = LineCollection([], linewidths=[1.4], colors=BRIDGE_COLOUR, zorder=12)
+    tunnels = LineCollection([], linewidths=[1.4], colors=TUNNER_COLOUR, zorder=11)
+    minor_lines = LineCollection([], linewidths=[0.5], colors=MINOR_ROAD_COLOUR, zorder=2)
 
     plt.ion()  # Turn on interactive mode
 

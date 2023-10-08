@@ -27,7 +27,7 @@ def run_computations(config, road_network, vertex_dict, total_time_arr):
     # rng.fix_overlapping_segments(config, road_network, vertex_dict)
     total_time_arr[0] += timer.stop()
     timer = Timer("Major roads")
-    # rng.generate_major_roads(config, road_network, vertex_dict)
+    rng.generate_major_roads(config, road_network, vertex_dict)
     # rng.fix_overlapping_segments(config, road_network, vertex_dict)
     total_time_arr[0] += timer.stop()
     timer = Timer("Minor roads")
@@ -36,7 +36,7 @@ def run_computations(config, road_network, vertex_dict, total_time_arr):
 
 
 def generate(config_path, show_city=False, show_time=False, show_stats=True, number_of_centres=35):
-    total_time_arr = [0]  # use array so thread can update total time
+def generate(config_path, show_city=False, show_time=False, show_stats=True, number_of_centres=40):
 
     # Step 0: Load config.
     timer = Timer("Config loader")
