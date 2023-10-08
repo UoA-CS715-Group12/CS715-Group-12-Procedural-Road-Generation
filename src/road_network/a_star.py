@@ -3,6 +3,8 @@ from queue import PriorityQueue
 
 import networkx as nx
 import numpy as np
+from relativeNeighborhoodGraph import returnRNG
+from scipy.spatial import distance_matrix
 
 from src.config_manager import ConfigManager
 from src.road_network.growth_rules.cost_function import check_curvature, check_water, linear_interpolate_points
@@ -181,6 +183,11 @@ def a_star_search(start, goal):
         current_priority, current = frontier.get()
         count += 1
 
+        # Max iterations reached
+        if count > 50000:
+            print("A* path not found in 50000 iterations")
+            return None
+
         # Current node has been visited before with a cheaper cost
         if current in closed_set:
             continue
@@ -298,6 +305,9 @@ def generate_a_star_road(path):
     """
     segments = []
 
+    if path is None:
+        return segments
+
     for i in range(len(path) - 1):
         x1, y1 = path[i][0]
         x2, y2 = path[i + 1][0]
@@ -317,7 +327,8 @@ def get_all_a_star_roads(population_centres):
     :return: An array of segments
     """
     segments = []
-    edges = get_edges_mst(population_centres)
+    # edges = get_edges_mst(population_centres)
+    edges = get_edges_rng(population_centres)
 
     for edge in edges:
         node1Idx, node2Idx = edge
@@ -361,3 +372,39 @@ def get_edges_mst(nodes):
     mst = nx.minimum_spanning_tree(G)
 
     return mst.edges()
+
+
+def get_edges_rng(nodes):
+    """
+    Returns a graph consisting of edges based on the population density centre nodes
+    using Relative Neighborhood Graph (RNG).
+
+    :param nodes: List of nodes in the form [(x1, y1, w1), (x2, y2, w2), ...]
+    :return: A list of edges in the form [(n0, n2), (n1, n3)] where nx is the index of the node
+    """
+    # Extract the positions of nodes
+    positions = [(x, y) for x, y, w in nodes]
+
+    # Compute the distance matrix
+    dist_matrix = distance_matrix(positions, positions)
+
+    # Compute the relative neighbor graph
+    RNG = returnRNG.returnRNG(dist_matrix)
+
+    def adjacency_matrix_to_edges(adjacency_matrix):
+        """
+        Convert the adjacency matrix to a list of edges.
+
+        :param adjacency_matrix: Adjacency matrix
+        :return: A list of edges in the form [(n0, n2), (n1, n3)] where nx is the index of the node
+        """
+        edges = []
+        for i in range(len(adjacency_matrix)):
+            for j in range(i + 1, len(adjacency_matrix)):
+                if adjacency_matrix[i][j] != 0:
+                    edges.append((i, j))
+        return edges
+
+    RNG = adjacency_matrix_to_edges(RNG.values)
+
+    return RNG

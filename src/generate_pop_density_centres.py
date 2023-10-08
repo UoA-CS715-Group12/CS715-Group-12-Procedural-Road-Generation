@@ -21,10 +21,11 @@ def load_image(image_path):
     # Threshold the image to create a binary black and white map
     # You can adjust the threshold value (128) to control the sensitivity
     image = (image > 70).astype(np.uint8)
-    
+
     plt.show()
-    
+
     return image
+
 
 def extract_data_points(image):
     """Extract data points representing high-density areas from a binary black and white map."""
@@ -41,8 +42,9 @@ def extract_data_points(image):
 
     # Convert the data points into a NumPy array
     data = np.array(data)
-    
+
     return data
+
 
 def cluster_data_points(data, eps=6, min_samples=50):
     """Cluster data points using the DBSCAN algorithm."""
@@ -59,8 +61,9 @@ def cluster_data_points(data, eps=6, min_samples=50):
     n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
 
     print(f'Estimated number of clusters: {n_clusters_}')
-    
+
     return labels
+
 
 def get_cluster_coordinates(data, labels):
     """Get the coordinates of each cluster."""
@@ -76,7 +79,7 @@ def get_cluster_coordinates(data, labels):
 
             # Add the cluster coordinates to the list
             clusters.append(cluster_data)
-    
+
     return clusters
 
 
@@ -100,8 +103,9 @@ def get_cluster_centroids(data, labels):
 
     # Convert the centroids into a NumPy array
     centroids = np.array(centroids)
-    
+
     return centroids
+
 
 def get_cluster_weights(data, labels):
     """Get the weights of each cluster based on their size."""
@@ -114,10 +118,10 @@ def get_cluster_weights(data, labels):
         if label != -1:
             # Get the data points belonging to this cluster
             cluster_data = data[labels == label]
-            
+
             # Compute the weight of the cluster
             weight = len(cluster_data)
-            
+
             # Add the weight to the list
             weights.append(weight)
 
@@ -126,9 +130,10 @@ def get_cluster_weights(data, labels):
 
     # Normalize the weights to be between 0 and 1
     weights = weights / np.max(weights)
-    
+
     return weights
-    
+
+
 def write_to_json(centroids, weights):
     # Create a list to store the centroid data
     centroid_data = []
@@ -141,16 +146,16 @@ def write_to_json(centroids, weights):
             'y': centroid[0],
             'weight': weight
         }
-        
+
         # Add the centroid data to the list
         centroid_data.append(centroid_dict)
 
-    centroid_data.sort(key=lambda x : x["weight"], reverse=True)
+    centroid_data.sort(key=lambda x: x["weight"], reverse=True)
     # Write the centroid data to a JSON file
     with open('pop_density_centres.json', 'w') as f:
         json.dump(centroid_data, f, indent=4)
 
-    
+
 def main():
     # Load the image using Pillow
     if len(sys.argv) > 1:
@@ -160,13 +165,13 @@ def main():
         # must be specified
         print("Please specific population density map name")
         return
-        
+
     image = load_image(filename)
     data = extract_data_points(image)
     labels = cluster_data_points(data)
     centroids = get_cluster_centroids(data, labels)
     weights = get_cluster_weights(data, labels)
-    
+
     # Save as json file
     write_to_json(centroids, weights)
 
@@ -182,9 +187,10 @@ def main():
     # Annotate the centroids with their weights
     for i, centroid in enumerate(centroids):
         plt.annotate(f'{weights[i]:.2f}', (centroid[1], centroid[0]), color='white', fontsize=8)
-    
+
     # Show the plot
     plt.show()
-    
+
+
 if __name__ == "__main__":
     main()
