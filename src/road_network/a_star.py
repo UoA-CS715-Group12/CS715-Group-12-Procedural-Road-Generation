@@ -184,8 +184,8 @@ def a_star_search(start, goal):
         count += 1
 
         # Max iterations reached
-        if count > 10000:
-            print("A* path not found in 10000 iterations")
+        if count > 50000:
+            print("A* path not found in 50000 iterations")
             return None
 
         # Current node has been visited before with a cheaper cost
