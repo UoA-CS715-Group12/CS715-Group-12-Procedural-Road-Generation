@@ -19,7 +19,7 @@
         "description": "Name of image used for land use",
         "value": "Zoning_Raster_low_res.tif"
     },
-    "height_map_image_name":{
+    "height_map_image_name": {
         "description": "Name of image used for height",
         "value": "greater_auckland/greater_auckland_height.png"
     },
@@ -27,7 +27,7 @@
         "description": "Name of file used to get major population centre coordinates",
         "value": "greater_auckland/auckland_pop_density_centres.json"
     },
-    "visualise_image_name":{
+    "visualise_image_name": {
         "description": "Name of image used for visualisation",
         "value": "greater_auckland/greater_auckland_visualise.png"
     },
@@ -143,8 +143,8 @@
         "description": "Value used to scale population density to [0-1] range.",
         "value": 9.043963245335577
     },
-    "pixel_scaling_factor" : {
-        "description" : "Value used to scale pixels to meters. Derived from input image using QGIS.",
-        "value" : 50.972477064
+    "pixel_scaling_factor": {
+        "description": "Value used to scale pixels to meters. Derived from input image using QGIS.",
+        "value": 50.972477064
     }
 }
