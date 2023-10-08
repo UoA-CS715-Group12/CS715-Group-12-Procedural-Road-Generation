@@ -32,7 +32,7 @@ def run_computations(config, road_network, vertex_dict):
     timer.stop()
 
 
-def generate(config_path, show_city=False, show_time=False, show_stats=False, number_of_centres=35):
+def generate(config_path, show_city=False, show_time=False, show_stats=False, number_of_centres=144):
     if show_time:
         t = time.process_time()
 
