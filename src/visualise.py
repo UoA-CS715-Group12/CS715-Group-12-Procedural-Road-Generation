@@ -6,7 +6,7 @@ from matplotlib.collections import LineCollection
 
 from src.utilities import RoadTypes
 
-HIGHWAY_COLOUR = [[251/255, 177/255, 99/255, 1]]
+HIGHWAY_COLOUR = [[251 / 255, 177 / 255, 99 / 255, 1]]
 MINOR_ROAD_COLOUR = [[183 / 255, 185 / 255, 187 / 255, 1]]
 TUNNER_COLOUR = [[227 / 255, 227 / 255, 227 / 255, 1]]
 BRIDGE_COLOUR = [[219 / 255, 181 / 255, 0 / 255, 1]]
@@ -66,6 +66,7 @@ def init_plot():
     legend = fig.legend(loc="upper left", handles=[
         highway_patch, minor_road_patch, bridge_patch, tunnel_patch])
 
+    plt.gca().set_aspect('equal', adjustable='box')
     plt.show()
 
     return fig, ax, highways, bridges, tunnels, minor_lines, legend
