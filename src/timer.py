@@ -8,4 +8,6 @@ class Timer:
 
     def stop(self):
         end_time = time.perf_counter()
-        print(f"{self.label} completed in {end_time - self.start_time:0.4f} seconds")
+        time_taken = end_time - self.start_time
+        print(f"{self.label} completed in {time_taken:0.4f} seconds")
+        return time_taken
