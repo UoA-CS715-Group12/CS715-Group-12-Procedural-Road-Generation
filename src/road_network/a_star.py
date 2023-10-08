@@ -304,7 +304,7 @@ def generate_a_star_road(path):
     :return: An array of segments
     """
     segments = []
-    
+
     if path is None:
         return segments
 
