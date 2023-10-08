@@ -200,7 +200,7 @@ def generate_major_roads(config, segment_added_list, vertex_added_dict):
             print(e)
 
         for segment in suggested_segments:
-            if not len(vertex_added_dict[current_segment.end_vert]) >= 2:
+            if len(vertex_added_dict[current_segment.end_vert]) < 2:
                 verified_segment = verify_segment(config, segment, min_distance, segment_added_list, vertex_added_dict)
                 if verified_segment:
                     segment_front_queue.put(verified_segment)
