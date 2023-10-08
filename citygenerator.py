@@ -2,7 +2,6 @@ import json
 import os
 import random
 import threading
-import time
 
 import matplotlib.pyplot as plt
 
@@ -37,7 +36,7 @@ def run_computations(config, road_network, vertex_dict, total_time_arr):
 
 
 def generate(config_path, show_city=False, show_time=False, show_stats=True, number_of_centres=35):
-    total_time_arr = [0] # use array so thread can update total time
+    total_time_arr = [0]  # use array so thread can update total time
 
     # Step 0: Load config.
     timer = Timer("Config loader")
@@ -80,10 +79,8 @@ def generate(config_path, show_city=False, show_time=False, show_stats=True, num
         visualiser.visualise()
 
     # Step 3: Compute road stats
-    if not show_stats:
-        return
-
-    compute_and_save_stats(road_network, vertex_dict, total_time_arr[0], config)
+    if show_stats:
+        compute_and_save_stats(road_network, vertex_dict, total_time_arr[0], config)
 
 
 def compute_and_save_stats(road_network, vertex_dict, total_time, config=None):
