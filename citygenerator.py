@@ -24,7 +24,7 @@ def run_computations(config, road_network, vertex_dict):
     # rng.fix_overlapping_segments(config, road_network, vertex_dict)
     timer.stop()
     timer = Timer("Major roads")
-    # rng.generate_major_roads(config, road_network, vertex_dict)
+    rng.generate_major_roads(config, road_network, vertex_dict)
     # rng.fix_overlapping_segments(config, road_network, vertex_dict)
     timer.stop()
     timer = Timer("Minor roads")
@@ -32,7 +32,7 @@ def run_computations(config, road_network, vertex_dict):
     timer.stop()
 
 
-def generate(config_path, show_city=False, show_time=False, show_stats=False, number_of_centres=35):
+def generate(config_path, show_city=False, show_time=False, show_stats=False, number_of_centres=100):
     if show_time:
         t = time.process_time()
 
@@ -41,23 +41,23 @@ def generate(config_path, show_city=False, show_time=False, show_stats=False, nu
     config = ConfigManager(config_path)
     timer.stop()
 
-    # Step 1: Grow road network.
-    timer = Timer("Population centres")
-    population_centres = get_first_n_population_centres(config.pop_density_centres, number_of_centres)
-    timer.stop()
+    # # Step 1: Grow road network.
+    # timer = Timer("Population centres")
+    # population_centres = get_first_n_population_centres(config.pop_density_centres, number_of_centres)
+    # timer.stop()
 
-    # TODO: remove later ----------- Debug
-    # population_centres = [(336,415,1),(302,235,1)]
-    # population_centres = [(428,537,1),(398,455,1)]
+    # # TODO: remove later ----------- Debug
+    # # population_centres = [(336,415,1),(302,235,1)]
+    # # population_centres = [(428,537,1),(398,455,1)]
 
-    timer = Timer("A*")
-    segments = get_all_a_star_roads(population_centres)
-    timer.stop()
+    # timer = Timer("A*")
+    # segments = get_all_a_star_roads(population_centres)
+    # timer.stop()
 
-    timer = Timer("Config extending")
-    for path in segments:
-        config.axiom.extend(path)
-    timer.stop()
+    # timer = Timer("Config extending")
+    # for path in segments:
+    #     config.axiom.extend(path)
+    # timer.stop()
 
     timer = Timer("Road network generator initialise")
     road_network, vertex_dict = rng.initialise(config)

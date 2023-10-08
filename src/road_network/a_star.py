@@ -28,7 +28,7 @@ MIN_HIGHWAY_LEN = 0
 HIGHWAY_COST = 0.0264  # Tweak this parameter
 TUNNEL_COST = 0.625  # Tweak this parameter
 BRIDGE_COST = 3.33  # Tweak this parameter
-GRADIENT_COST_FACTOR = 10  # Tweak this parameter
+GRADIENT_COST_FACTOR = 10 # Tweak this parameter
 GRADIENT_CUTOFF = 2  # Tweak this parameter
 
 
@@ -182,7 +182,7 @@ def a_star_search(start, goal):
     while not frontier.empty():
         current_priority, current = frontier.get()
         count += 1
-
+        print("current: ", start, " goal: ", goal, " current priority: ", current_priority, " current: ", current, "count: ", count)
         # Current node has been visited before with a cheaper cost
         if current in closed_set:
             continue
