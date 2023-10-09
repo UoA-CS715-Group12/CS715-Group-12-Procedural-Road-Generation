@@ -1,7 +1,38 @@
 {
     "axiom": {
         "description": "Default starting segments.",
-        "value": [[[300,400], [300, 430]]]
+        "value": [
+            [
+                [
+                    300,
+                    400
+                ],
+                [
+                    330,
+                    400
+                ]
+            ],
+            [
+                [
+                    280,
+                    210
+                ],
+                [
+                    300,
+                    210
+                ]
+            ],
+            [
+                [
+                    721,
+                    537
+                ],
+                [
+                    731,
+                    537
+                ]
+            ]
+        ]
     },
     "rule_image_name": {
         "description": "Name of image used for road network pattern rules.",
@@ -19,7 +50,7 @@
         "description": "Name of image used for land use",
         "value": "Zoning_Raster_low_res.tif"
     },
-    "height_map_image_name":{
+    "height_map_image_name": {
         "description": "Name of image used for height",
         "value": "greater_auckland/greater_auckland_height.png"
     },
@@ -27,7 +58,7 @@
         "description": "Name of file used to get major population centre coordinates",
         "value": "greater_auckland/auckland_pop_density_centres.json"
     },
-    "visualise_image_name":{
+    "visualise_image_name": {
         "description": "Name of image used for visualisation",
         "value": "greater_auckland/greater_auckland_visualise.png"
     },
@@ -41,7 +72,7 @@
     },
     "major_vertex_min_distance": {
         "description": "Minimum allowed distance between major road vertices.",
-        "value": 40
+        "value": 20
     },
     "grid_straight_road_probability": {
         "description": "Probability [0-1] of a road going straight being generated for the grid pattern.",
@@ -53,11 +84,11 @@
     },
     "grid_road_min_length": {
         "description": "Minimum length of a road segment for the grid pattern.",
-        "value": 80
+        "value": 40
     },
     "grid_road_max_length": {
         "description": "Maximum length of a road segment for the grid pattern.",
-        "value": 80
+        "value": 40
     },
     "organic_straight_road_probability": {
         "description": "Probability [0-1] of a road going straight being generated for the organic pattern.",
@@ -69,11 +100,11 @@
     },
     "organic_road_min_length": {
         "description": "Minimum length of a road segment for the organic pattern.",
-        "value": 20
+        "value": 40
     },
     "organic_road_max_length": {
         "description": "Maximum length of a road segment for the organic pattern.",
-        "value": 90
+        "value": 45
     },
     "radial_straight_road_probability": {
         "description": "Probability [0-1] of a road going straight being generated for the radial pattern.",
@@ -85,23 +116,35 @@
     },
     "radial_road_min_length": {
         "description": "Minimum length of a road segment for the radial pattern.",
-        "value": 80
+        "value": 40
     },
     "radial_road_max_length": {
         "description": "Maximum length of a road segment for the radial pattern.",
-        "value": 90
+        "value": 45
     },
     "grid_legend": {
         "description": "Color used to represent the grid rule.",
-        "value": [255, 100, 100]
+        "value": [
+            255,
+            100,
+            100
+        ]
     },
     "organic_legend": {
         "description": "Color used to represent the organic rule.",
-        "value": [100, 255, 100]
+        "value": [
+            100,
+            255,
+            100
+        ]
     },
     "radial_legend": {
         "description": "Color used to represent the radial rule.",
-        "value": [100, 100, 255]
+        "value": [
+            100,
+            100,
+            255
+        ]
     },
     "minor_road_min_length": {
         "description": "Minimum length of a minor road seed road.",
@@ -109,15 +152,15 @@
     },
     "minor_road_max_length": {
         "description": "Maximum length of a minor road seed road.",
-        "value": 5
+        "value": 8
     },
     "minor_road_seed_probability": {
         "description": "Probability [0-1] of a minor road seed road being generated.",
-        "value": 10
+        "value": 1
     },
     "minor_vertex_min_distance": {
         "description": "Minimum allowed distance between minor road vertices.",
-        "value": 8
+        "value": 4
     },
     "minor_road_organic_probability": {
         "description": "Probability [0-1] of using the organic rule for minor roads.",
@@ -125,26 +168,60 @@
     },
     "water_legend": {
         "description": "Color used to represent water.",
-        "value": [255, 255, 255]
+        "value": [
+            255,
+            255,
+            255
+        ]
     },
     "residential_legends": {
         "description": "Grayscale values used to represent residential areas.",
-        "value": [18, 19, 20, 23, 60, 8, 44, 3, 4, 68]
+        "value": [
+            18,
+            19,
+            20,
+            23,
+            60,
+            8,
+            44,
+            3,
+            4,
+            68
+        ]
     },
     "commercial_legends": {
         "description": "Grayscale values used to represent commercial areas.",
-        "value": [1, 10, 12, 22, 35, 49, 7, 45, 56, 63, 64, 54, 55]
+        "value": [
+            1,
+            10,
+            12,
+            22,
+            35,
+            49,
+            7,
+            45,
+            56,
+            63,
+            64,
+            54,
+            55
+        ]
     },
     "industry_legends": {
         "description": "Grayscale values used to represent industry areas.",
-        "value": [17, 5, 16, 51]
+        "value": [
+            17,
+            5,
+            16,
+            51
+        ]
     },
     "population_scaling_factor": {
         "description": "Value used to scale population density to [0-1] range.",
         "value": 9.043963245335577
     },
-    "pixel_scaling_factor" : {
-        "description" : "Value used to scale pixels to meters. Derived from input image using QGIS.",
-        "value" : 50.972477064
+    "pixel_scaling_factor": {
+        "description": "Value used to scale pixels to meters. Derived from input image using QGIS.",
+        "value": 50.972477064
     }
 }
