@@ -16,12 +16,12 @@ from src.utilities import get_distance, RoadTypes, get_change_in_height, get_hei
 WEIGHT_FACTOR = 30
 
 # Heuristic related params
-BOUNDED_RELAXATION = 2  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
+BOUNDED_RELAXATION = 1  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
 
 # Neighbours related params
-NEIGHBOR_RANGE = 15  # Tweak this. Higher = more time, roads can take more angles, has to be bigger than MIN_TUNNEL_LEN and MIN_BRIDGE_LEN
-MIN_TUNNEL_LEN = 5  # Tweak this
-MIN_BRIDGE_LEN = 6  # Tweak this
+NEIGHBOR_RANGE = 8  # Tweak this. Higher = more time, roads can take more angles, has to be bigger than MIN_TUNNEL_LEN and MIN_BRIDGE_LEN
+MIN_TUNNEL_LEN = 3  # Tweak this
+MIN_BRIDGE_LEN = 3  # Tweak this
 MIN_HIGHWAY_LEN = 0
 
 # Cost function related params (Road cost $?M/m)
@@ -184,8 +184,8 @@ def a_star_search(start, goal):
         count += 1
 
         # Max iterations reached
-        if count > 50000:
-            print("A* path not found in 50000 iterations")
+        if count > 500000:
+            print("A* path not found in 500000 iterations")
             return None
 
         # Current node has been visited before with a cheaper cost
