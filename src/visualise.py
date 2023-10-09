@@ -6,7 +6,7 @@ from matplotlib.collections import LineCollection
 
 from src.utilities import RoadTypes
 
-HIGHWAY_COLOUR = [[251/255, 177/255, 99/255, 1]]
+HIGHWAY_COLOUR = [[251 / 255, 177 / 255, 99 / 255, 1]]
 MINOR_ROAD_COLOUR = [[183 / 255, 185 / 255, 187 / 255, 1]]
 TUNNER_COLOUR = [[227 / 255, 227 / 255, 227 / 255, 1]]
 BRIDGE_COLOUR = [[219 / 255, 181 / 255, 0 / 255, 1]]
@@ -43,14 +43,10 @@ class Visualiser:
 def init_plot():
     fig, ax = plt.subplots()
     ax.axis('equal')
-    highways = LineCollection([], linewidths=[
-        1.6], colors=HIGHWAY_COLOUR, zorder=10)
-    bridges = LineCollection([], linewidths=[1.8],
-                             colors=BRIDGE_COLOUR, zorder=12)
-    tunnels = LineCollection([], linewidths=[1.8],
-                             colors=TUNNER_COLOUR, zorder=11)
-    minor_lines = LineCollection(
-        [], linewidths=[0.8], colors=MINOR_ROAD_COLOUR, zorder=2)
+    highways = LineCollection([], linewidths=[1.2], colors=HIGHWAY_COLOUR, zorder=10)
+    bridges = LineCollection([], linewidths=[1.4], colors=BRIDGE_COLOUR, zorder=12)
+    tunnels = LineCollection([], linewidths=[1.4], colors=TUNNER_COLOUR, zorder=11)
+    minor_lines = LineCollection([], linewidths=[0.5], colors=MINOR_ROAD_COLOUR, zorder=2)
 
     plt.ion()  # Turn on interactive mode
 
@@ -66,6 +62,7 @@ def init_plot():
     legend = fig.legend(loc="upper left", handles=[
         highway_patch, minor_road_patch, bridge_patch, tunnel_patch])
 
+    plt.gca().set_aspect('equal', adjustable='box')
     plt.show()
 
     return fig, ax, highways, bridges, tunnels, minor_lines, legend

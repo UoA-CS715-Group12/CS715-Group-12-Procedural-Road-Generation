@@ -2,36 +2,8 @@
     "axiom": {
         "description": "Default starting segments.",
         "value": [
-            [
-                [
-                    300,
-                    400
-                ],
-                [
-                    330,
-                    400
-                ]
-            ],
-            [
-                [
-                    280,
-                    210
-                ],
-                [
-                    300,
-                    210
-                ]
-            ],
-            [
-                [
-                    721,
-                    537
-                ],
-                [
-                    731,
-                    537
-                ]
-            ]
+            [[300, 400], [330, 400]],
+            [[280, 210], [300, 210]]
         ]
     },
     "rule_image_name": {
@@ -124,27 +96,15 @@
     },
     "grid_legend": {
         "description": "Color used to represent the grid rule.",
-        "value": [
-            255,
-            100,
-            100
-        ]
+        "value": [255, 100, 100]
     },
     "organic_legend": {
         "description": "Color used to represent the organic rule.",
-        "value": [
-            100,
-            255,
-            100
-        ]
+        "value": [100, 255, 100]
     },
     "radial_legend": {
         "description": "Color used to represent the radial rule.",
-        "value": [
-            100,
-            100,
-            255
-        ]
+        "value": [100, 100, 255]
     },
     "minor_road_min_length": {
         "description": "Minimum length of a minor road seed road.",
@@ -168,53 +128,19 @@
     },
     "water_legend": {
         "description": "Color used to represent water.",
-        "value": [
-            255,
-            255,
-            255
-        ]
+        "value": [255, 255, 255]
     },
     "residential_legends": {
         "description": "Grayscale values used to represent residential areas.",
-        "value": [
-            18,
-            19,
-            20,
-            23,
-            60,
-            8,
-            44,
-            3,
-            4,
-            68
-        ]
+        "value": [18, 19, 20, 23, 60, 8, 44, 3, 4, 68]
     },
     "commercial_legends": {
         "description": "Grayscale values used to represent commercial areas.",
-        "value": [
-            1,
-            10,
-            12,
-            22,
-            35,
-            49,
-            7,
-            45,
-            56,
-            63,
-            64,
-            54,
-            55
-        ]
+        "value": [1, 10, 12, 22, 35, 49, 7, 45, 56, 63, 64, 54, 55]
     },
     "industry_legends": {
         "description": "Grayscale values used to represent industry areas.",
-        "value": [
-            17,
-            5,
-            16,
-            51
-        ]
+        "value": [17, 5, 16, 51]
     },
     "population_scaling_factor": {
         "description": "Value used to scale population density to [0-1] range.",
