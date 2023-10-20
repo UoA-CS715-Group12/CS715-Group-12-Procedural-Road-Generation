@@ -1,4 +1,4 @@
-<h1 align="center">Procedural Generation of Realistic Road Layouts Using Terrain and Economic Characteristics</h1>
+<h1 align="center">Procedural Road Generation</h1>
 
 <div align="center">
 
