@@ -30,7 +30,7 @@ The Unity 3D visualisation module can be found [here](https://github.com/UoA-CS7
 - [⚙️ Input Configurations](#️-input-configurations)
   - [Images](#images)
   - [Population density centres and other parameters](#population-density-centres-and-other-parameters)
-  - [A\* and Minimum Spanning Tree (MST)](#a-and-minimum-spanning-tree-mst)
+  - [A\* and (Legacy) Minimum Spanning Tree (MST)](#a-and-legacy-minimum-spanning-tree-mst)
 - [📖 Acknowledgements:](#-acknowledgements)
 
 ## 📋 Requirements
@@ -82,7 +82,7 @@ The centres JSON file could be found in `input/configs/json`
 Number of population density centres can be changed in the `generate` function within the file `citygenerator.py`
 
 
-### A* and Minimum Spanning Tree (MST)
+### A* and (Legacy) Minimum Spanning Tree (MST)
 Parameters used for A* and the MST can be found as a list of constants at the top of the file `a_star.py`.
 
 Note: Increasing the value of these parameters will significantly increase the runtime.
