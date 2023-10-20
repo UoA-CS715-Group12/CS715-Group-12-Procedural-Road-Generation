@@ -14,6 +14,8 @@ The algorithms used are [A Star](https://en.wikipedia.org/wiki/A*_search_algorit
 
 The Unity 3D visualisation module can be found [here](https://github.com/UoA-CS715-Group12/Unity-Visualisation)
 
+![example_cover](https://github.com/UoA-CS715-Group12/Python-Lsystem/assets/61865484/9f3d9e8a-befb-4b11-b744-9c3b952598ec)
+
 <br/>
 
 </div>
