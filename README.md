@@ -32,6 +32,7 @@ The Unity 3D visualisation module can be found [here](https://github.com/UoA-CS7
   - [Population density centres and other parameters](#population-density-centres-and-other-parameters)
   - [A\* and (Legacy) Minimum Spanning Tree (MST)](#a-and-legacy-minimum-spanning-tree-mst)
 - [📖 Acknowledgements:](#-acknowledgements)
+- [💻 Credits](#-credits)
 
 ## 📋 Requirements
 This project was run on Python 3.11 using a Windows machine. The full list of dependencies can be found in `requirements.txt`
@@ -94,3 +95,13 @@ https://github.com/x775/citygenerator
 All changes after the first commit is our own implementation
 
 - Input images are source from [Koordinates.com](https://koordinates.com/) and [Mapbox](https://www.mapbox.com/)
+
+## 💻 Credits
+This project was created by the following people as part of their CS715 university project.
+
+- Alex Liang
+- Nick Huang
+- Bowen Xiang
+- Tony Cui
+- Benjamin Goh
+
