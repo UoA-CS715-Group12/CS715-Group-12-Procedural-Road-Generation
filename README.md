@@ -6,11 +6,11 @@
 </div>
 
 <div align="center">
-This repository contains the source code for a novel procedural road generation algorithm utilising terrain, height, and population density data.
+This repository contains the source code for a novel procedural road generation algorithm that leverages terrain, height, and population density data.
 
 <br/>
 
-The algorithms used are [A Star](https://en.wikipedia.org/wiki/A*_search_algorithm) and the [L-System](https://en.wikipedia.org/wiki/L-system#:~:text=An%20L%2Dsystem%20consists%20of,generated%20strings%20into%20geometric%20structures.).
+The algorithms utilised include [A Star](https://en.wikipedia.org/wiki/A*_search_algorithm), [L-System](https://en.wikipedia.org/wiki/L-system#:~:text=An%20L%2Dsystem%20consists%20of,generated%20strings%20into%20geometric%20structures.), and [relative neighbourhood graph](https://en.wikipedia.org/wiki/Relative_neighborhood_graph).
 
 The Unity 3D visualisation module can be found [here](https://github.com/UoA-CS715-Group12/Unity-Visualisation)
 
@@ -35,7 +35,7 @@ The Unity 3D visualisation module can be found [here](https://github.com/UoA-CS7
 - [💻 Credits](#-credits)
 
 ## 📋 Requirements
-This project was run on Python 3.11 using a Windows machine. The full list of dependencies can be found in `requirements.txt`
+This project was run on Python 3.11 using a Windows machine. For the complete list of dependencies, check `requirements.txt`.
 
 ## 👩‍🏫 Getting started:
 1. Clone the repository using `git clone`.
@@ -71,22 +71,18 @@ python citygenerator.py
 ## ⚙️ Input Configurations
 
 ### Images
-Image configurations can be found in the file `input/configs/auckland.json`
+Image configurations are located in the file `input/configs/auckland.json`. Modify the file names for the input files as needed.
 
-You can change the names of the input files to be used accordingly.
-
-Currently, we are using a population density, coastline, and water depth map sourced from [Koordinates.com](https://koordinates.com/).
+Currently, we are using a population density, coastline, and water depth map obtained from [Koordinates.com](https://koordinates.com/).
 
 ### Population density centres and other parameters
-The centres JSON file could be found in `input/configs/json`
-
-Number of population density centres can be changed in the `generate` function within the file `citygenerator.py`
+The centers JSON file can be found in `input/configs/json`. Adjust the number of population density centers in the `generate` function within the file `citygenerator.py`.
 
 
 ### A* and (Legacy) Minimum Spanning Tree (MST)
 Parameters used for A* and the MST can be found as a list of constants at the top of the file `a_star.py`.
 
-Note: Increasing the value of these parameters will significantly increase the runtime.
+Note: Increasing these parameters will significantly increase the runtime.
 
 ## 📖 Acknowledgements:
 This repository is built based on an existing implementation of the extended L-system for road generation:
