@@ -19,9 +19,9 @@ WEIGHT_FACTOR = 30
 BOUNDED_RELAXATION = 1  # Tweak this. Higher = Greedy search Faster, lower >= 1 optimal path
 
 # Neighbours related params
-NEIGHBOR_RANGE = 8  # Tweak this. Higher = more time, roads can take more angles, has to be bigger than MIN_TUNNEL_LEN and MIN_BRIDGE_LEN
-MIN_TUNNEL_LEN = 3  # Tweak this
-MIN_BRIDGE_LEN = 3  # Tweak this
+NEIGHBOR_RANGE = 10  # Tweak this. Higher = more time, roads can take more angles, has to be bigger than MIN_TUNNEL_LEN and MIN_BRIDGE_LEN
+MIN_TUNNEL_LEN = 8  # Tweak this
+MIN_BRIDGE_LEN = 8  # Tweak this
 MIN_HIGHWAY_LEN = 0
 
 # Cost function related params (Road cost $?M/m)
@@ -182,7 +182,7 @@ def a_star_search(start, goal):
     while not frontier.empty():
         current_priority, current = frontier.get()
         count += 1
-
+        # print("count:", count, "priority:", current_priority)
         # Max iterations reached
         if count > 500000:
             print("A* path not found in 500000 iterations")
@@ -340,7 +340,6 @@ def get_all_a_star_roads(population_centres):
 
         path = generate_a_star_road(a_star_search((x1, y1), (x2, y2)))
         # path = generate_a_star_road([[[x1,y1]],[[x2,y2], RoadTypes.HIGHWAY]]) # No A Star
-        # print(path)
         segments.append(path)
 
     print("==============================================================")

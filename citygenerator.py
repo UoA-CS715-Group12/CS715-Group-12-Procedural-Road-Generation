@@ -35,7 +35,7 @@ def run_computations(config, road_network, vertex_dict, total_time_arr):
     total_time_arr[0] += timer.stop()
 
 
-def generate(config_path, show_city=False, show_time=False, show_stats=True, number_of_centres=144):
+def generate(config_path, show_city=False, show_time=False, show_stats=True, number_of_centres=20):
     total_time_arr = [0] # use array so thread can update total time
 
     # Step 0: Load config.

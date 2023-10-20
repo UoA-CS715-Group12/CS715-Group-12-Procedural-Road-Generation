@@ -16,7 +16,7 @@ from src.utilities import find_pixel_value
 from src.utilities import get_population_density_value
 from src.utilities import rotate
 
-HEIGHT_THRESHOLD = 100  # Tweak this to set the maximum height L-system roads can be generated
+HEIGHT_THRESHOLD = 80  # Tweak this to set the maximum height L-system roads can be generated
 DIRECTION_SIMILARITY_THRESHOLD = 0.9
 CLOSE_THRESHOLD = 10
 
