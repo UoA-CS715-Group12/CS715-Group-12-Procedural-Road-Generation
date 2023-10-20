@@ -1,18 +1,47 @@
-# Procedural road generation in Python
+<h1 align="center">Procedural Generation of Realistic Road Layouts Using Terrain and Economic Characteristics</h1>
 
-This is the road generation module that generates road networks based on various input maps and creates a json file for
-visualisation.
+<div align="center">
 
-For the visualisation module, see: ... (TODO: insert repo link)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-311/)
+</div>
 
-## Acknowledgements:
+<div align="center">
+This repository contains the source code for a novel procedural road generation algorithm utilising terrain, height, and population density data.
 
-This repository is built based on an existing implementation of the extended L-system for road generation:
-https://github.com/x775/citygenerator
+<br/>
 
-All changes after the first commit is our own implementation.
+The algorithms used are [A Star](https://en.wikipedia.org/wiki/A*_search_algorithm) and the [L-System](https://en.wikipedia.org/wiki/L-system#:~:text=An%20L%2Dsystem%20consists%20of,generated%20strings%20into%20geometric%20structures.).
 
-## Getting started:
+The Unity 3D visualisation module can be found [here](https://github.com/UoA-CS715-Group12/Unity-Visualisation)
+
+<br/>
+
+</div>
+
+## Contents
+
+- [Contents](#contents)
+- [📋 Requirements](#-requirements)
+- [👩‍🏫 Getting started:](#-getting-started)
+  - [K-means clustering](#k-means-clustering)
+  - [Road Generation](#road-generation)
+- [⚙️ Input Configurations](#️-input-configurations)
+  - [Images](#images)
+  - [Population density centres and other parameters](#population-density-centres-and-other-parameters)
+  - [A\* and Minimum Spanning Tree (MST)](#a-and-minimum-spanning-tree-mst)
+- [📖 Acknowledgements:](#-acknowledgements)
+
+## 📋 Requirements
+This project was run on Python 3.11 using a Windows machine. The full list of dependencies can be found in `requirements.txt`
+
+## 👩‍🏫 Getting started:
+1. Clone the repository using `git clone`.
+
+2. It is recommended to use a [virtual environment](https://docs.python.org/3/library/venv.html) to install the python packages to avoid conflicts.
+
+2. Run `pip install -r requirements.txt` in the **root directory** of the package.
+
+3. We included the Python 3.11 version of the GDAL package for a windows 64-bit machine in the repository. For other versions and operating systems, instructions are found [here](https://github.com/cgohlke/geospatial-wheels/).
 
 ### K-means clustering
 
@@ -31,11 +60,35 @@ python src/generate_pop_density_centres.py input/images/greater_auckland/greater
 
 ### Road Generation
 
+Run the following command in the command line:
 ```
-pip install -r requirements.txt
+python citygenerator.py
 ```
 
-Run the `citygenerator.py` file either using an IDE or the command line
+## ⚙️ Input Configurations
 
-# Acknowledgements:
+### Images
+Image configurations can be found in the file `input/configs/auckland.json`
+
+You can change the names of the input files to be used accordingly.
+
+Currently, we are using a population density, coastline, and water depth map sourced from [Koordinates.com](https://koordinates.com/).
+
+### Population density centres and other parameters
+The centres JSON file could be found in `input/configs/json`
+
+Number of population density centres can be changed in the `generate` function within the file `citygenerator.py`
+
+
+### A* and Minimum Spanning Tree (MST)
+Parameters used for A* and the MST can be found as a list of constants at the top of the file `a_star.py`.
+
+Note: Increasing the value of these parameters will significantly increase the runtime.
+
+## 📖 Acknowledgements:
+This repository is built based on an existing implementation of the extended L-system for road generation:
+https://github.com/x775/citygenerator
+
+All changes after the first commit is our own implementation
+
 - Input images are source from [Koordinates.com](https://koordinates.com/) and [Mapbox](https://www.mapbox.com/)
