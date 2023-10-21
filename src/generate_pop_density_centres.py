@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 from sklearn.cluster import DBSCAN
+import os
 
 
 def load_image(image_path):
@@ -151,9 +152,27 @@ def write_to_json(centroids, weights):
         centroid_data.append(centroid_dict)
 
     centroid_data.sort(key=lambda x: x["weight"], reverse=True)
+    
+    create_output_folder()
+    
     # Write the centroid data to a JSON file
-    with open('pop_density_centres.json', 'w') as f:
+    with open('output/pop_density_centres.json', 'w') as f:
         json.dump(centroid_data, f, indent=4)
+
+def create_output_folder():
+    # Define the name of the folder
+    folder_name = 'output'
+
+    # Define the path of the folder
+    folder_path = os.path.join(os.getcwd(), folder_name)
+
+    # Check if the folder already exists
+    if not os.path.exists(folder_path):
+        # Create a new folder if it doesn't exist
+        os.makedirs(folder_path)
+        print(f"The '{folder_name}' folder has been created.")
+    else:
+        print(f"The '{folder_name}' folder already exists.")
 
 
 def main():
