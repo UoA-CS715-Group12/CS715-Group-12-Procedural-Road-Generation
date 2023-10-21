@@ -14,7 +14,7 @@ The algorithms utilised include [A Star](https://en.wikipedia.org/wiki/A*_search
 
 The Unity 3D visualisation module can be found [here](https://github.com/UoA-CS715-Group12/Unity-Visualisation)
 
-![example_cover](https://github.com/UoA-CS715-Group12/Python-Lsystem/assets/61865484/9f3d9e8a-befb-4b11-b744-9c3b952598ec)
+<img src="https://github.com/UoA-CS715-Group12/CS715-Group-12-Procedural-Road-Generation/assets/69305722/7f6861d9-56bb-44b5-9f4a-29178c562fc3" alt="image" width="600"/>
 
 <br/>
 
