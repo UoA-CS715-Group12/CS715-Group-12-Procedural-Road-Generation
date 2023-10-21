@@ -10,7 +10,7 @@ This repository contains the source code for a novel procedural road generation 
 
 <br/>
 
-The algorithms utilised include [A Star](https://en.wikipedia.org/wiki/A*_search_algorithm), [L-System](https://en.wikipedia.org/wiki/L-system#:~:text=An%20L%2Dsystem%20consists%20of,generated%20strings%20into%20geometric%20structures.), and [relative neighbourhood graph](https://en.wikipedia.org/wiki/Relative_neighborhood_graph).
+The algorithms utilised include [A Star](https://en.wikipedia.org/wiki/A*_search_algorithm), [L-System](https://en.wikipedia.org/wiki/L-system), and [relative neighbourhood graph](https://en.wikipedia.org/wiki/Relative_neighborhood_graph).
 
 The Unity 3D visualisation module can be found [here](https://github.com/UoA-CS715-Group12/Unity-Visualisation)
 
